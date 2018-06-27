@@ -25,7 +25,7 @@ class Nav implements EccubeNav
         return [
             'order' => [
                 'id' => 'admin_sample_payment_list',
-                'name' => '決済状況一覧',
+                'name' => 'sample_payment.admin.nav.payment_list',
                 'url' => 'admin_sample_payment_list',
             ],
         ];

@@ -1,0 +1,17 @@
+# nav
+sample_payment.admin.nav.payment_list: 決済状況一覧
+
+# flash messages
+sample_payment.admin.save.success: 登録しました。
+sample_payment.admin.save.failed: 登録に失敗しました。
+
+# twig
+sample_payment.admin.config.title: サンプル決済
+sample_payment.admin.config.sub_title: プラグイン一覧
+sample_payment.admin.config.header: 設定
+sample_payment.admin.config.save: 登録
+sample_payment.admin.config.required: 必須
+sample_payment.admin.config.back: プラグイン一覧
+sample_payment.admin.config.api_url: API URL
+sample_payment.admin.config.api_id: API ID
+sample_payment.admin.config.api_password: API パスワード

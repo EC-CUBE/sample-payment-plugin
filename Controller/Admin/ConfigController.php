@@ -52,9 +52,9 @@ class ConfigController extends AbstractController
             $this->entityManager->persist($Config);
             $this->entityManager->flush($Config);
 
-            $this->addSuccess('登録しました。', 'admin');
+            $this->addSuccess('sample_payment.admin.save.success', 'admin');
 
-            return $this->redirectToRoute('admin_sample_payment_config');
+            return $this->redirectToRoute('plugin_SamplePayment_config');
         }
 
         return [

@@ -12,8 +12,8 @@ file that was distributed with this source code.
 
 {% set menus = ['store', 'plugin', 'plugin_list'] %}
 
-{% block title %}サンプル決済{% endblock %}
-{% block sub_title %}プラグイン一覧{% endblock %}
+{% block title %}{{ 'sample_payment.admin.config.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'sample_payment.admin.config.sub_title'|trans }}{% endblock %}
 
 {% form_theme form '@admin/Form/bootstrap_4_horizontal_layout.html.twig' %}
 
@@ -30,27 +30,27 @@ file that was distributed with this source code.
             <div class="c-contentsArea__primaryCol">
                 <div class="c-primaryCol">
                     <div class="card rounded border-0 mb-4">
-                        <div class="card-header"><span>設定</span></div>
+                        <div class="card-header"><span>{{ 'sample_payment.admin.config.header'|trans }}</span></div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-3"><span>サーバURL</span><span
-                                            class="badge badge-primary ml-1">必須</span></div>
+                                <div class="col-3"><span>{{ 'sample_payment.admin.config.api_url'|trans }}</span><span
+                                            class="badge badge-primary ml-1">{{ 'sample_payment.admin.config.required'|trans }}</span></div>
                                 <div class="col mb-2">
                                     {{ form_widget(form.api_url) }}
                                     {{ form_errors(form.api_url) }}
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-3"><span>API ID</span><span
-                                            class="badge badge-primary ml-1">必須</span></div>
+                                <div class="col-3"><span>{{ 'sample_payment.admin.config.api_id'|trans }}</span><span
+                                            class="badge badge-primary ml-1">{{ 'sample_payment.admin.config.required'|trans }}</span></div>
                                 <div class="col mb-2">
                                     {{ form_widget(form.api_id) }}
                                     {{ form_errors(form.api_id) }}
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-3"><span>API パスワード</span><span
-                                            class="badge badge-primary ml-1">必須</span>
+                                <div class="col-3"><span>{{ 'sample_payment.admin.config.api_password'|trans }}</span><span
+                                            class="badge badge-primary ml-1">{{ 'sample_payment.admin.config.required'|trans }}</span>
                                 </div>
                                 <div class="col mb-2">
                                     {{ form_widget(form.api_password) }}
@@ -70,7 +70,7 @@ file that was distributed with this source code.
                             <a class="c-beseLink"
                                href="{{ url('admin_store_plugin') }}">
                                 <i class="fa fa-backward" aria-hidden="true"></i>
-                                <span>プラグイン一覧</span>
+                                <span>{{ 'sample_payment.admin.config.back'|trans }}</span>
                             </a>
                         </div>
                     </div>
@@ -78,7 +78,7 @@ file that was distributed with this source code.
                         <div class="row align-items-center justify-content-end">
                             <div class="col-auto">
                                 <button class="btn btn-ec-conversion px-5"
-                                        type="submit">登録</button>
+                                        type="submit">{{ 'sample_payment.admin.config.save'|trans }}</button>
                             </div>
                         </div>
                     </div>
