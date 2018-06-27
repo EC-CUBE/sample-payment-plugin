@@ -6,7 +6,7 @@
  * Time: 13:48
  */
 
-namespace Plugin\SamplePayment\Service;
+namespace Plugin\SamplePayment\Service\Method;
 
 
 use Doctrine\ORM\EntityManagerInterface;

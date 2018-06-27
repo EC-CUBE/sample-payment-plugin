@@ -17,6 +17,7 @@ use Eccube\Entity\Payment;
 use Eccube\Plugin\AbstractPluginManager;
 use Eccube\Repository\PaymentRepository;
 use Plugin\SamplePayment\Entity\Config;
+use Plugin\SamplePayment\Entity\PaymentStatus;
 use Plugin\SamplePayment\Service\LinkCreditCard;
 use Plugin\SamplePayment\Service\LinkPaymentService;
 use Plugin\SamplePayment\Service\Method\CreditCard;
