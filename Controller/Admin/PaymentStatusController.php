@@ -71,7 +71,7 @@ class PaymentStatusController extends AbstractController
      *
      * @Route("/%eccube_admin_route%/sample_payment/payment_status", name="sample_payment_admin_payment_status")
      * @Route("/%eccube_admin_route%/sample_payment/payment_status/{page_no}", requirements={"page_no" = "\d+"}, name="sample_payment_admin_payment_status_pageno")
-     * @Template("@SamplePayment/admin/list.twig")
+     * @Template("@SamplePayment/admin/payment_status.twig")
      */
     public function index(Request $request, $page_no = null, PaginatorInterface $paginator)
     {

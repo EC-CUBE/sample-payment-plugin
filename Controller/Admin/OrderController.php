@@ -13,29 +13,20 @@
 
 namespace Plugin\SamplePayment\Controller\Admin;
 
-use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Order;
-use Eccube\Repository\Master\OrderStatusRepository;
-use Eccube\Repository\Master\PageMaxRepository;
-use Eccube\Repository\OrderRepository;
-use Eccube\Util\FormUtil;
-use Knp\Component\Pager\PaginatorInterface;
-use Plugin\SamplePayment\Form\Type\Admin\SearchPaymentType;
-use Plugin\SamplePayment\Repository\PaymentStatusRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class PaymentController extends AbstractController
+class OrderController extends AbstractController
 {
-    /*
+    /**
      * 受注編集 > 決済のキャンセル処理
      *
      * @Method("POST")
-     * @Route("/%eccube_admin_route%/sample_payment/order/cancel/{id}", requirements={"id" = "\d+"}, name="admin_sample_payment_order_cancel")
+     * @Route("/%eccube_admin_route%/sample_payment/order/cancel/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_cancel")
      */
     public function cancel(Request $request, Order $Order)
     {
@@ -54,7 +45,7 @@ class PaymentController extends AbstractController
      * 受注編集 > 決済の金額変更
      *
      * @Method("POST")
-     * @Route("/%eccube_admin_route%/sample_payment/order/change_price/{id}", requirements={"id" = "\d+"}, name="admin_sample_payment_order_change_price")
+     * @Route("/%eccube_admin_route%/sample_payment/order/change_price/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_change_price")
      */
     public function changePrice(Request $request, Order $Order)
     {
