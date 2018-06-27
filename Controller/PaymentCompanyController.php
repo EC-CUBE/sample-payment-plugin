@@ -21,7 +21,7 @@ class PaymentCompanyController extends AbstractController
      * 決済会社側での処理
      *
      * @Route("/payment_company", name="payment_company")
-     * @Template("LinkPayment/Resource/dummy.twig")
+     * @Template("@SamplePayment/dummy.twig")
      */
     public function index(Request $request)
     {

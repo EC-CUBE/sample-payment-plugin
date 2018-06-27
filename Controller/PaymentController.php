@@ -16,8 +16,7 @@ use Eccube\Entity\Order;
 use Eccube\Entity\OrderItem;
 use Eccube\Repository\OrderRepository;
 use Eccube\Service\ShoppingService;
-use Plugin\LinkPayment\Entity\PaymentStatus;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Plugin\SamplePayment\Entity\PaymentStatus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -155,7 +154,7 @@ class PaymentController extends AbstractController
 
         // 決済ステータス更新（未決済 -> 仮売上済み）
         $provisionalSalesPaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::PROVISIONAL_SALES);
-        $Order->setLinkPaymentPaymentStatus($provisionalSalesPaymentStatus);
+        $Order->getSamplePaymentPaymentStatus($provisionalSalesPaymentStatus);
 
 
         // 共通処理
@@ -181,7 +180,7 @@ class PaymentController extends AbstractController
         $outstandingPaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
 
         /** @var Order $Order */
-        $Order = $this->orderRepository->findOneBy(['order_code' => $orderCode, 'OrderStatus' => $pendingOrderStatus, 'LinkPaymentPaymentStatus' => $outstandingPaymentStatus]);
+        $Order = $this->orderRepository->findOneBy(['order_code' => $orderCode, 'OrderStatus' => $pendingOrderStatus, 'SamplePaymentPaymentStatus' => $outstandingPaymentStatus]);
 
         if (is_null($Order)) {
             throw new NotFoundHttpException();

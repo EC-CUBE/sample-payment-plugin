@@ -6,7 +6,7 @@
  * Time: 13:48
  */
 
-namespace Plugin\LinkPayment\Service;
+namespace Plugin\SamplePayment\Service;
 
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,12 +17,12 @@ use Eccube\Service\Payment\PaymentDispatcher;
 use Eccube\Service\Payment\PaymentMethod;
 use Eccube\Service\Payment\PaymentResult;
 use Eccube\Service\ShoppingService;
-use Plugin\LinkPayment\Entity\PaymentStatus;
+use Plugin\SamplePayment\Entity\PaymentStatus;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class CreditCard implements PaymentMethod
+class LinkCreditCard implements PaymentMethod
 {
     /**
      * @var Order
@@ -80,9 +80,9 @@ class CreditCard implements PaymentMethod
         $this->shoppingService->setOrderStatus($Order, OrderStatus::PENDING);
 
         // - 決済ステータス（なし -> 未決済）
-        if ($Order->getLinkPaymentPaymentStatus() == null) {
+        if ($Order->getSamplePaymentPaymentStatus() == null) {
             $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
-            $Order->setLinkPaymentPaymentStatus($PaymentStatus);
+            $Order->getSamplePaymentPaymentStatus($PaymentStatus);
         }
 
         // 他のコントローラに移譲等の処理をする

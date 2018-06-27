@@ -6,7 +6,7 @@
  * Time: 13:52
  */
 
-namespace Plugin\LinkPayment\Service;
+namespace Plugin\SamplePayment\Service;
 
 
 use Eccube\Entity\Order;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Eccube\Service\PaymentService as BasePaymentService;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class PaymentService extends BasePaymentService
+class LinkPaymentService extends BasePaymentService
 {
     /**
      * @var ShoppingService
