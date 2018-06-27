@@ -10,7 +10,7 @@ file that was distributed with this source code.
 #}
 {% extends '@admin/styleguide_frame.twig' %}
 
-{% set menus = ['order', 'admin_sample_payment_list'] %}
+{% set menus = ['order', 'sample_payment_admin_payment_status'] %}
 
 {% block title %}決済状況一覧{% endblock %}
 {% block sub_title %}受注管理{% endblock %}
@@ -85,7 +85,7 @@ file that was distributed with this source code.
 {% block main %}
     <!--検索条件設定テーブルここから-->
     <div class="c-outsideBlock">
-        <form name="search_form" method="POST" action="{{ url('admin_sample_payment_list') }}">
+        <form name="search_form" method="POST" action="{{ url('sample_payment_admin_payment_status') }}">
             {{ form_widget(searchForm._token) }}
             <div class="c-outsideBlock__contents">
                 <div class="row">
@@ -180,7 +180,7 @@ file that was distributed with this source code.
                                             <select class="custom-select" id="option_bulk_status">
                                             <option value="" selected>{{ 'admin.order.index.option_bulk_change_status'|trans }}</option>
                                             {% for action in bulkActions %}
-                                            <option value="{{ url('admin_sample_payment_bulk_action', {'id': action.id }) }}">{{ action.name }}</option>
+                                            <option value="{{ url('sample_payment_admin_payment_status_bulk_action', {'id': action.id }) }}">{{ action.name }}</option>
                                             {% endfor %}
                                             </select>
                                         </div>
@@ -195,7 +195,7 @@ file that was distributed with this source code.
                                     <select class="custom-select" onchange="location = this.value;">
                                         {% for pageMax in pageMaxis %}
                                             <option {% if pageMax.name == page_count%} selected {% endif %}
-                                                    value="{{ path('admin_sample_payment_list', {'page_no': 1, 'page_count': pageMax.name}) }}">
+                                                    value="{{ path('sample_payment_admin_payment_status', {'page_no': 1, 'page_count': pageMax.name}) }}">
                                                 {{ pageMax.name|e }}{{ 'admin.order.index.num'|trans }}</option>
                                         {% endfor %}
                                     </select>
