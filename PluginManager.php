@@ -28,10 +28,6 @@ class PluginManager extends AbstractPluginManager
     {
         // TODO PluginServiceでインスタンス化されメソッドが呼ばれるので、Injectionできない.
         $paymentRepository = $container->get(PaymentRepository::class);
-        $Payment = $paymentRepository->findOneBy(['method_class' => CreditCard::class]);
-        if ($Payment) {
-            return;
-        }
 
         $Payment = new Payment();
         $Payment->setCharge(0);
@@ -40,6 +36,14 @@ class PluginManager extends AbstractPluginManager
         $Payment->setMethod('サンプル決済(トークン)'); // todo nameでいいんじゃないか
         $Payment->setServiceClass(PaymentService::class);
         $Payment->setMethodClass(CreditCard::class);
+
+        $Payment = new Payment();
+        $Payment->setCharge(0);
+        $Payment->setSortNo(999);
+        $Payment->setVisible(true);
+        $Payment->setMethod('サンプル決済(リンク)'); // todo nameでいいんじゃないか
+        $Payment->setServiceClass(LinkPaymentService::class);
+        $Payment->setMethodClass(LinkCreditCard::class);
 
         $entityManager = $container->get('doctrine.orm.entity_manager');
         $entityManager->persist($Payment);
