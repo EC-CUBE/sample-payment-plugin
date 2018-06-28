@@ -1,0 +1,60 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>リンク決済サンプルページ</title>
+</head>
+
+<body>
+<p>受注番号：{{ order_code }}</p>
+<form method="post" action="{{ url('payment_company') }}">
+    <input type="hidden" name="code" value="{{ order_code }}">
+    <h3>クレジットカード情報入力</h3>
+    <div>
+        <p>カード情報を入力してください。</p>
+        <table>
+            <tbody>
+            <tr>
+                <th>カード番号</th>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <th>支払い方法</th>
+                <td><select>
+                        <option>一括払い</option>
+                        <option>分割2回払い</option>
+                        <option>...</option>
+                    </select></td>
+            </tr>
+            <tr>
+                <th>セキュリティコード</th>
+                <td><input type="text"></td>
+            </tr>
+            <tr>
+                <th>カード有効期限</th>
+                <td><select>
+                        <option>01</option>
+                        <option>02</option>
+                        <option>...</option>
+                    </select>月 /20<select>
+                        <option>18</option>
+                        <option>19</option>
+                        <option>...</option>
+                    </select>年
+                </td>
+            </tr>
+            <tr>
+                <th>カード名義人</th>
+                <td>名：<input type="text"> &nbsp;姓：<input type="text"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <button type="submit">購入完了</button>
+</form>
+
+{# 直リンクではなくいったん決済サーバを挟んでリダイレクトの方が良いか #}
+<a href="{{ url('sample_payment_back') }}?code={{ order_code }}">注文手続き画面に戻る</a>
+</body>
+</html>
