@@ -9,6 +9,7 @@
 namespace Plugin\SamplePayment\Controller\Admin;
 
 
+use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Order;
 use Eccube\Repository\Master\PageMaxRepository;
@@ -210,7 +211,8 @@ class PaymentStatusController extends AbstractController
             $count++;
         }
 
-        $this->addSuccess($count.'件を処理しました', 'admin');
+        $this->addSuccess(trans('sample_payment.admin.payment_status.bulk_action.success', ['%count%' => $count]),
+            'admin');
 
         return $this->redirectToRoute('sample_payment_admin_payment_status_pageno', ['resume' => Constant::ENABLED]);
     }

@@ -33,7 +33,7 @@ class OrderController extends AbstractController
         if ($request->isXmlHttpRequest() && $this->isTokenValid()) {
             // 通信処理
 
-            $this->addSuccess('取消処理を行いました', 'admin');
+            $this->addSuccess('sample_payment.admin.order.cancel.success', 'admin');
 
             return $this->json([]);
         }
@@ -52,7 +52,7 @@ class OrderController extends AbstractController
         if ($request->isXmlHttpRequest() && $this->isTokenValid()) {
             // 通信処理
 
-            $this->addSuccess('金額変更処理を行いました', 'admin');
+            $this->addSuccess('sample_payment.admin.order.change_price.success', 'admin');
 
             return $this->json([]);
         }

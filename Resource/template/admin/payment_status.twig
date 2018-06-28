@@ -12,8 +12,8 @@ file that was distributed with this source code.
 
 {% set menus = ['order', 'sample_payment_admin_payment_status'] %}
 
-{% block title %}決済状況一覧{% endblock %}
-{% block sub_title %}受注管理{% endblock %}
+{% block title %}{{ 'sample_payment.admin.payment_status.title'|trans }}{% endblock %}
+{% block sub_title %}{{ 'sample_payment.admin.payment_status.sub_title'|trans }}{% endblock %}
 
 {% form_theme searchForm '@admin/Form/bootstrap_4_layout.html.twig' %}
 
@@ -43,7 +43,7 @@ file that was distributed with this source code.
                 var value = $('#option_bulk_status').val();
                 if (!value) {
                     $(this).data('cancel', true);
-                    alert("{{ 'admin.order.index.340'|trans }}");
+                    alert("{{ 'sample_payment.admin.payment_status.bulk_alert'|trans }}");
                     return false;
                 }
                 $(this).data('cancel', false);
@@ -57,7 +57,7 @@ file that was distributed with this source code.
                     event.preventDefault();
 
                     if (!form.find('input:checkbox[name^="ids"]:checked').length) {
-                        alert("{{ 'admin.order.index.340'|trans }}");
+                        alert("{{ 'sample_payment.admin.payment_status.bulk_alert'|trans }}");
                         return false;
                     }
 
@@ -92,7 +92,7 @@ file that was distributed with this source code.
                     <div class="col-12">
                         <div class="form-row">
                             <div class="form-group col-12">
-                                <p class="col-form-label">支払方法</p>
+                                <p class="col-form-label">{{ 'sample_payment.admin.payment_status.search_condition_payment'|trans }}</p>
                                 {{ form_widget(searchForm.Payments, {'label_attr': {'class': 'checkbox-inline'}}) }}
                                 {{ form_errors(searchForm.Payments) }}
                             </div>
@@ -103,7 +103,7 @@ file that was distributed with this source code.
                     <div class="col-12">
                         <div class="form-row">
                             <div class="form-group col-12">
-                                <p class="col-form-label">注文状況</p>
+                                <p class="col-form-label">{{ 'sample_payment.admin.payment_status.search_condition_order_status'|trans }}</p>
                                 {{ form_widget(searchForm.OrderStatuses, {'label_attr': {'class': 'checkbox-inline'}}) }}
                                 {{ form_errors(searchForm.OrderStatuses) }}
                             </div>
@@ -114,7 +114,7 @@ file that was distributed with this source code.
                     <div class="col-12">
                         <div class="form-row">
                             <div class="form-group col-12">
-                                <p class="col-form-label">決済状況</p>
+                                <p class="col-form-label">{{ 'sample_payment.admin.payment_status.search_condition_payment_status'|trans }}</p>
                                 {{ form_widget(searchForm.PaymentStatuses, {'label_attr': {'class': 'checkbox-inline'}}) }}
                                 {{ form_errors(searchForm.PaymentStatuses) }}
                             </div>
@@ -128,7 +128,7 @@ file that was distributed with this source code.
                         <div class="col-12">
                             <button class="btn btn-ec-conversion px-5" type="submit">検索</button>
                             {% if pagination %}
-                                <span class="font-weight-bold ml-2">検索結果：{{ pagination.totalItemCount }}件が該当しました</span>
+                                <span class="font-weight-bold ml-2">{{ 'sample_payment.admin.payment_status.search_result_count'|trans({ '%count%': pagination.totalItemCount }) }}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -147,23 +147,23 @@ file that was distributed with this source code.
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">{{ 'admin.order.index.bulk_modal_title'|trans }}</h5>
+                                    <h5 class="modal-title">{{ 'sample_payment.admin.payment_status.bulk_modal_title'|trans }}</h5>
                                     <button class="close" type="button" data-dismiss="modal"
                                             aria-label="Close">
                                         <span aria-hidden="true">×</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>{{ 'admin.order.index.bulk_modal_body'|trans }}</p>
+                                    <p>{{ 'sample_payment.admin.payment_status.bulk_modal_body'|trans }}</p>
                                 </div>
                                 <div class="modal-footer">
                                     <button class="btn btn-ec-conversion" data-action="execute" type="button"
                                             data-dismiss="modal">
-                                        {{ 'common.label.execute'|trans }}
+                                        {{ 'sample_payment.admin.payment_status.bulk_modal_action_exec'|trans }}
                                     </button>
                                     <button class="btn btn-ec-sub" data-action="cancel" type="button"
                                             data-dismiss="modal">
-                                        {{ 'common.label.cancel'|trans }}
+                                        {{ 'sample_payment.admin.payment_status.bulk_modal_action_cancel'|trans }}
                                     </button>
                                 </div>
                             </div>
@@ -175,28 +175,28 @@ file that was distributed with this source code.
                             <div class="col-6">
                                 <div class="row justify-content-between">
                                     <div class="col-auto d-none btn-bulk-wrapper">
-                                        <label class="mr-2">一括操作</label>
+                                        <label class="mr-2">{{ 'sample_payment.admin.payment_status.bulk_label'|trans }}</label>
                                         <div class="d-inline-block mr-2">
                                             <select class="custom-select" id="option_bulk_status">
-                                            <option value="" selected>{{ 'admin.order.index.option_bulk_change_status'|trans }}</option>
+                                            <option value="" selected>--</option>
                                             {% for action in bulkActions %}
                                             <option value="{{ url('sample_payment_admin_payment_status_bulk_action', {'id': action.id }) }}">{{ action.name }}</option>
                                             {% endfor %}
                                             </select>
                                         </div>
                                         <button id="btn_bulk_status" class="btn btn-ec-regular mr-2" data-submit="bulk" data-confirm="true">
-                                            {{ 'admin.order.index.btn_bulk_submit'|trans }}
+                                            {{ 'sample_payment.admin.payment_status.bulk_submit'|trans }}
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-5 text-right">
                                 <div class="d-inline-block">
-                                    <select class="custom-select" onchange="location = this.value;">
+                                    <select class="custom-select" onchange="location.href = this.value;">
                                         {% for pageMax in pageMaxis %}
                                             <option {% if pageMax.name == page_count%} selected {% endif %}
                                                     value="{{ path('sample_payment_admin_payment_status', {'page_no': 1, 'page_count': pageMax.name}) }}">
-                                                {{ pageMax.name|e }}{{ 'admin.order.index.num'|trans }}</option>
+                                                {{ 'sample_payment.admin.payment_status.display_count'|trans({ '%count%': pageMax.name|e }) }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -210,12 +210,12 @@ file that was distributed with this source code.
                                         <th class="border-top-0 pt-2 pb-2 text-center pl-3">
                                             <input type="checkbox" id="check_all" name="filter" value="open">
                                         </th>
-                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'admin.order.index.328'|trans }}</th>
-                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'admin.order.index.329'|trans }}</th>
-                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'admin.order.index.330'|trans }}</th>
-                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'admin.order.index.331'|trans }}</th>
-                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'admin.order.index.332'|trans }}</th>
-                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'admin.order.index.334'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'sample_payment.admin.payment_status.col_order_date'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'sample_payment.admin.payment_status.col_order_no'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'sample_payment.admin.payment_status.col_order_name'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'sample_payment.admin.payment_status.col_order_payment'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'sample_payment.admin.payment_status.col_order_price'|trans }}</th>
+                                        <th class="border-top-0 pt-2 pb-2 text-center">{{ 'sample_payment.admin.payment_status.col_order_staus'|trans }}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -251,7 +251,7 @@ file that was distributed with this source code.
                             </div>
                             <div class="row justify-content-md-center mb-4">
                                 {% if pagination.totalItemCount > 0 %}
-                                    {% include "@admin/styleguide_pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'admin_order_page' } %}
+                                    {% include "@admin/styleguide_pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'sample_payment_admin_payment_status_pageno' } %}
                                 {% endif %}
                             </div>
                         </div>
@@ -260,16 +260,15 @@ file that was distributed with this source code.
                 {% elseif has_errors %}
                     <div class="card rounded border-0">
                         <div class="card-body p-4">
-                            <div class="text-center text-muted mb-4 h5">{{ 'admin.order.index.invalid_search_data'|trans }}</div>
-                            <div class="text-center text-muted">{{ 'admin.order.index.pls_change_search_criteria'|trans }}</div>
+                            <div class="text-center text-muted mb-4 h5">{{ 'sample_payment.admin.payment_status.invalid_condition'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'sample_payment.admin.payment_status.change_condition'|trans }}</div>
                         </div>
                     </div>
                 {% else %}
                     <div class="card rounded border-0">
                         <div class="card-body p-4">
-                            <div class="text-center text-muted mb-4 h5">{{ 'admin.order.index.no_matching_search_data'|trans }}</div>
-                            <div class="text-center text-muted">{{ 'admin.order.index.pls_change_search_criteria'|trans }}</div>
-                            <div class="text-center text-muted">{{ 'admin.order.index.pls_try_advanced_search'|trans }}</div>
+                            <div class="text-center text-muted mb-4 h5">{{ 'sample_payment.admin.payment_status.no_result'|trans }}</div>
+                            <div class="text-center text-muted">{{ 'sample_payment.admin.payment_status.change_condition'|trans }}</div>
                         </div>
                     </div>
                 {% endif %}
