@@ -138,14 +138,28 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 
 ## 決済プラグインについて
 
-### シーケンス図（リンク型、トークン型）
+### シーケンス図
 
 #### リンク型決済
 
 ![リンク型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/LinkPaymentSequenceDiagram.png "リンク型決済シーケンス図")
 
+#### トークン型決済
 
+![トークン型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/TokenPaymentSequenceDiagram.png "トークン型決済シーケンス図")
 
-### ステートマシン図（リンク型、トークン型）
+#### トークン型決済（3Dセキュア）
+
+![トークン型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/TokenPaymentSequenceDiagram_3D.png "トークン型決済シーケンス図")
+
+### 受注ステータスステートマシン図
+
+#### リンク型決済
+
+![リンク型決済ステートマシン図](https://github.com/okazy/sample-payment-plugin/raw/images/LinkPaymentStateMachineDiagram.png "リンク型決済ステートマシン図")
+
+#### トークン型決済
+
+![トークン型決済ステートマシン図](https://github.com/okazy/sample-payment-plugin/raw/images/TokenPaymentStateMachineDiagram.png "トークン型決済ステートマシン図")
 
 
