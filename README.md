@@ -44,8 +44,83 @@ DATABASE_URL=mysql://root:password@127.0.0.1:3306/eccube
 `bin/console eccube:plugin:disable --code=SamplePayment`
 - 削除
 `bin/console eccube:plugin:uninstall --code=SamplePayment`
+- プラグインサンプルの生成
+`bin/console eccube:plugin:generate`
 
-## プラグインカスタマイズ方法
+## プラグインカスタマイズ
+
+### イベントの追加
+
+`EventSubscriberInterface` を実装し、イベントを追加します。
+1. `Event.php` ファイルの `getSubscribedEvents()` メソッドの戻り値で追加するイベントを指定します。（3.0系の `event.yml` の内容に相当）
+1. `Event.php` に呼び出すメソッドを定義します。
+
+```php
+class Event implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        return ['eventName' => 'methodName'];
+    }
+
+    public function methodName(Event $event)
+    {
+    }
+}
+```
+
+
+### 管理画面ナビの拡張
+
+管理画面にプラグインのメニューを追加します。
+以下のようにEccubeNavを実装すると, 対象メニュー内の最下部に追加されます。
+プラグインの場合、有効時のみ表示されます。
+
+```php
+class Nav implements EccubeNav
+{
+    public static function getNav()
+    {
+        return [
+            'order' => [
+                'id' => 'sample_payment_admin_payment_status',
+                'name' => 'sample_payment.admin.nav.payment_list',
+                'url' => 'sample_payment_admin_payment_status',
+            ],
+        ];
+    }
+}
+```
+
+本体の管理画面ナビは `/app/config/eccube/packages/eccube_nav.yaml` で定義されています。
+
+### Twigユーザ定義関数の読み込み
+
+`EccubeTwigBlock`を実装し、対象のテンプレートファイルを読み込みます。
+
+```php
+class TwigBlock impletemts EccubeTwigBlock
+{
+    public static function getTwigBlocks()
+    {
+        return ['@SamplePayment/hello_block.twig']
+    }
+}
+```
+
+`/Resource/template/` 配下にblockの定義ファイルを作成します。
+
+```html
+{% block hello %}
+    <h1>Hello, {{ name }}!</h1>
+{% endblock %}
+```
+
+twigファイルに以下のように記載することでBlockが呼び出せるようになります。
+
+```
+{{ eccube_block_hello({ name: 'hoge'}) }}
+```
 
 ### PurchaseFlowの解説
 
