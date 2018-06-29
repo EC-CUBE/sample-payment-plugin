@@ -140,4 +140,12 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 
 ### シーケンス図（リンク型、トークン型）
 
+#### リンク型決済
+
+![リンク型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/LinkPaymentSequenceDiagram.png "リンク型決済シーケンス図")
+
+
+
 ### ステートマシン図（リンク型、トークン型）
+
+
