@@ -116,15 +116,25 @@ class TwigBlock impletemts EccubeTwigBlock
 {% endblock %}
 ```
 
-twigファイルに以下のように記載することでBlockが呼び出せるようになります。
+twigファイルに以下のように記載することでBlockが呼び出せます。
 
 ```
 {{ eccube_block_hello({ name: 'hoge'}) }}
 ```
 
+### PaymentMethodの拡張
+
+各決済ごとに `PaymentMethod` を実装することで決済に独自の処理を追加できます。
+
+- `verify()`
+  - 注文手続き画面でsubmitされた時に実行する処理を記載します。
+- `apply()`
+  - 注文確認画面でsubmitされた時に処理を他のcontrollerへ移譲する処理を記載します。
+- `checkout()` :
+  - 注文確認画面でsubmitされた時に決済完了処理を記載します。
+
 ### PurchaseFlowの解説
 
-### PaymentService, PaymentMethod周辺の解説
 
 ## 決済プラグインについて
 
