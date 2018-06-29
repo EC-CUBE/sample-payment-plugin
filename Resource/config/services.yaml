@@ -1,0 +1,6 @@
+# パラメータ定義
+#parameters:
+  # sample_payment.xxx: 1
+
+# コンテナ定義
+#services:

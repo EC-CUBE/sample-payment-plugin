@@ -1,0 +1,49 @@
+# nav
+sample_payment.admin.nav.payment_list: 決済状況一覧
+
+# flash messages
+sample_payment.admin.save.success: 登録しました。
+sample_payment.admin.save.failed: 登録に失敗しました。
+sample_payment.admin.order.cancel.success: 取消処理を行いました。
+sample_payment.admin.order.change_price.success: 取消処理を行いました。
+sample_payment.admin.payment_status.bulk_action.success: %count%件を処理しました。
+
+# twig
+sample_payment.admin.config.title: サンプル決済
+sample_payment.admin.config.sub_title: プラグイン一覧
+sample_payment.admin.config.header: 設定
+sample_payment.admin.config.save: 登録
+sample_payment.admin.config.required: 必須
+sample_payment.admin.config.back: プラグイン一覧
+sample_payment.admin.config.api_url: API URL
+sample_payment.admin.config.api_id: API ID
+sample_payment.admin.config.api_password: API パスワード
+sample_payment.admin.order_edit.title: 決済情報
+sample_payment.admin.order_edit.payment_status: 決済種別
+sample_payment.admin.order_edit.payment_action: 決済操作
+sample_payment.admin.order_edit.payment_action_cancel: 取消実行
+sample_payment.admin.order_edit.payment_action_change_price: 金額変更
+sample_payment.admin.payment_status.title: 決済状況一覧
+sample_payment.admin.payment_status.sub_title: 受注管理
+sample_payment.admin.payment_status.search: 検索
+sample_payment.admin.payment_status.search_result_count: 検索結果：%count%件が該当しました
+sample_payment.admin.payment_status.search_condition_payment: 支払方法
+sample_payment.admin.payment_status.search_condition_order_status: 支払方法
+sample_payment.admin.payment_status.search_condition_payment_status: 支払方法
+sample_payment.admin.payment_status.invalid_condition: 検索条件に誤りがあります
+sample_payment.admin.payment_status.no_result: 検索条件に合致するデータが見つかりませんでした
+sample_payment.admin.payment_status.change_condition: 検索条件を変えて、再度検索をお試しください。
+sample_payment.admin.payment_status.display_count: %count%件
+sample_payment.admin.payment_status.col_order_date: 受注日時
+sample_payment.admin.payment_status.col_order_no: 注文番号
+sample_payment.admin.payment_status.col_order_name: お名前
+sample_payment.admin.payment_status.col_order_payment: 支払方法
+sample_payment.admin.payment_status.col_order_price: 購入金額
+sample_payment.admin.payment_status.col_order_staus: 対応状況
+sample_payment.admin.payment_status.bulk_label: 一括操作
+sample_payment.admin.payment_status.bulk_submit: 決定
+sample_payment.admin.payment_status.bulk_modal_title: 一括操作の確認
+sample_payment.admin.payment_status.bulk_modal_body: 複数の項目を変更します。実行してよろしいですか
+sample_payment.admin.payment_status.bulk_modal_action_exec: 実行
+sample_payment.admin.payment_status.bulk_modal_action_cancel: キャンセル
+sample_payment.admin.payment_status.bulk_alert: 選択されていません
