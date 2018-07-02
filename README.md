@@ -27,8 +27,11 @@ http://127.0.0.1:8000/
 ### DBごとのDATABASE_URL設定例
 
 ```
-DATABASE_URL=postgresql://postgres@127.0.0.1:5432/eccube
-DATABASE_URL=mysql://root:password@127.0.0.1:3306/eccube
+## PostgreSQL
+DATABASE_URL=postgresql://db_user:db_password@127.0.0.1:3306/db_name
+
+## MySQL
+DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 ```
 
 # プラグイン導入方法
