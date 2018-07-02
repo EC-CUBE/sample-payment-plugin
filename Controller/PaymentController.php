@@ -15,6 +15,7 @@ use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
 use Eccube\Entity\OrderItem;
 use Eccube\Repository\OrderRepository;
+use Eccube\Service\CartService;
 use Eccube\Service\ShoppingService;
 use Plugin\SamplePayment\Entity\PaymentStatus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -34,16 +35,21 @@ class PaymentController extends AbstractController
      * @var ShoppingService
      */
     private $shoppingService;
+    /**
+     * @var CartService
+     */
+    private $cartService;
 
     /**
      * PaymentController constructor.
      * @param OrderRepository $orderRepository
      * @param ShoppingService $shoppingService
      */
-    public function __construct(OrderRepository $orderRepository, ShoppingService $shoppingService)
+    public function __construct(OrderRepository $orderRepository, ShoppingService $shoppingService, CartService $cartService)
     {
         $this->orderRepository = $orderRepository;
         $this->shoppingService = $shoppingService;
+        $this->cartService = $cartService;
     }
 
 
@@ -130,7 +136,8 @@ class PaymentController extends AbstractController
 
         // カード情報を保存するなどあればここに処理を追加
 
-        // TODO カートを削除する
+        // カートを削除する
+        $this->cartService->clear();
 
         // TODO 受注番号を完了画面に送って画面に表示させたい
         return $this->redirectToRoute("shopping_complete");
