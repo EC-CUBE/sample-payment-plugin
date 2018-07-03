@@ -28,8 +28,8 @@ sample_payment.admin.payment_status.sub_title: 受注管理
 sample_payment.admin.payment_status.search: 検索
 sample_payment.admin.payment_status.search_result_count: 検索結果：%count%件が該当しました
 sample_payment.admin.payment_status.search_condition_payment: 支払方法
-sample_payment.admin.payment_status.search_condition_order_status: 支払方法
-sample_payment.admin.payment_status.search_condition_payment_status: 支払方法
+sample_payment.admin.payment_status.search_condition_order_status: 対応状況
+sample_payment.admin.payment_status.search_condition_payment_status: 決済状況
 sample_payment.admin.payment_status.invalid_condition: 検索条件に誤りがあります
 sample_payment.admin.payment_status.no_result: 検索条件に合致するデータが見つかりませんでした
 sample_payment.admin.payment_status.change_condition: 検索条件を変えて、再度検索をお試しください。
