@@ -11,6 +11,8 @@ EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があり�
 ## EC-CUBEのインストール手順
 TODO: マニュアルに移動させてリンクを貼る
 
+利用できるPostgresかMySQLを立ち上げておきます。
+
 1. [こちら](https://github.com/EC-CUBE/ec-cube)からEC-CUBEのリポジトリをclone
 ```git clone https://github.com/EC-CUBE/ec-cube.git```
 1. ディレクトリを移動
@@ -29,7 +31,7 @@ http://127.0.0.1:8000/
 
 ```
 ## PostgreSQL
-DATABASE_URL=postgresql://db_user:db_password@127.0.0.1:3306/db_name
+DATABASE_URL=postgresql://db_user:db_password@127.0.0.1:5432/db_name
 
 ## MySQL
 DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
@@ -39,7 +41,10 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 
 ## プラグインファイルの配置
 
-TODO
+`/app/Plugin/` にプラグインのファイルを配置してください。
+
+例
+`/app/Plugin/sample-payment-plugin`
 
 ## コマンドラインインタフェース
 
@@ -52,15 +57,66 @@ TODO
 `bin/console eccube:plugin:disable --code=SamplePayment`
 - 削除
 `bin/console eccube:plugin:uninstall --code=SamplePayment`
-- プラグインサンプルの生成
+
+### プラグインジェネレータ
+
+以下のコマンドで推奨ディレクトリ構成のプラグインサンプルが生成できます。
+
 `bin/console eccube:plugin:generate`
-  - TODO: プラグインジェネレータの説明を追加
 
 ## プラグインカスタマイズ
 
-### 推奨ディレクトリ構造
+### 推奨ディレクトリ構成
 
-TODO
+プラグインのディレクトリ構成ですが、極力EC-CUBE3本体のディレクトリ構成に合わせる事を推奨します。但し、全てのディレクトリが必要ではなく必要に応じてディレクトリをプラグイン側に作成してください。
+
+- ディレクトリ例
+
+```
+[プラグインコード]
+  ├── Controller
+  │   └── XXXXController.php
+  ├── Entity
+  │   └── XXXX.php
+  ├── Form
+  │   ├── Extension
+  │   │   └── XXXXTypeExtension.php
+  │   └── Type
+  │           └── XXXXType.php
+  ├── Repository
+  │   └── XXXXRepository.php
+  ├── Resource
+  │   ├── assets
+  │   │   ├── css
+  │   │   │   └── xxxx.css
+  │   │   ├── img
+  │   │   │   ├── xxxx.gif
+  │   │   │   ├── xxxx.jpg
+  │   │   │   └── xxxx.png
+  │   │   └── js
+  │   │       └── xxxx.js
+  │   ├── locale
+  │   │   └── messages.ja.yaml
+  │   │   └── validators.ja.yaml
+  │   └── template
+  │           ├── Block
+  │           │   └── XXXX.twig
+  │           ├── admin
+  │           │   └── XXXX.twig
+  │           └── XXXX.twig
+  ├── Service
+  │   └── XXXXService.php
+  ├── PluginManager.php
+  ├── LICENSE.txt
+  ├── XXXXEvent.php
+  ├── XXXXNav.php
+  ├── XXXXTwigBlock.php
+  └── config.yml
+```
+
+### 命名規約は以下のissueを参照
+
+https://github.com/EC-CUBE/sample-payment-plugin/issues/6
 
 ### ルーティングの追加
 
@@ -69,6 +125,9 @@ TODO
 ### Entity拡張
 
 TODO
+
+#### proxyファイルについて
+
 
 ### FormType拡張
 
