@@ -13,7 +13,6 @@
 
 namespace Plugin\SamplePayment\Service\Method;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
 use Eccube\Repository\Master\OrderStatusRepository;
@@ -44,33 +43,32 @@ class CreditCard implements PaymentMethodInterface
     /**
      * @var OrderStatusRepository
      */
-    protected $orderStatusRepository;
+    private $orderStatusRepository;
 
     /**
-     * @var EntityManagerInterface
+     * @var PaymentStatusRepository
      */
-    protected $entityManager;
+    private $paymentStatusRepository;
 
     /**
      * @var PurchaseFlow
      */
-    protected $purchaseFlow;
+    private $purchaseFlow;
 
     /**
      * CreditCard constructor.
-     *
      * @param OrderStatusRepository $orderStatusRepository
-     * @param EntityManagerInterface $entityManager
-     * @param PurchaseFlow $purchaseFlow
+     * @param PaymentStatusRepository $paymentStatusRepository
+     * @param PurchaseFlow $shoppingPurchaseFlow
      */
     public function __construct(
         OrderStatusRepository $orderStatusRepository,
-        EntityManagerInterface $entityManager,
-        PurchaseFlow $purchaseFlow
+        PaymentStatusRepository $paymentStatusRepository,
+        PurchaseFlow $shoppingPurchaseFlow
     ) {
         $this->orderStatusRepository = $orderStatusRepository;
-        $this->entityManager = $entityManager;
-        $this->purchaseFlow = $purchaseFlow;
+        $this->paymentStatusRepository = $paymentStatusRepository;
+        $this->purchaseFlow = $shoppingPurchaseFlow;
     }
 
     /**
@@ -115,7 +113,7 @@ class CreditCard implements PaymentMethodInterface
         $this->Order->setOrderStatus($OrderStatus);
 
         // 決済ステータスを未決済へ変更
-        $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
+        $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
         $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
         // purchaseFlow::prepareを呼び出し, 購入処理を進める.
