@@ -9,7 +9,6 @@ EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があり�
 - [開発ドキュメント・マニュアル](http://doc3n.ec-cube.net/)
 
 ## EC-CUBEのインストール手順
-TODO: マニュアルに移動させてリンクを貼る
 
 利用できるPostgresかMySQLを立ち上げておきます。
 
@@ -43,7 +42,7 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 
 `/app/Plugin/` にプラグインのファイルを配置してください。
 
-本サンプルプラグインの場合は以下となります。
+本サンプルプラグインの場合は以下のようになります。
 
 `/app/Plugin/sample-payment-plugin`
 
@@ -121,18 +120,27 @@ https://github.com/EC-CUBE/sample-payment-plugin/issues/6
 
 ### ルーティングの追加
 
-TODO
+`@Route` アノテーションを付与したクラスファイルを `Controller` 以下に配置することで、サイトに新しいルーティングを追加することが可能です。
+
+Controllerファイルについては開発ドキュメント・マニュアルの[Controllerのカスタマイズ](http://doc3n.ec-cube.net/customize_controller)ページをご確認ください。
 
 ### Entity拡張
 
-TODO
+クラスファイルを `Entity` 以下に配置することで新しいEntityを追加可能です。
 
-#### proxyファイルについて
+traitと `@EntityExtension` アノテーションを使用して、既存Entityのフィールドを拡張可能です。
 
+また、`@EntityExtension` アノテーションで拡張したフィールドに `@FormAppend` アノテーションを追加することで、フォームを自動生成できます。
+
+Entityファイルについては開発ドキュメント・マニュアルの[Entityのカスタマイズ](http://doc3n.ec-cube.net/customize_entity)ページをご確認ください。
 
 ### FormType拡張
 
-TODO
+FormExtensionの仕組みを利用すれば、既存のフォームをカスタマイズすることができます。
+
+`Form/Extension` に `AbstractTypeExtension` を継承したクラスファイルを作成することで、FormExtensionとして認識されます。
+
+FormExtensionについては開発ドキュメント・マニュアルの[FormTypeのカスタマイズ](http://doc3n.ec-cube.net/customize_formtype)ページをご確認ください。
 
 ### イベントの追加
 
@@ -153,7 +161,6 @@ class Event implements EventSubscriberInterface
     }
 }
 ```
-
 
 ### 管理画面ナビの拡張
 
@@ -235,27 +242,38 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 `PaymentResult` には、実行結果、エラーメッセージなどを設定します。
 3Dセキュア決済の場合は、 `Response` を設定して、独自の出力を実装することも可能です。
 
-### PurchaseFlowの処理の流れ
+### PurchaseFlowについて
 
-TODO
+EC-CUBE3.nではPurchaseFlowをカスタマイズすることで購入フローのカスタマイズが可能になります。
+
+PurchaseFlowについては開発ドキュメント・マニュアルの[Serviceのカスタマイズ](http://doc3n.ec-cube.net/customize_service#%E8%B3%BC%E5%85%A5%E3%83%95%E3%83%AD%E3%83%BC%E3%81%AE%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%9E%E3%82%A4%E3%82%BA-2424)ページをご確認ください。
+
+※PurchaseFlowは改善が進められており、ドキュメントの内容に古い部分があります。随時更新していきます。
 
 ### メッセージIDについて
 
-多言語対応ができる旨とtrans関数、メッセージファイル、について、メッセージIDの命名ルールについて記載
+メッセージファイルを `Resource/locale` 以下に配置すると多言語対応が可能です。
 
-### プラグインのインストール・有効化・無効化・削除の考え方
+- messages.ja.yaml: 日本語のメッセージファイル
+- validators.ja.yaml: 日本語のバリデーションメッセージファイル
 
-#### インストール
-ファイルの配置のみ
+例えば `messages.en.yaml` ファイルを用意し、EC-CUBE本体の `.env` ファイルで `ECCUBE_LOCALE=en` と設定すると読み込まれるメッセージファイルが切り替わります。
 
-#### 有効化
-DBの更新
+phpのソースコード内でメッセージを使用する場合にはグローバル関数の `trans()` が利用できます。
 
-#### 無効化
-DBは変更しない
+```
+trans('message.id');
+```
 
-#### 削除
-DBの更新とファイルの削除
+twigのソースコード内でメッセージを使用する場合には `trans` フィルタが利用できます。
+
+```
+{{ 'message.id'|trans }}
+```
+
+重複防止のためプラグイン内で利用するメッセージIDにはプラグインコードのプレフィックスをつけてください。
+
+その他の命名規則については[こちら](https://github.com/EC-CUBE/ec-cube/issues/2597#issuecomment-345912583)のissueを確認してください。
 
 ### DBの更新方法
 
