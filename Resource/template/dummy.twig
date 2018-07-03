@@ -8,8 +8,8 @@
 
 <body>
 <p>受注番号：{{ order_code }}</p>
-<form method="post" action="{{ url('payment_company') }}">
-    <input type="hidden" name="code" value="{{ order_code }}">
+<form method="post" action="">
+    <input type="hidden" name="no" value="{{ order_no }}">
     <h3>クレジットカード情報入力</h3>
     <div>
         <p>カード情報を入力してください。</p>
@@ -54,7 +54,6 @@
     <button type="submit">購入完了</button>
 </form>
 
-{# 直リンクではなくいったん決済サーバを挟んでリダイレクトの方が良いか #}
-<a href="{{ url('sample_payment_back') }}?code={{ order_code }}">注文手続き画面に戻る</a>
+<a href="{{ url('sample_payment_back') }}?no={{ order_no }}">注文手続き画面に戻る</a>
 </body>
 </html>

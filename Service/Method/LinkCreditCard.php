@@ -9,19 +9,21 @@
 namespace Plugin\SamplePayment\Service\Method;
 
 
-use Doctrine\ORM\EntityManagerInterface;
-use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
 use Eccube\Exception\ShoppingException;
+use Eccube\Repository\Master\OrderStatusRepository;
 use Eccube\Service\Payment\PaymentDispatcher;
 use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
-use Eccube\Service\ShoppingService;
+use Eccube\Service\PurchaseFlow\PurchaseFlow;
 use Plugin\SamplePayment\Entity\PaymentStatus;
+use Plugin\SamplePayment\Repository\PaymentStatusRepository;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormTypeInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * クレジットカード(リンク式)の決済処理を行う
+ */
 class LinkCreditCard implements PaymentMethodInterface
 {
     /**
@@ -30,112 +32,112 @@ class LinkCreditCard implements PaymentMethodInterface
     private $Order;
 
     /**
-     * @var ShoppingService
+     * @var FormInterface
      */
-    private $shoppingService;
+    private $form;
 
     /**
-     * @var EntityManagerInterface
+     * @var OrderStatusRepository
      */
-    private $entityManager;
+    private $orderStatusRepository;
 
-    public function __construct(ShoppingService $shoppingService, EntityManagerInterface $entityManager)
-    {
-        $this->shoppingService = $shoppingService;
-        $this->entityManager = $entityManager;
+    /**
+     * @var PaymentStatusRepository
+     */
+    private $paymentStatusRepository;
+
+    /**
+     * @var PurchaseFlow
+     */
+    private $purchaseFlow;
+
+    /**
+     * LinkCreditCard constructor.
+     * @param OrderStatusRepository $orderStatusRepository
+     * @param PaymentStatusRepository $paymentStatusRepository
+     * @param PurchaseFlow $shoppingPurchaseFlow
+     */
+    public function __construct(
+        OrderStatusRepository $orderStatusRepository,
+        PaymentStatusRepository $paymentStatusRepository,
+        PurchaseFlow $shoppingPurchaseFlow
+    ) {
+        $this->orderStatusRepository = $orderStatusRepository;
+        $this->paymentStatusRepository = $paymentStatusRepository;
+        $this->purchaseFlow = $shoppingPurchaseFlow;
     }
 
-    public function checkout()
-    {
-        return new PaymentResult();
-    }
-
-    // TODO 呼び出し元の処理が必要
+    /**
+     * 注文確認画面遷移時に呼び出される.
+     *
+     * リンク式は使用しない.
+     *
+     * @return PaymentResult|void
+     */
     public function verify()
     {
-        // リンク型は使用しない
+        $result = new PaymentResult();
+        $result->setSuccess(true);
+
+        return $result;
     }
 
     /**
-     * ここでは決済方法の独自処理を記載する
-     * forward先を指定してそちらから決済画面へリダイレクトさせる
+     * 注文時に呼び出される.
      *
-     * 決済会社の画面へリダイレクト
+     * 決済サーバのカード入力画面へリダイレクトする.
      *
      * @return PaymentDispatcher
      * @throws ShoppingException
      */
     public function apply()
     {
-        // 決済の独自処理
-        // こちらに書いてもいいし、forward先で書いてもいい
-        $OrderItems = $this->Order->getProductOrderItems();
-        /** @var OrderItem $OrderItem */
-        foreach ($OrderItems as $OrderItem) {
-            $ProductClass = $OrderItem->getProductClass();
+        // 受注ステータスを決済処理中へ変更
+        $OrderStatus = $this->orderStatusRepository->find(9); // TODO 決済処理中ステータスを定数化
+        $this->Order->setOrderStatus($OrderStatus);
 
-            if ($ProductClass->isStockUnlimited()) {
-                continue;
-            }
+        // 決済ステータスを未決済へ変更
+        $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
+        $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
-            $quantity = $OrderItem->getQuantity();
-            $stock = $ProductClass->getProductStock()->getStock() - $quantity;
-            // TODO stockの管理を１箇所にしたい
-            $ProductClass->setStock($stock);
-            $ProductClass->getProductStock()->setStock($stock);
-        }
+        // purchaseFlow::prepareを呼び出し, 購入処理を進める.
+        $this->purchaseFlow->prepare($this->Order, new PurchaseContext());
 
+        // 決済サーバのカード入力画面へリダイレクトする.
+        $url = '/payment_company?no='.$this->Order->getOrderNo();
+        $response = new RedirectResponse($url);
 
-        if (!$this->Order) {
-            throw new ShoppingException();
-        }
-
-        // - 受注ステータスの変更（購入処理中 -> 決済処理中）
-        $this->shoppingService->setOrderStatus($this->Order, OrderStatus::PENDING);
-
-        // - 決済ステータス（なし -> 未決済）
-        if ($this->Order->getSamplePaymentPaymentStatus() == null) {
-            $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
-            $this->Order->getSamplePaymentPaymentStatus($PaymentStatus);
-        }
-
-        // 他のコントローラに移譲等の処理をする
-        $dispatcher = new PaymentDispatcher();
-        $dispatcher->setForward(true);
-        $dispatcher->setRoute('sample_payment_index');
-
-        return $dispatcher;
+        return $response;
     }
 
     /**
-     * @param FormTypeInterface
+     * 注文時に呼び出される.
+     * リンク式の場合, applyで決済サーバのカード入力画面へ遷移するため, checkoutは使用しない.
      *
-     * TODO FormTypeInterface -> FormInterface
+     * @return PaymentResult
+     */
+    public function checkout()
+    {
+        $result = new PaymentResult();
+        $result->setSuccess(true);
+
+        return $result;
+    }
+
+
+    /**
+     * {@inheritdoc}
      */
     public function setFormType(FormInterface $form)
     {
-        // TODO Orderエンティティにトークンが保持されているのでフォームは不要
-        // TODO フォームよりOrderがほしい
-        // TODO applyやcheckoutでOrderが渡ってきてほしい.
-        // TODO やっぱりFormはいる -> Orderには保持しないデータはFormで引き回す(確認画面とか). 画面に持っていくデータを詰められるオブジェクトがあればいいのかな
-
-    }
-
-    // TODO Interfaceに追加と呼び出し元の処理が必要
-    public function receive()
-    {
-
+        $this->form = $form;
     }
 
     /**
-     * @param Order
-     *
-     * @return LinkCreditCard
+     * {@inheritdoc}
      */
     public function setOrder(Order $Order)
     {
         $this->Order = $Order;
-
-        return $this;
     }
 }
