@@ -1,13 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: hideki_okajima
- * Date: 2018/06/21
- * Time: 14:09
+
+/*
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Plugin\SamplePayment\Controller;
-
 
 use Eccube\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

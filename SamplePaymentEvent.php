@@ -14,7 +14,6 @@
 namespace Plugin\SamplePayment;
 
 use Eccube\Event\TemplateEvent;
-use Plugin\SamplePayment\Service\Method\CreditCard;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SamplePaymentEvent implements EventSubscriberInterface
@@ -32,7 +31,7 @@ class SamplePaymentEvent implements EventSubscriberInterface
      * - array('eventName' => array('methodName', $priority))
      * - array('eventName' => array(array('methodName1', $priority), array('methodName2')))
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {

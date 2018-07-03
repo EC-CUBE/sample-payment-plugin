@@ -1,13 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: hideki_okajima
- * Date: 2018/06/21
- * Time: 13:48
+
+/*
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Plugin\SamplePayment\Service\Method;
-
 
 use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
@@ -55,6 +59,7 @@ class LinkCreditCard implements PaymentMethodInterface
 
     /**
      * LinkCreditCard constructor.
+     *
      * @param OrderStatusRepository $orderStatusRepository
      * @param PaymentStatusRepository $paymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow
@@ -90,6 +95,7 @@ class LinkCreditCard implements PaymentMethodInterface
      * 決済サーバのカード入力画面へリダイレクトする.
      *
      * @return PaymentDispatcher
+     *
      * @throws ShoppingException
      */
     public function apply()
@@ -127,7 +133,6 @@ class LinkCreditCard implements PaymentMethodInterface
 
         return $result;
     }
-
 
     /**
      * {@inheritdoc}

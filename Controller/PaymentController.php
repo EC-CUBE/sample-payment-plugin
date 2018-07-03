@@ -1,9 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: hideki_okajima
- * Date: 2018/06/21
- * Time: 15:41
+
+/*
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Plugin\SamplePayment\Controller;
@@ -57,6 +62,7 @@ class PaymentController extends AbstractController
 
     /**
      * PaymentController constructor.
+     *
      * @param OrderRepository $orderRepository
      * @param ShoppingService $shoppingService
      */
@@ -76,7 +82,9 @@ class PaymentController extends AbstractController
 
     /**
      * @Route("/sample_payment_back", name="sample_payment_back")
+     *
      * @param Request $request
+     *
      * @return RedirectResponse
      */
     public function back(Request $request)
@@ -105,7 +113,7 @@ class PaymentController extends AbstractController
 
         $this->entityManager->flush();
 
-        return $this->redirectToRoute("shopping");
+        return $this->redirectToRoute('shopping');
     }
 
     /**
@@ -134,7 +142,7 @@ class PaymentController extends AbstractController
 
         $this->entityManager->flush();
 
-        return $this->redirectToRoute("shopping_complete");
+        return $this->redirectToRoute('shopping_complete');
     }
 
     /**
@@ -168,13 +176,14 @@ class PaymentController extends AbstractController
 
         $this->entityManager->flush();
 
-        return new Response("OK!!");
+        return new Response('OK!!');
     }
 
     /**
      * 注文番号で受注を検索する.
      *
      * @param $orderNo
+     *
      * @return Order
      */
     private function getOrderByNo($orderNo)

@@ -17,7 +17,6 @@ use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
 use Eccube\Repository\Master\OrderStatusRepository;
 use Eccube\Service\Payment\PaymentDispatcher;
-use Eccube\Service\Payment\PaymentMethod;
 use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
@@ -58,6 +57,7 @@ class CreditCard implements PaymentMethodInterface
 
     /**
      * CreditCard constructor.
+     *
      * @param OrderStatusRepository $orderStatusRepository
      * @param PaymentStatusRepository $paymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow
@@ -78,6 +78,7 @@ class CreditCard implements PaymentMethodInterface
      * クレジットカードの有効性チェックを行う.
      *
      * @return PaymentResult
+     *
      * @throws \Eccube\Service\PurchaseFlow\PurchaseException
      */
     public function verify()
