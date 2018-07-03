@@ -47,3 +47,5 @@ sample_payment.admin.payment_status.bulk_modal_body: 複数の項目を変更し
 sample_payment.admin.payment_status.bulk_modal_action_exec: 実行
 sample_payment.admin.payment_status.bulk_modal_action_cancel: キャンセル
 sample_payment.admin.payment_status.bulk_alert: 選択されていません
+sample_payment.shopping.checkout.error: カード決済に失敗しました。
+sample_payment.shopping.verify.error: カードを利用することができません。

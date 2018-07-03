@@ -18,8 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Config
  *
- * TODO プラグインのテーブルで必要なアノテーションを精査
- *
  * @ORM\Table(name="plg_sample_payment_config")
  * @ORM\Entity(repositoryClass="Plugin\SamplePayment\Repository\ConfigRepository")
  */

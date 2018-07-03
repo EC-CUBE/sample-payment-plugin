@@ -15,7 +15,7 @@ namespace Plugin\SamplePayment;
 
 use Eccube\Common\EccubeTwigBlock;
 
-class TwigBlock implements EccubeTwigBlock
+class SamplePaymentTwigBlock implements EccubeTwigBlock
 {
     /**
      * @return array

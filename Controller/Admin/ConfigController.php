@@ -38,7 +38,7 @@ class ConfigController extends AbstractController
     }
 
     /**
-     * @Route("/%eccube_admin_route%/sample_payment/config", name="plugin_SamplePayment_config")
+     * @Route("/%eccube_admin_route%/sample_payment/config", name="sample_payment_admin_config")
      * @Template("@SamplePayment/admin/config.twig")
      */
     public function index(Request $request)

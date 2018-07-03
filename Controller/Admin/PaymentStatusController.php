@@ -1,13 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: chihiro_adachi
- * Date: 2018/06/27
- * Time: 19:07
+
+/*
+ * This file is part of EC-CUBE
+ *
+ * Copyright(c) LOCKON CO.,LTD. All Rights Reserved.
+ *
+ * http://www.lockon.co.jp/
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Plugin\SamplePayment\Controller\Admin;
-
 
 use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
@@ -88,7 +92,7 @@ class PaymentStatusController extends AbstractController
         $page_count = $this->session->get('sample_payment.admin.payment_status.search.page_count',
             $this->eccubeConfig->get('eccube_default_page_count'));
 
-        $page_count_param = (int)$request->get('page_count');
+        $page_count_param = (int) $request->get('page_count');
         $pageMaxis = $this->pageMaxRepository->findAll();
 
         if ($page_count_param) {
@@ -133,7 +137,7 @@ class PaymentStatusController extends AbstractController
                  */
                 if ($page_no) {
                     // ページ送りで遷移した場合.
-                    $this->session->set('sample_payment.admin.payment_status.search.page_no', (int)$page_no);
+                    $this->session->set('sample_payment.admin.payment_status.search.page_no', (int) $page_no);
                 } else {
                     // 他画面から遷移した場合.
                     $page_no = $this->session->get('sample_payment.admin.payment_status.search.page_no', 1);

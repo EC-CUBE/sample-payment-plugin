@@ -26,8 +26,6 @@ trait CustomerTrait
      *
      * @var string
      * @ORM\Column(type="smallint", nullable=true)
-     *
-     * TODO 命名規約が必要.
      */
-    public $sample_token_cards;
+    public $sample_payment_cards;
 }

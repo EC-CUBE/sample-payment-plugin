@@ -14,10 +14,9 @@
 namespace Plugin\SamplePayment;
 
 use Eccube\Event\TemplateEvent;
-use Plugin\SamplePayment\Service\Method\CreditCard;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class Event implements EventSubscriberInterface
+class SamplePaymentEvent implements EventSubscriberInterface
 {
     /**
      * リッスンしたいサブスクライバのイベント名の配列を返します。
@@ -32,7 +31,7 @@ class Event implements EventSubscriberInterface
      * - array('eventName' => array('methodName', $priority))
      * - array('eventName' => array(array('methodName1', $priority), array('methodName2')))
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function getSubscribedEvents()
     {
@@ -43,12 +42,6 @@ class Event implements EventSubscriberInterface
 
     public function onAdminOrderEditTwig(TemplateEvent $event)
     {
-        $Order = $event->getParameter('Order');
-        if ($Order && $Order->getPayment()->getMethodClass() === CreditCard::class) {
-            $search = '{% block main %}';
-            $replace = '{% block main %}{{ include("@SamplePayment/admin/order_edit.twig") }}';
-            $source = str_replace($search, $replace, $event->getSource());
-            $event->setSource($source);
-        }
+        $event->addSnippet('@SamplePayment/admin/order_edit.twig');
     }
 }

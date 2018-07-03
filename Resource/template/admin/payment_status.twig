@@ -8,7 +8,7 @@ http://www.lockon.co.jp/
 For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
-{% extends '@admin/styleguide_frame.twig' %}
+{% extends '@admin/default_frame.twig' %}
 
 {% set menus = ['order', 'sample_payment_admin_payment_status'] %}
 
@@ -236,7 +236,7 @@ file that was distributed with this source code.
                                                 <input type="checkbox"  name="ids[]" id="check_{{ Order.id }}" value="{{ Order.id }}">
                                             </td>
                                             <td class="align-middle text-left" id="order_date--{{ Order.id }}">{{ Order.order_date|date_min }}</td>
-                                            <td class="align-middle text-center" id="id--{{ Order.id }}"><a class="action-edit" href="{{ url('admin_order_edit', { id : Order.id }) }}">{{ Order.order_code }}</a></td>
+                                            <td class="align-middle text-center" id="id--{{ Order.id }}"><a class="action-edit" href="{{ url('admin_order_edit', { id : Order.id }) }}">{{ Order.order_no }}</a></td>
                                             <td class="align-middle text-center" id="name--{{ Order.id }}">{{ Order.name01 }} {{ Order.name02 }}</td>
                                             <td class="align-middle text-center" id="payment_method--{{ Order.id }}">{{ Order.payment_method }}</td>
                                             <td class="align-middle text-right" id="payment_total--{{ Order.id }}">{{ Order.payment_total|price }}</td>

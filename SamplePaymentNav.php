@@ -15,7 +15,7 @@ namespace Plugin\SamplePayment;
 
 use Eccube\Common\EccubeNav;
 
-class Nav implements EccubeNav
+class SamplePaymentNav implements EccubeNav
 {
     /**
      * @return array
