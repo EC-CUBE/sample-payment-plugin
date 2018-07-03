@@ -361,11 +361,11 @@ Order 拡張用のトレイト。クレジットカードのトークンや、�
 
 PluginManager クラス。 install/uninstall/enable/disable の処理を実装する。
 
-#### [Plugin\SamplePayment\PluginManager\Repository\ConfigRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/ConfigRepository.php)
+#### [Plugin\SamplePayment\PluginManager\Repository\ConfigRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/Repository/ConfigRepository.php)
 
 プラグイン設定画面用のリポジトリクラス
 
-#### [Plugin\SamplePayment\PluginManager\Repository\PaymentStatusRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/PaymentStatusRepository.php)
+#### [Plugin\SamplePayment\PluginManager\Repository\PaymentStatusRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/Repository/PaymentStatusRepository.php)
 
 決済ステータス用のリポジトリクラス
 
