@@ -43,12 +43,6 @@ class SamplePaymentEvent implements EventSubscriberInterface
 
     public function onAdminOrderEditTwig(TemplateEvent $event)
     {
-        $Order = $event->getParameter('Order');
-        if ($Order && $Order->getPayment()->getMethodClass() === CreditCard::class) {
-            $search = '{% block main %}';
-            $replace = '{% block main %}{{ include("@SamplePayment/admin/order_edit.twig") }}';
-            $source = str_replace($search, $replace, $event->getSource());
-            $event->setSource($source);
-        }
+        $event->addSnippet('@SamplePayment/admin/order_edit.twig');
     }
 }
