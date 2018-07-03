@@ -19,9 +19,7 @@ use Eccube\Repository\PaymentRepository;
 use Plugin\SamplePayment\Entity\Config;
 use Plugin\SamplePayment\Entity\PaymentStatus;
 use Plugin\SamplePayment\Service\Method\LinkCreditCard;
-use Plugin\SamplePayment\Service\LinkPaymentService;
 use Plugin\SamplePayment\Service\Method\CreditCard;
-use Plugin\SamplePayment\Service\PaymentService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PluginManager extends AbstractPluginManager
@@ -52,7 +50,6 @@ class PluginManager extends AbstractPluginManager
         $Payment->setSortNo($sortNo);
         $Payment->setVisible(true);
         $Payment->setMethod('サンプル決済(トークン)'); // todo nameでいいんじゃないか
-        $Payment->setServiceClass(PaymentService::class);
         $Payment->setMethodClass(CreditCard::class);
 
         $entityManager->persist($Payment);
@@ -77,7 +74,6 @@ class PluginManager extends AbstractPluginManager
         $Payment->setSortNo($sortNo);
         $Payment->setVisible(true);
         $Payment->setMethod('サンプル決済(リンク)'); // todo nameでいいんじゃないか
-        $Payment->setServiceClass(LinkPaymentService::class);
         $Payment->setMethodClass(LinkCreditCard::class);
 
         $entityManager->persist($Payment);
