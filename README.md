@@ -9,6 +9,7 @@ EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があり�
 - [開発ドキュメント・マニュアル](http://doc3n.ec-cube.net/)
 
 ## EC-CUBEのインストール手順
+TODO: マニュアルに移動させてリンクを貼る
 
 1. [こちら](https://github.com/EC-CUBE/ec-cube)からEC-CUBEのリポジトリをclone
 ```git clone https://github.com/EC-CUBE/ec-cube.git```
@@ -36,6 +37,10 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 
 # プラグイン導入方法
 
+## プラグインファイルの配置
+
+TODO
+
 ## コマンドラインインタフェース
 
 ### 利用例
@@ -49,16 +54,25 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 `bin/console eccube:plugin:uninstall --code=SamplePayment`
 - プラグインサンプルの生成
 `bin/console eccube:plugin:generate`
+  - TODO: プラグインジェネレータの説明を追加
 
 ## プラグインカスタマイズ
 
+### 推奨ディレクトリ構造
+
+TODO
+
 ### ルーティングの追加
 
-TBD
+TODO
 
 ### Entity拡張
 
-TBD
+TODO
+
+### FormType拡張
+
+TODO
 
 ### イベントの追加
 
@@ -163,7 +177,7 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 
 ### PurchaseFlowの処理の流れ
 
-TBD
+TODO
 
 ### メッセージIDについて
 
@@ -183,8 +197,15 @@ DBは変更しない
 #### 削除
 DBの更新とファイルの削除
 
+### DBの変更方法
+
+TODO
 
 ## 決済プラグインについて
+
+### ファイルごとの概要
+
+TODO
 
 ### シーケンス図
 
