@@ -212,6 +212,119 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 {{ eccube_block_hello({ name: 'hoge'}) }}
 ```
 
+### 画面への介入について
+
+EC-CUBE3.0系では画面の拡張をする場合、直接Twigファイルを書き換えたりしていましたが、
+新しいバージョンからはTemplateEventに新たな関数を用意し、それを利用することでJavaScriptを使って簡単に制御することが可能となります。
+
+
+* TemplateEvent抜粋
+```php
+/**
+ * アセットを追加する
+ *
+ * ここで追加したコードは, <head></head>内に出力される
+ * javascriptの読み込みやcssの読み込みに利用する.
+ *
+ * @param $asset
+ * @param bool $include twigファイルとしてincludeするかどうか
+ *
+ * @return $this
+ */
+public function addAsset($asset, $include = true)
+{
+    $this->assets[$asset] = $include;
+
+    $this->setParameter('plugin_assets', $this->assets);
+
+    return $this;
+}
+
+/**
+ * スニペットを追加する.
+ *
+ * ここで追加したコードは, </body>タグ直前に出力される
+ *
+ * @param $snippet
+ * @param bool $include twigファイルとしてincludeするかどうか
+ *
+ * @return $this
+ */
+public function addSnippet($snippet, $include = true)
+{
+    $this->snippets[$snippet] = $include;
+
+    $this->setParameter('plugin_snippets', $this->snippets);
+
+    return $this;
+}
+```
+
+ このプラグインを利用する方法は以下の通りです。例として商品一覧に対して列を追加する方法となります。
+
+* AdminSampleEvent を作成
+```php
+<?php
+namespace Plugin\AdminSample;
+
+use Eccube\Event\TemplateEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class AdminSampleEvent implements EventSubscriberInterface
+{
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            '@admin/Product/index.twig' => 'productList',
+        ];
+    }
+
+    public function productList(TemplateEvent $event)
+    {
+        $twig = '@AdminSample/product_list.twig';
+        $event->addSnippet($twig);
+    }
+}
+```
+
+というEventクラスを作成し、
+
+`app/Plugin/AdminSample/Resource/template/product_list.twig` というファイルを作成後、
+
+```php
+{% for p in pagination %}
+    <div class="p{{ loop.index }}" data-status="{{ p.Status.id }}">{{ p.name }}</div>
+{% endfor %}
+
+<script>
+    $(function() {
+        $('table tr').each(function(i) {
+            if (i != 0) {
+                $elem = $('.p' + i);
+                if ($elem.data('status') == '2') {
+                    $(this).addClass('table-secondary');
+                }
+                $('td:eq(4)', this).after('<td class="align-middle">' + $elem.text() + '</td>');
+                $('td:eq(5)', this).after('<td class="align-middle"><button type="button" class="btn btn-light" data-hoge="' + i + '">ボタン' + i + '</button></td>');
+                $elem.remove();
+            } else {
+                $('th:eq(4)', this).after('<th class="border-top-0 pt-2 pb-2">名称</th>');
+                $('th:eq(5)', this).after('<th class="border-top-0 pt-2 pb-2">ボタン</th>');
+            }
+        });
+
+        $(document).on('click', '.btn-light', function() {
+            alert($(this).data('hoge'));
+        })
+    });
+</script>
+```
+
+と記述することで簡単に画面要素の介入が可能となります。`product_list.twig`ファイルには何を記述しても構いません。
+
 ### PaymentMethodInterface の拡張
 
 各決済ごとに `PaymentMethodInterface` を実装することで決済に独自の処理を追加できます。
