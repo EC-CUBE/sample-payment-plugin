@@ -47,7 +47,7 @@ trait OrderTrait
      * @var PaymentStatus
      * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment\Entity\PaymentStatus")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="sample_payment_payment_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="sample_payment_payment_status_id", referencedColumnName="id")
      * })
      */
     private $SamplePaymentPaymentStatus;
