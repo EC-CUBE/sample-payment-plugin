@@ -133,16 +133,33 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 {{ eccube_block_hello({ name: 'hoge'}) }}
 ```
 
-### PaymentMethodの拡張
+### PaymentMethodInterface の拡張
 
-各決済ごとに `PaymentMethod` を実装することで決済に独自の処理を追加できます。
+各決済ごとに `PaymentMethodInterface` を実装することで決済に独自の処理を追加できます。
 
-- `verify()`
-  - 注文手続き画面でsubmitされた時に実行する処理を記載します。
-- `apply()`
-  - 注文確認画面でsubmitされた時に処理を他のcontrollerへ移譲する処理を記載します。
-- `checkout()` :
-  - 注文確認画面でsubmitされた時に決済完了処理を記載します。
+#### `verify()`
+
+注文手続き画面でsubmitされた時に実行する処理を実装します。
+主に、クレジットカード決済の有効性チェックをするために使用します。
+このメソッドは、 `PaymentResult` を返します。
+`PaymentResult` には、実行結果、エラーメッセージなどを設定します。
+`Response` を設定して、他の画面にリダイレクトしたり、独自の出力を実装することも可能です。
+ 
+#### `apply()`
+
+注文確認画面でsubmitされた時に、他の Controller へ処理を移譲する実装をします。
+主にリンク式決済や、キャリア決済など、決済会社の画面へ遷移する必要がある場合に使用します。
+また、独自に作成した Controller に遷移する場合にも使用できます。
+このメソッドは `PaymentDispatcher` を返します。
+`PaymentDispatcher` は、他の Controller へ `Redirect` もしくは `Forward` させるための情報を設定します。
+決済会社の画面など、サイト外へ遷移させる場合は、 `Response` を設定します。
+
+#### `checkout()`
+
+注文確認画面でsubmitされた時に決済完了処理を記載します。
+このメソッドは、 `PaymentResult` を返します。
+`PaymentResult` には、実行結果、エラーメッセージなどを設定します。
+3Dセキュア決済の場合は、 `Response` を設定して、独自の出力を実装することも可能です。
 
 ### PurchaseFlowの処理の流れ
 
