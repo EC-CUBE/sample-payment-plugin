@@ -1,72 +1,70 @@
-{% if Order.id is not null %}
-    <script>
-        $(function () {
-            // ページ最下部に移動
-            $('#sample_payment-info').appendTo($('#form1 > div.c-contentsArea__cols > div > div'));
+<script>
+    $(function () {
+        // ページ最下部に移動
+        $('#sample_payment-info').appendTo($('#form1 > div.c-contentsArea__cols > div > div'));
 
-            // 取消処理実行
-            $('#sample_payment-action__cancel').on('click', function () {
-                $('#sample_payment-info__body button').prop('disabled', true);
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ url('sample_payment_admin_order_cancel', { id: Order.id }) }}',
-                }).always(function () {
-                    location.href = location.href;
-                });
-            });
-
-            // キャンセル処理実行
-            $('#sample_payment-action__change_price').on('click', function () {
-                $('#sample_payment-info__body button').prop('disabled', true);
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ url('sample_payment_admin_order_change_price', { id: Order.id }) }}',
-                }).always(function () {
-                    location.href = location.href;
-                });
+        // 取消処理実行
+        $('#sample_payment-action__cancel').on('click', function () {
+            $('#sample_payment-info__body button').prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '{{ url('sample_payment_admin_order_cancel', { id: Order.id }) }}',
+            }).always(function () {
+                location.href = location.href;
             });
         });
-    </script>
-    <div class="d-none">
-        <div id="sample_payment-info" class="card rounded border-0 mb-4">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-8">
-                        <span class="card-title">{{ 'sample_payment.admin.order_edit.title'|trans }}</span>
-                    </div>
-                    <div class="col-4 text-right"><a data-toggle="collapse" href="#sample_payment-info__body"
-                                                     aria-expanded="false" aria-controls="sample_payment-info__body"><i
-                                    class="fa fa-angle-up fa-lg"></i></a></div>
+
+        // キャンセル処理実行
+        $('#sample_payment-action__change_price').on('click', function () {
+            $('#sample_payment-info__body button').prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: '{{ url('sample_payment_admin_order_change_price', { id: Order.id }) }}',
+            }).always(function () {
+                location.href = location.href;
+            });
+        });
+    });
+</script>
+<div class="d-none">
+    <div id="sample_payment-info" class="card rounded border-0 mb-4">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-8">
+                    <span class="card-title">{{ 'sample_payment.admin.order_edit.title'|trans }}</span>
                 </div>
+                <div class="col-4 text-right"><a data-toggle="collapse" href="#sample_payment-info__body"
+                                                 aria-expanded="false" aria-controls="sample_payment-info__body"><i
+                                class="fa fa-angle-up fa-lg"></i></a></div>
             </div>
-            <div class="collapse show ec-cardCollapse" id="sample_payment-info__body">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-2"><span>{{ 'sample_payment.admin.order_edit.payment_status'|trans }}</span></div>
-                        <div class="col">
-                            {{ Order.sample_payment_payment_status is not empty ? Order.sample_payment_payment_status.name : '--' }}
-                        </div>
+        </div>
+        <div class="collapse show ec-cardCollapse" id="sample_payment-info__body">
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-2"><span>{{ 'sample_payment.admin.order_edit.payment_status'|trans }}</span></div>
+                    <div class="col">
+                        {{ Order.sample_payment_payment_status is not empty ? Order.sample_payment_payment_status.name : '--' }}
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-2"><span>{{ 'sample_payment.admin.order_edit.payment_action'|trans }}</span></div>
-                        <div class="col">
-                            <ul class="list-inline">
-                                <li class="list-inline-item">
-                                    <button id="sample_payment-action__cancel" type="button"
-                                            class="btn btn-ec-regular px-5">{{ 'sample_payment.admin.order_edit.payment_action_cancel'|trans }}
-                                    </button>
-                                </li>
-                                <li class="list-inline-item">
-                                    <button id="sample_payment-action__change_price" type="button"
-                                            class="btn btn-ec-regular px-5">
-                                        {{ 'sample_payment.admin.order_edit.payment_action_change_price'|trans }}
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-2"><span>{{ 'sample_payment.admin.order_edit.payment_action'|trans }}</span></div>
+                    <div class="col">
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <button id="sample_payment-action__cancel" type="button"
+                                        class="btn btn-ec-regular px-5">{{ 'sample_payment.admin.order_edit.payment_action_cancel'|trans }}
+                                </button>
+                            </li>
+                            <li class="list-inline-item">
+                                <button id="sample_payment-action__change_price" type="button"
+                                        class="btn btn-ec-regular px-5">
+                                    {{ 'sample_payment.admin.order_edit.payment_action_change_price'|trans }}
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-{% endif %}
+</div>
