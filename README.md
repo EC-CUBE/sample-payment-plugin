@@ -327,7 +327,7 @@ class AdminSampleEvent implements EventSubscriberInterface
 
 ### PaymentMethodInterface の拡張
 
-各決済ごとに `PaymentMethodInterface` を実装することで決済に独自の処理を追加できます。
+各決済ごとに `PaymentMethodInterface` を実装することで決済に独自の処理を追加できます。また、 `PaymentMethodInterface` の実装クラスは `PurchaseFlow` を使用して購入処理中の受注データを確定させる必要があります。
 
 #### `verify()`
 
@@ -336,7 +336,7 @@ class AdminSampleEvent implements EventSubscriberInterface
 このメソッドは、 `PaymentResult` を返します。
 `PaymentResult` には、実行結果、エラーメッセージなどを設定します。
 `Response` を設定して、他の画面にリダイレクトしたり、独自の出力を実装することも可能です。
- 
+
 #### `apply()`
 
 注文確認画面でsubmitされた時に、他の Controller へ処理を移譲する実装をします。
@@ -346,12 +346,18 @@ class AdminSampleEvent implements EventSubscriberInterface
 `PaymentDispatcher` は、他の Controller へ `Redirect` もしくは `Forward` させるための情報を設定します。
 決済会社の画面など、サイト外へ遷移させる場合は、 `Response` を設定します。
 
+このメソッドでは購入処理中の受注データを仮確定させるために `PurchaseFlow#prepare()` を実行します。仮確定してサイト外へ遷移した後に、遷移先でユーザが決済をキャンセルした場合は、仮確定を取り消す必要があります。仮確定の取り消しには、まずサイト外から決済をキャンセルして戻ってくるためのControllerを用意しておきます。このControllerの処理の中で `PurchaseFlow#rollback()` を実行します。仮確定取消後は注文手続き画面に遷移させるようにします。
+
+サイト外へ遷移後、ユーザが決済処理を完了したときは、決済手続き完了用のControllerに遷移させます。このタイミングで購入処理中の受注を確定できる場合は `PurchaseFlow#commit()` を実行します。この遷移タイミングではなく、決済サーバからの完了通知を受けて購入処理を確定する場合は、完了通知用のControllerを実装し `PurchaseFlow#commit()` を実行するようにします。
+
 #### `checkout()`
 
 注文確認画面でsubmitされた時に決済完了処理を記載します。
 このメソッドは、 `PaymentResult` を返します。
 `PaymentResult` には、実行結果、エラーメッセージなどを設定します。
 3Dセキュア決済の場合は、 `Response` を設定して、独自の出力を実装することも可能です。
+
+決済処理をこのメソッドで完了できる場合は、`PurchaseFlow#commit()` を実行して購入処理中の受注データを確定します。3Dセキュア決済などで他サイトへの遷移が必要な場合は、他サイトでの処理を完了して呼び戻されるControllerの中で `PurchaseFlow#commit()` を実行します。他サイトでの処理がキャンセルされたときは `PurchaseFlow#rollback()` を呼び出す必要があります。
 
 ### PurchaseFlowについて
 
