@@ -94,7 +94,7 @@ class LinkCreditCard implements PaymentMethodInterface
     public function apply()
     {
         // 受注ステータスを決済処理中へ変更
-        $OrderStatus = $this->orderStatusRepository->find(9); // TODO 決済処理中ステータスを定数化
+        $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PENDING);
         $this->Order->setOrderStatus($OrderStatus);
 
         // 決済ステータスを未決済へ変更
@@ -107,8 +107,10 @@ class LinkCreditCard implements PaymentMethodInterface
         // 決済サーバのカード入力画面へリダイレクトする.
         $url = '/payment_company?no='.$this->Order->getOrderNo();
         $response = new RedirectResponse($url);
+        $dispatcher = new PaymentDispatcher();
+        $dispatcher->setResponse($response);
 
-        return $response;
+        return $dispatcher;
     }
 
     /**

@@ -92,6 +92,14 @@ class PaymentController extends AbstractController
             throw new NotFoundHttpException();
         }
 
+        // 受注ステータスを購入処理中へ変更
+        $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PROCESSING);
+        $Order->setOrderStatus($OrderStatus);
+
+        // 決済ステータスを未決済へ変更
+        $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
+        $Order->setSamplePaymentPaymentStatus($PaymentStatus);
+
         // purchaseFlow::rollbackを呼び出し, 購入処理をロールバックする.
         $this->purchaseFlow->rollback($Order, new PurchaseContext());
 

@@ -110,7 +110,7 @@ class CreditCard implements PaymentMethodInterface
     public function apply()
     {
         // 受注ステータスを決済処理中へ変更
-        $OrderStatus = $this->orderStatusRepository->find(9); // TODO 決済処理中ステータスを定数化
+        $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PENDING);
         $this->Order->setOrderStatus($OrderStatus);
 
         // 決済ステータスを未決済へ変更
