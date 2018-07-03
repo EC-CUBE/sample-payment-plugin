@@ -40,11 +40,11 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 
 ## プラグインファイルの配置
 
-`/app/Plugin/` にプラグインのファイルを配置してください。
+`/app/Plugin/` にディレクトリ名がプラグインコードとなるディレクトリを作成し、そこにプラグインのファイルを配置してください。
 
 本サンプルプラグインの場合は以下のようになります。
 
-`/app/Plugin/sample-payment-plugin`
+`/app/Plugin/SamplePayment`
 
 ## コマンドラインインタフェース
 
