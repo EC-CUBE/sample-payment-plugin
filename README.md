@@ -43,7 +43,8 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
 
 `/app/Plugin/` にプラグインのファイルを配置してください。
 
-例
+本サンプルプラグインの場合は以下となります。
+
 `/app/Plugin/sample-payment-plugin`
 
 ## コマンドラインインタフェース
@@ -256,9 +257,12 @@ DBは変更しない
 #### 削除
 DBの更新とファイルの削除
 
-### DBの変更方法
+### DBの更新方法
 
-TODO
+1. Entity拡張のORMアノテーションでDBの設定を更新
+1. コマンドラインからプロキシファイルを作成 `bin/console eccube:generate:proxies`
+1. DBの更新内容の確認 `bin/console doctrine:schema:update --dump-sql`
+1. DBの更新を実行 `bin/console doctrine:schema:update --dump-sql --force`
 
 ## 決済プラグインについて
 
