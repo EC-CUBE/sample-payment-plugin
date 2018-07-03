@@ -186,6 +186,8 @@ class Nav implements EccubeNav
 
 ### Twigユーザ定義関数の読み込み
 
+フロント画面はtwigにtagを埋め込むカスタマイズ方法を推奨します。
+
 `EccubeTwigBlock`を実装し、対象のテンプレートファイルを読み込みます。
 
 ```php
@@ -210,6 +212,19 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 
 ```twig
 {{ eccube_block_hello({ name: 'hoge'}) }}
+```
+
+本サンプルプラグインではトークン決済の入力フォームと確認フォームのタグを手動で埋め込む必要があります。
+
+管理画面のページ管理からテンプレートファイルの適当な箇所に以下のタグを追加してください。
+
+- 商品購入ページ
+```twig
+{{ eccube_block_sample_payment_credit_form({ Order: Order, form: form }) }}
+```
+- 商品購入/ご注文確認ページ
+```twig
+{{ eccube_block_sample_payment_credit_form_confirm({ Order: Order, form: form }) }}
 ```
 
 ### 画面への介入について
