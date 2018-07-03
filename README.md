@@ -268,11 +268,11 @@ DBの更新とファイルの削除
 
 ### ファイルごとの概要
 
-#### [Plugin\SamplePayment\Service\Method\CreditCard](https://github.com/EC-CUBE/sample-plugin/blob/master/Service/Method/CreditCard.php)
+#### [Plugin\SamplePayment\Service\Method\CreditCard](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/Service/Method/CreditCard.php)
 
 トークン型クレジットカード払い用のビジネスロジッククラス
 
-#### [Plugin\SamplePayment\Service\Method\LinkCreditCard](https://github.com/EC-CUBE/sample-plugin/blob/master/Service/Method/LinkCreditCard.php)
+#### [Plugin\SamplePayment\Service\Method\LinkCreditCard](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/Service/Method/LinkCreditCard.php)
 
 リンク型クレジットカード払い用のビジネスロジッククラス
 
