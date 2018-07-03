@@ -200,7 +200,7 @@ class TwigBlock impletemts EccubeTwigBlock
 
 `/Resource/template/` 配下にblockの定義ファイルを作成します。
 
-```html
+```twig
 {% block hello %}
     <h1>Hello, {{ name }}!</h1>
 {% endblock %}
@@ -208,7 +208,7 @@ class TwigBlock impletemts EccubeTwigBlock
 
 twigファイルに以下のように記載することでBlockが呼び出せます。
 
-```
+```twig
 {{ eccube_block_hello({ name: 'hoge'}) }}
 ```
 
@@ -259,13 +259,13 @@ PurchaseFlowについては開発ドキュメント・マニュアルの[Service
 
 phpのソースコード内でメッセージを使用する場合にはグローバル関数の `trans()` が利用できます。
 
-```
+```php
 trans('message.id');
 ```
 
 twigのソースコード内でメッセージを使用する場合には `trans` フィルタが利用できます。
 
-```
+```twig
 {{ 'message.id'|trans }}
 ```
 
