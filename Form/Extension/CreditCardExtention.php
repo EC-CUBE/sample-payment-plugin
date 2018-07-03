@@ -27,8 +27,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * 注文手続き画面のFormを拡張し、カード入力フォームを追加する.
  * 支払い方法に応じてエクステンションを作成する.
- *
- * FIXME extentionを一つひとつ作るよりは、各フォームタイプに切り分けてもよいかも.
  */
 class CreditCardExtention extends AbstractTypeExtension
 {
@@ -51,25 +49,10 @@ class CreditCardExtention extends AbstractTypeExtension
 
             // 支払い方法が一致する場合
             if ($data->getPayment()->getMethodClass() === CreditCard::class) {
-                // TODO 確認画面以降は, Orderエンティティに保持されるため不要
-                // TODO 注文手続き画面か確認画面かわかるようにする
                 $form->add('sample_payment_token', HiddenType::class, [
                     'required' => false,
                     'mapped' => true, // Orderエンティティに追加したカラムなので、mappedはtrue
-                    // TODO 注文手続き画面の場合のみNotBlankを有効にしたい
-                    // 'constraints' => [
-                    //    new NotBlank()
-                    //]*/
                 ]);
-
-                // 確認画面の表示用、submitは行わない(credit_confirm.twig参照)
-                // PaymentMethod::verifyで、取得した下4桁の番号をセットしている(予定)
-                $form->add('sample_payment_card_no_last4', HiddenType::class, [
-                    'required' => false,
-                    'mapped' => false,
-                ]);
-                // TODO 確認する or 注文するボタンもここで制御したい
-                // TODO 属性追加やon click追加など
             }
         });
 
@@ -83,15 +66,12 @@ class CreditCardExtention extends AbstractTypeExtension
             // 支払い方法が一致しなければremove
             if ($Payment->getId() != $data['Payment']) {
                 $form->remove('sample_payment_token');
-                $form->remove('sample_payment_card_no_last4');
             }
         });
     }
 
     /**
-     * Returns the name of the type being extended.
-     *
-     * @return string The name of the type being extended
+     * {@inheritdoc}
      */
     public function getExtendedType()
     {

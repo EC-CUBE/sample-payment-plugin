@@ -28,11 +28,16 @@ trait OrderTrait
      *
      * @var string
      * @ORM\Column(type="string", nullable=true)
-     *
-     * TODO 命名規約.いったんプラグインコードのスネークケースで.
-     * TODO 文字長はどれくらいが適切？
      */
     private $sample_payment_token;
+
+    /**
+     * クレジットカード番号の末尾4桁.
+     * 永続化は行わず, 注文確認画面で表示する.
+     *
+     * @var string
+     */
+    private $sample_payment_card_no_last4;
 
     /**
      * 決済ステータスを保持するカラム.
@@ -65,6 +70,22 @@ trait OrderTrait
         $this->sample_payment_token = $sample_payment_token;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSamplePaymentCardNoLast4()
+    {
+        return $this->sample_payment_card_no_last4;
+    }
+
+    /**
+     * @param string $sample_payment_card_no_last4
+     */
+    public function setSamplePaymentCardNoLast4($sample_payment_card_no_last4)
+    {
+        $this->sample_payment_card_no_last4 = $sample_payment_card_no_last4;
     }
 
     /**

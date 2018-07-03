@@ -17,7 +17,7 @@ use Eccube\Event\TemplateEvent;
 use Plugin\SamplePayment\Service\Method\CreditCard;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class Event implements EventSubscriberInterface
+class SamplePaymentEvent implements EventSubscriberInterface
 {
     /**
      * リッスンしたいサブスクライバのイベント名の配列を返します。

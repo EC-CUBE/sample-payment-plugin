@@ -19,14 +19,14 @@ use Eccube\Entity\Master\AbstractMasterEntity;
 /**
  * PaymentStatus
  *
- * TODO プラグインのテーブルで必要なアノテーションを精査
- *
  * @ORM\Table(name="plg_sample_payment_payment_status")
  * @ORM\Entity(repositoryClass="Plugin\SamplePayment\Repository\PaymentStatusRepository")
  */
 class PaymentStatus extends AbstractMasterEntity
 {
-    // TODO 定数名は要変更
+    /**
+     * 定数名は適宜変更してください.
+     */
 
     /**
      * 未決済

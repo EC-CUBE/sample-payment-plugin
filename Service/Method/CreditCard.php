@@ -15,15 +15,32 @@ namespace Plugin\SamplePayment\Service\Method;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Eccube\Entity\Master\OrderStatus;
+use Eccube\Entity\Order;
 use Eccube\Repository\Master\OrderStatusRepository;
-use Eccube\Service\Payment\Method\CreditCard as BaseCreditCard;
 use Eccube\Service\Payment\PaymentDispatcher;
+use Eccube\Service\Payment\PaymentMethod;
+use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
+use Eccube\Service\PurchaseFlow\PurchaseContext;
+use Eccube\Service\PurchaseFlow\PurchaseFlow;
 use Plugin\SamplePayment\Entity\PaymentStatus;
 use Symfony\Component\Form\FormInterface;
 
-class CreditCard extends BaseCreditCard
+/**
+ * クレジットカード(トークン決済)の決済処理を行う.
+ */
+class CreditCard implements PaymentMethodInterface
 {
+    /**
+     * @var Order
+     */
+    protected $Order;
+
+    /**
+     * @var FormInterface
+     */
+    protected $form;
+
     /**
      * @var OrderStatusRepository
      */
@@ -34,75 +51,142 @@ class CreditCard extends BaseCreditCard
      */
     protected $entityManager;
 
-    public function __construct(OrderStatusRepository $orderStatusRepository, EntityManagerInterface $entityManager)
-    {
+    /**
+     * @var PurchaseFlow
+     */
+    protected $purchaseFlow;
+
+    /**
+     * CreditCard constructor.
+     *
+     * @param OrderStatusRepository $orderStatusRepository
+     * @param EntityManagerInterface $entityManager
+     * @param PurchaseFlow $purchaseFlow
+     */
+    public function __construct(
+        OrderStatusRepository $orderStatusRepository,
+        EntityManagerInterface $entityManager,
+        PurchaseFlow $purchaseFlow
+    ) {
         $this->orderStatusRepository = $orderStatusRepository;
         $this->entityManager = $entityManager;
-    }
-
-    public function verify()
-    {
+        $this->purchaseFlow = $purchaseFlow;
     }
 
     /**
-     * 決済サーバと通信して、決済処理を行う.
+     * 注文確認画面遷移時に呼び出される.
+     *
+     * クレジットカードの有効性チェックを行う.
      *
      * @return PaymentResult
+     * @throws \Eccube\Service\PurchaseFlow\PurchaseException
      */
-    public function checkout()
+    public function verify()
     {
-        // TODO トークンから仮売上あげる
-        // エラーだったらどうするか？
-        // とりあえずShoppingExceptionなげればエラーにはできる
+        // 決済サーバとの通信処理(有効性チェックやカード番号の下4桁取得)
+        // ...
+        //
 
-        // トークン取得
-        $token = $this->Order->getSamplePaymentToken();
-        // 決済サーバに仮売上のリクエスト送る(設定等によって送るリクエストは異なる)
-
-        $OrderStatus = $this->orderStatusRepository->find(OrderStatus::NEW);
-        $this->Order->setOrderStatus($OrderStatus);
-
-        $message = '決済完了しました。トークン -> '.$token;
-        //$this->Order->addMailText($message);
-
-        $this->Order->setNote($message);
-
-        $result = new PaymentResult();
-        $result->setSuccess(true);
+        if (true) {
+            $result = new PaymentResult();
+            $result->setSuccess(true);
+            $this->Order->setSamplePaymentCardNoLast4('****-*****-****-1234');
+        } else {
+            $result = new PaymentResult();
+            $result->setSuccess(false);
+            $result->setErrors([trans('sample_payment.shopping.verify.error')]);
+        }
 
         return $result;
     }
 
     /**
-     * 受注ステータス, 決済ステータスを更新する
-     * まだAPI通信は行わない.
+     * 注文時に呼び出される.
      *
-     * @return PaymentDispatcher
+     * 受注ステータス, 決済ステータスを更新する.
+     * ここでは決済サーバとの通信は行わない.
+     *
+     * @return PaymentDispatcher|null
      */
     public function apply()
     {
-        // TODO 決済処理中ステータスを定数化
-        $OrderStatus = $this->orderStatusRepository->find(9);
+        // 受注ステータスを決済処理中へ変更
+        $OrderStatus = $this->orderStatusRepository->find(9); // TODO 決済処理中ステータスを定数化
         $this->Order->setOrderStatus($OrderStatus);
 
+        // 決済ステータスを未決済へ変更
         $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
         $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
-        // TODO ここでの処理はcheckoutで実装しても実質的には問題ない
-        // TODO 3Dセキュアのフローが見えてない
-        // TODO flushされるタイミングが読みづらいな->最後にflush
+        // purchaseFlow::prepareを呼び出し, 購入処理を進める.
+        $this->purchaseFlow->prepare($this->Order, new PurchaseContext());
     }
 
     /**
-     * @param FormInterface
+     * 注文時に呼び出される.
+     *
+     * クレジットカードの決済処理を行う.
+     *
+     * @return PaymentResult
+     */
+    public function checkout()
+    {
+        // 決済サーバに仮売上のリクエスト送る(設定等によって送るリクエストは異なる)
+        // ...
+        //
+        $token = $this->Order->getSamplePaymentToken();
+
+        if (true) {
+            // 受注ステータスを新規受付へ変更
+            $OrderStatus = $this->orderStatusRepository->find(OrderStatus::NEW);
+            $this->Order->setOrderStatus($OrderStatus);
+
+            // 決済ステータスを仮売上へ変更
+            $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::PROVISIONAL_SALES);
+            $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
+
+            // 注文完了画面/注文完了メールにメッセージを追加
+            $this->Order->appendCompleteMessage('トークン -> '.$token);
+            $this->Order->appendCompleteMailMessage('トークン -> '.$token);
+
+            // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
+            $this->purchaseFlow->commit($this->Order, new PurchaseContext());
+
+            $result = new PaymentResult();
+            $result->setSuccess(true);
+        } else {
+            // 受注ステータスを購入処理中へ変更
+            $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PROCESSING);
+            $this->Order->setOrderStatus($OrderStatus);
+
+            // 決済ステータスを未決済へ変更
+            $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
+            $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
+
+            // 失敗時はpurchaseFlow::commitを呼び出す.
+            $this->purchaseFlow->rollback($this->Order, new PurchaseContext());
+
+            $result = new PaymentResult();
+            $result->setSuccess(false);
+            $result->setErrors([trans('sample_payment.shopping.checkout.error')]);
+        }
+
+        return $result;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function setFormType(FormInterface $form)
     {
-        $this->Order = $form->getData();
+        $this->form = $form;
+    }
 
-        // TODO Orderエンティティにトークンが保持されているのでフォームは不要
-        // TODO フォームよりOrderがほしい
-        // TODO applyやcheckoutでOrderが渡ってきてほしい.
-        // TODO やっぱりFormはいる -> Orderには保持しないデータはFormで引き回す(確認画面とか). 画面に持っていくデータを詰められるオブジェクトがあればいいのかな
+    /**
+     * {@inheritdoc}
+     */
+    public function setOrder(Order $Order)
+    {
+        $this->Order = $Order;
     }
 }
