@@ -114,9 +114,7 @@ DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
   └── config.yml
 ```
 
-### 命名規約は以下のissueを参照
-
-https://github.com/EC-CUBE/sample-payment-plugin/issues/6
+命名規約は[こちら](https://github.com/EC-CUBE/sample-payment-plugin/issues/6)のissueを参照
 
 ### ルーティングの追加
 
@@ -290,26 +288,8 @@ TODO
 
 ### シーケンス図
 
-#### リンク型決済
-
-![リンク型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/LinkPaymentSequenceDiagram.png "リンク型決済シーケンス図")
-
-#### トークン型決済
-
-![トークン型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/TokenPaymentSequenceDiagram.png "トークン型決済シーケンス図")
-
-#### トークン型決済（3Dセキュア）
-
-![トークン型決済シーケンス図](https://github.com/okazy/sample-payment-plugin/raw/images/TokenPaymentSequenceDiagram_3D.png "トークン型決済シーケンス図")
+[こちら](https://github.com/EC-CUBE/sample-payment-plugin/issues/11)のissueを参照
 
 ### 受注ステータスステートマシン図
 
-#### リンク型決済
-
-![リンク型決済ステートマシン図](https://github.com/okazy/sample-payment-plugin/raw/images/LinkPaymentStateMachineDiagram.png "リンク型決済ステートマシン図")
-
-#### トークン型決済
-
-![トークン型決済ステートマシン図](https://github.com/okazy/sample-payment-plugin/raw/images/TokenPaymentStateMachineDiagram.png "トークン型決済ステートマシン図")
-
-
+[こちら](https://github.com/EC-CUBE/sample-payment-plugin/issues/10)のissueを参照
