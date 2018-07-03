@@ -141,7 +141,7 @@ class CreditCard implements PaymentMethodInterface
             $this->Order->setOrderStatus($OrderStatus);
 
             // 決済ステータスを仮売上へ変更
-            $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::PROVISIONAL_SALES);
+            $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::PROVISIONAL_SALES);
             $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
             // 注文完了画面/注文完了メールにメッセージを追加
@@ -159,7 +159,7 @@ class CreditCard implements PaymentMethodInterface
             $this->Order->setOrderStatus($OrderStatus);
 
             // 決済ステータスを未決済へ変更
-            $PaymentStatus = $this->entityManager->find(PaymentStatus::class, PaymentStatus::OUTSTANDING);
+            $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
             $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
             // 失敗時はpurchaseFlow::commitを呼び出す.

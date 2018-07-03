@@ -15,6 +15,7 @@ use Eccube\Repository\Master\OrderStatusRepository;
 use Eccube\Service\Payment\PaymentDispatcher;
 use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
+use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
 use Plugin\SamplePayment\Entity\PaymentStatus;
 use Plugin\SamplePayment\Repository\PaymentStatusRepository;
