@@ -9,6 +9,7 @@
 namespace Plugin\SamplePayment\Service\Method;
 
 
+use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
 use Eccube\Exception\ShoppingException;
 use Eccube\Repository\Master\OrderStatusRepository;
