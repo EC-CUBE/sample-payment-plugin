@@ -54,7 +54,7 @@ class ConfigController extends AbstractController
 
             $this->addSuccess('sample_payment.admin.save.success', 'admin');
 
-            return $this->redirectToRoute('plugin_SamplePayment_config');
+            return $this->redirectToRoute('sample_payment_admin_config');
         }
 
         return [
