@@ -180,7 +180,7 @@ class Nav implements EccubeNav
 `EccubeTwigBlock`を実装し、対象のテンプレートファイルを読み込みます。
 
 ```php
-class TwigBlock impletemts EccubeTwigBlock
+class TwigBlock implements EccubeTwigBlock
 {
     public static function getTwigBlocks()
     {
