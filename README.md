@@ -29,6 +29,8 @@ EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があり�
 ```cd ec-cube```
 1. `experimental/sf` のブランチをチェックアウト
 ```git checkout experimental/sf```
+1. composer installを実行
+```composer install --dev```
 1. ec-cubeのインストールコマンドを実行。
 ```bin/console eccube:install```
 1. DATABASE_URLを入力、他はそのままエンターでOK。
