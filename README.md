@@ -21,33 +21,9 @@ EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があり�
 
 ## EC-CUBEのインストール手順
 
-利用できるPostgresかMySQLを立ち上げておきます。
+EC-CUBEのインストール手順は、以下を参照してください。
 
-1. [こちら](https://github.com/EC-CUBE/ec-cube)からEC-CUBEのリポジトリをclone
-```git clone https://github.com/EC-CUBE/ec-cube.git```
-1. ディレクトリを移動
-```cd ec-cube```
-1. `experimental/sf` のブランチをチェックアウト
-```git checkout experimental/sf```
-1. composer installを実行
-```composer install --dev```
-1. ec-cubeのインストールコマンドを実行。
-```bin/console eccube:install```
-1. DATABASE_URLを入力、他はそのままエンターでOK。
-1. サーバの起動
-```bin/console server:run```
-1. ブラウザでアクセス
-http://127.0.0.1:8000/
-
-### DBごとのDATABASE_URL設定例
-
-```
-## PostgreSQL
-DATABASE_URL=postgresql://db_user:db_password@127.0.0.1:5432/db_name
-
-## MySQL
-DATABASE_URL=mysql://db_user:db_password@127.0.0.1:3306/db_name
-```
+http://doc3n.ec-cube.net/quickstart_install
 
 # プラグイン導入方法
 
