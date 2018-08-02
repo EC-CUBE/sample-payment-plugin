@@ -251,7 +251,7 @@ file that was distributed with this source code.
                             </div>
                             <div class="row justify-content-md-center mb-4">
                                 {% if pagination.totalItemCount > 0 %}
-                                    {% include "@admin/styleguide_pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'sample_payment_admin_payment_status_pageno' } %}
+                                    {% include "@admin/pager.twig" with { 'pages' : pagination.paginationData, 'routes' : 'sample_payment_admin_payment_status_pageno' } %}
                                 {% endif %}
                             </div>
                         </div>
