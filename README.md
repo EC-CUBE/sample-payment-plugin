@@ -175,21 +175,15 @@ class Nav implements EccubeNav
     {
         return [
             'product' => [
-                'name' => '商品管理（上書き）',
                 'child' => [
-                    'product_master' => [
-                        'name' => '商品一覧（上書き）',
-                        'url' => 'admin_homepage',
-                    ],
                     'hoge' => [
                         'name' => '商品管理の子（追加）',
                         'url' => 'admin_homepage',
                     ],
-                ]
+                ],
             ],
             'piyo' => [
                 'name' => '1階層メニュー（追加）',
-                'url' => 'admin_homepage',
                 'icon' => 'fa-cube',
                 'child' => [
                     'piyopiyo1' => [
@@ -200,11 +194,11 @@ class Nav implements EccubeNav
                         'name' => '2階層メニュー（子あり）',
                         'child' => [
                             'piyopiyopiyo1' => [
-                                'name' => '2階層メニュー1',
+                                'name' => '3階層メニュー1',
                                 'url' => 'admin_homepage',
                             ],
                             'piyopiyopiyo2' => [
-                                'name' => '2階層メニュー2',
+                                'name' => '3階層メニュー2',
                                 'url' => 'admin_homepage',
                             ],
                         ],

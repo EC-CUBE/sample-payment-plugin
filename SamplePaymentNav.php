@@ -29,7 +29,7 @@ class SamplePaymentNav implements EccubeNav
                         'name' => 'sample_payment.admin.nav.payment_list',
                         'url' => 'sample_payment_admin_payment_status',
                     ],
-                ]
+                ],
             ],
         ];
     }
