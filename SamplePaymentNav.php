@@ -24,9 +24,12 @@ class SamplePaymentNav implements EccubeNav
     {
         return [
             'order' => [
-                'id' => 'sample_payment_admin_payment_status',
-                'name' => 'sample_payment.admin.nav.payment_list',
-                'url' => 'sample_payment_admin_payment_status',
+                'children' => [
+                    'sample_payment_admin_payment_status' => [
+                        'name' => 'sample_payment.admin.nav.payment_list',
+                        'url' => 'sample_payment_admin_payment_status',
+                    ],
+                ],
             ],
         ];
     }

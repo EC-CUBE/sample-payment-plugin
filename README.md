@@ -152,7 +152,9 @@ class Event implements EventSubscriberInterface
 ### 管理画面ナビの拡張
 
 管理画面にプラグインのメニューを追加します。
-以下のようにEccubeNavを実装すると, 対象メニュー内の最下部に追加されます。
+以下のようにEccubeNavを実装すると, メニューの上書き/追加ができます。
+追加の場合は対象メニュー内の最下部に追加されます。
+構造は本体のナビ定義も参考にしてください。
 プラグインの場合、有効時のみ表示されます。
 
 ```php
@@ -161,10 +163,36 @@ class Nav implements EccubeNav
     public static function getNav()
     {
         return [
-            'order' => [
-                'id' => 'sample_payment_admin_payment_status',
-                'name' => 'sample_payment.admin.nav.payment_list',
-                'url' => 'sample_payment_admin_payment_status',
+            'product' => [
+                'children' => [
+                    'hoge' => [
+                        'name' => '商品管理の子（追加）',
+                        'url' => 'admin_homepage',
+                    ],
+                ],
+            ],
+            'piyo' => [
+                'name' => '1階層メニュー（追加）',
+                'icon' => 'fa-cube',
+                'children' => [
+                    'piyopiyo1' => [
+                        'name' => '2階層メニュー（子なし）',
+                        'url' => 'admin_homepage',
+                    ],
+                    'piyopiyo2' => [
+                        'name' => '2階層メニュー（子あり）',
+                        'children' => [
+                            'piyopiyopiyo1' => [
+                                'name' => '3階層メニュー1',
+                                'url' => 'admin_homepage',
+                            ],
+                            'piyopiyopiyo2' => [
+                                'name' => '3階層メニュー2',
+                                'url' => 'admin_homepage',
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ];
     }
