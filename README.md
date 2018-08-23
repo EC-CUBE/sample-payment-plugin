@@ -100,7 +100,7 @@ http://doc3n.ec-cube.net/quickstart_install
   ├── XXXXEvent.php
   ├── XXXXNav.php
   ├── XXXXTwigBlock.php
-  └── config.yml
+  └── composer.json
 ```
 
 命名規約は[こちら](https://github.com/EC-CUBE/sample-payment-plugin/issues/6)のissueを参照
@@ -524,7 +524,7 @@ PluginManager クラス。 install/uninstall/enable/disable の処理を実装�
 
 TwigBlock定義用クラス
 
-### [config.yml](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/config.yml)
+### [composer.json](https://github.com/EC-CUBE/sample-payment-plugin/blob/master/composer.json)
 
 プラグイン定義ファイル
 
