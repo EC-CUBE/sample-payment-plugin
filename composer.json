@@ -1,0 +1,12 @@
+{
+  "name": "ec-cube/SamplePayment",
+  "version": "1.0.0-alpha-1",
+  "description": "EC-CUBE Payment Sample Plugin",
+  "type": "eccube-plugin",
+  "extra": {
+    "code": "SamplePayment"
+  },
+  "require": {
+    "ec-cube/plugin-installer": "~0.0.4"
+  }
+}
