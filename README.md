@@ -1,9 +1,9 @@
 # sample-payment-plugin
-EC-CUBE 3.nの決済プラグインサンプルです。
+EC-CUBE4の決済プラグインサンプルです。
 リンク型とトークン型の２種類のクレジットカード決済方法を追加できます。
-EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があります。
+EC-CUBE4は開発中であり、APIの仕様は変更になる場合があります。
 
-- [EC-CUBE3.n](#ec-cube3n)
+- [EC-CUBE4](#ec-cube4)
   - [EC-CUBEのインストール手順](#ec-cubeのインストール手順)
 - [プラグイン導入方法](#プラグイン導入方法)
   - [プラグインファイルの配置](#プラグインファイルの配置)
@@ -14,16 +14,16 @@ EC-CUBE3.nは開発中であり、APIの仕様は変更になる場合があり�
   - [シーケンス図](#シーケンス図)
   - [受注ステータスステートマシン図](#受注ステータスステートマシン図)
 
-# EC-CUBE3.n
+# EC-CUBE4
 
 - [本体ソースコード](https://github.com/EC-CUBE/ec-cube/tree/experimental/sf)
-- [開発ドキュメント・マニュアル](http://doc3n.ec-cube.net/)
+- [開発ドキュメント・マニュアル](http://doc4.ec-cube.net/)
 
 ## EC-CUBEのインストール手順
 
 EC-CUBEのインストール手順は、以下を参照してください。
 
-http://doc3n.ec-cube.net/quickstart_install
+http://doc4.ec-cube.net/quickstart_install
 
 # プラグイン導入方法
 
@@ -57,7 +57,7 @@ http://doc3n.ec-cube.net/quickstart_install
 
 ### 推奨ディレクトリ構成
 
-プラグインのディレクトリ構成ですが、極力EC-CUBE3本体のディレクトリ構成に合わせる事を推奨します。但し、全てのディレクトリが必要ではなく必要に応じてディレクトリをプラグイン側に作成してください。
+プラグインのディレクトリ構成ですが、極力EC-CUBE4本体のディレクトリ構成に合わせる事を推奨します。但し、全てのディレクトリが必要ではなく必要に応じてディレクトリをプラグイン側に作成してください。
 
 - ディレクトリ例
 
@@ -109,7 +109,7 @@ http://doc3n.ec-cube.net/quickstart_install
 
 `@Route` アノテーションを付与したクラスファイルを `Controller` 以下に配置することで、サイトに新しいルーティングを追加することが可能です。
 
-Controllerファイルについては開発ドキュメント・マニュアルの[Controllerのカスタマイズ](http://doc3n.ec-cube.net/customize_controller)ページをご確認ください。
+Controllerファイルについては開発ドキュメント・マニュアルの[Controllerのカスタマイズ](http://doc4.ec-cube.net/customize_controller)ページをご確認ください。
 
 ### Entity拡張
 
@@ -119,7 +119,7 @@ traitと `@EntityExtension` アノテーションを使用して、既存Entity�
 
 また、`@EntityExtension` アノテーションで拡張したフィールドに `@FormAppend` アノテーションを追加することで、フォームを自動生成できます。
 
-Entityファイルについては開発ドキュメント・マニュアルの[Entityのカスタマイズ](http://doc3n.ec-cube.net/customize_entity)ページをご確認ください。
+Entityファイルについては開発ドキュメント・マニュアルの[Entityのカスタマイズ](http://doc4.ec-cube.net/customize_entity)ページをご確認ください。
 
 ### FormType拡張
 
@@ -127,7 +127,7 @@ FormExtensionの仕組みを利用すれば、既存のフォームをカスタ�
 
 `Form/Extension` に `AbstractTypeExtension` を継承したクラスファイルを作成することで、FormExtensionとして認識されます。
 
-FormExtensionについては開発ドキュメント・マニュアルの[FormTypeのカスタマイズ](http://doc3n.ec-cube.net/customize_formtype)ページをご確認ください。
+FormExtensionについては開発ドキュメント・マニュアルの[FormTypeのカスタマイズ](http://doc4.ec-cube.net/customize_formtype)ページをご確認ください。
 
 ### イベントの追加
 
@@ -247,7 +247,7 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 ### 画面への介入について
 
 EC-CUBE3.0系では画面の拡張をする場合、直接Twigファイルを書き換えたりしていましたが、
-新しいバージョンからはTemplateEventに新たな関数を用意し、それを利用することでJavaScriptを使って簡単に制御することが可能となります。
+EC-CUBE4からはTemplateEventに新たな関数を用意し、それを利用することでJavaScriptを使って簡単に制御することが可能となります。
 
 
 * TemplateEvent抜粋
@@ -393,9 +393,9 @@ class AdminSampleEvent implements EventSubscriberInterface
 
 ### PurchaseFlowについて
 
-EC-CUBE3.nではPurchaseFlowをカスタマイズすることで購入フローのカスタマイズが可能になります。
+EC-CUBE4ではPurchaseFlowをカスタマイズすることで購入フローのカスタマイズが可能になります。
 
-PurchaseFlowについては開発ドキュメント・マニュアルの[Serviceのカスタマイズ](http://doc3n.ec-cube.net/customize_service#%E8%B3%BC%E5%85%A5%E3%83%95%E3%83%AD%E3%83%BC%E3%81%AE%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%9E%E3%82%A4%E3%82%BA-2424)ページをご確認ください。
+PurchaseFlowについては開発ドキュメント・マニュアルの[Serviceのカスタマイズ](http://doc4.ec-cube.net/customize_service#%E8%B3%BC%E5%85%A5%E3%83%95%E3%83%AD%E3%83%BC%E3%81%AE%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%9E%E3%82%A4%E3%82%BA-2424)ページをご確認ください。
 
 ※PurchaseFlowは改善が進められており、ドキュメントの内容に古い部分があります。随時更新していきます。
 
