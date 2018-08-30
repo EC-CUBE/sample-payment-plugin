@@ -24,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PluginManager extends AbstractPluginManager
 {
-    public function enable($config, $app, ContainerInterface $container)
+    public function enable(array $meta, ContainerInterface $container)
     {
         $this->createTokenPayment($container);
         $this->createLinkPayment($container);
