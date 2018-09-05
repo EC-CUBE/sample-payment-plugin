@@ -56,15 +56,31 @@ class CreditCardExtention extends AbstractTypeExtension
         });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-            $Payment = $this->paymentRepository->findOneBy(['method_class' => CreditCard::class]);
+            $options = $event->getForm()->getConfig()->getOptions();
 
-            /** @var Order $data */
-            $data = $event->getData();
-            $form = $event->getForm();
+            // 注文確認->注文処理時はフォームは定義されない.
+            if ($options['skip_add_form']) {
 
-            // 支払い方法が一致しなければremove
-            if ($Payment->getId() != $data['Payment']) {
-                $form->remove('sample_payment_token');
+                // サンプル決済では使用しないが、支払い方法に応じて処理を行う場合は
+                // $event->getData()ではなく、$event->getForm()->getData()でOrderエンティティを取得できる
+
+                /** @var Order $Order */
+                $Order = $event->getForm()->getData();
+                $Order->getPayment()->getId();
+
+                return;
+            } else {
+
+                $Payment = $this->paymentRepository->findOneBy(['method_class' => CreditCard::class]);
+
+                $data = $event->getData();
+                $form = $event->getForm();
+
+                // 支払い方法が一致しなければremove
+                if ($Payment->getId() != $data['Payment']) {
+                    $form->remove('sample_payment_token');
+                }
+
             }
         });
     }

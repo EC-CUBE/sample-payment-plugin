@@ -1,17 +1,15 @@
 {#
     Shopping/confirm.twigに以下のスニペットを追記
-    {{ eccube_block_sample_payment_credit_form_confirm({ Order: Order, form: form }) }}
+    {{ include('@SamplePayment/credit_confirm.twig', ignore_missing=true) }}
 #}
-{% block sample_payment_credit_form_confirm %}
-    {% if Order.Payment.method_class == 'Plugin\\SamplePayment\\Service\\Method\\CreditCard' %}
-        <div class="ec-orderPayment">
-            <div class="ec-rectHeading">
-                <h2>クレジットカード番号(下4桁)</h2>
-            </div>
-            <div class="ec-input">
-                {{ form_widget(form.sample_payment_token) }}
-                {{ Order.sample_payment_card_no_last4 }}
-            </div>
+{% if Order.Payment.method_class == 'Plugin\\SamplePayment\\Service\\Method\\CreditCard' %}
+    <div class="ec-orderPayment">
+        <div class="ec-rectHeading">
+            <h2>クレジットカード番号(下4桁)</h2>
         </div>
-    {% endif %}
-{% endblock %}
+        <div class="ec-input">
+            {{ form_widget(form.sample_payment_token) }}
+            {{ Order.sample_payment_card_no_last4 }}
+        </div>
+    </div>
+{% endif %}
