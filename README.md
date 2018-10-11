@@ -201,34 +201,39 @@ class Nav implements EccubeNav
 
 本体の管理画面ナビは `/app/config/eccube/packages/eccube_nav.yaml` で定義されています。
 
-### Twigユーザ定義関数の読み込み
+### フロント画面へのパーツ埋め込み
 
 フロント画面はtwigにtagを埋め込むカスタマイズ方法を推奨します。
 
-`EccubeTwigBlock`を実装し、対象のテンプレートファイルを読み込みます。
+`/Resource/template/` 配下にテンプレートファイルを作成します。
+
+```twig
+<h1>Hello, {{ name }}!</h1>
+```
+
+twigファイルに以下のように記載することで作成したテンプレートが呼び出せます。
+
+```twig
+{{ include('@プラグインコード/xxx.twig', ignore_missing=true) }}
+```
+
+twig内で変数を使用する場合は、TemplateEventで渡します。
 
 ```php
-class TwigBlock implements EccubeTwigBlock
+class Event implements EventSubscriberInterface
 {
-    public static function getTwigBlocks()
+    public static function getSubscribedEvents()
     {
-        return ['@SamplePayment/hello_block.twig']
+        return [
+            'xxx.twig' => 'onXxxTwig',
+        ];
+    }
+    
+    public function onXxxTwig(TemplateEvent $event)
+    {
+        $event->setParameter('name', '球部太郎');
     }
 }
-```
-
-`/Resource/template/` 配下にblockの定義ファイルを作成します。
-
-```twig
-{% block hello %}
-    <h1>Hello, {{ name }}!</h1>
-{% endblock %}
-```
-
-twigファイルに以下のように記載することでBlockが呼び出せます。
-
-```twig
-{{ eccube_block_hello({ name: 'hoge'}) }}
 ```
 
 本サンプルプラグインではトークン決済の入力フォームと確認フォームのタグを手動で埋め込む必要があります。
@@ -237,11 +242,11 @@ twigファイルに以下のように記載することでBlockが呼び出せ�
 
 - 商品購入ページ
 ```twig
-{{ eccube_block_sample_payment_credit_form({ Order: Order, form: form }) }}
+{{ include('@SamplePayment/credit.twig', ignore_missing=true) }}
 ```
 - 商品購入/ご注文確認ページ
 ```twig
-{{ eccube_block_sample_payment_credit_form_confirm({ Order: Order, form: form }) }}
+{{ include('@SamplePayment/credit_confirm.twig', ignore_missing=true) }}
 ```
 
 ### 画面への介入について
