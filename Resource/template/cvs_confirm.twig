@@ -1,0 +1,13 @@
+{#
+    Shopping/confirm.twigに以下のスニペットを追記
+    {{ include('@SamplePayment/cvs_confirm.twig', ignore_missing=true) }}
+#}
+    <div class="ec-orderPayment">
+        <div class="ec-rectHeading">
+            <h2>コンビニ決済</h2>
+        </div>
+        <div class="ec-radio">
+            {{ form_widget(form.SamplePaymentCvsType, { type: 'hidden' }) }}
+            {{ form.SamplePaymentCvsType.vars.data.name }}
+        </div>
+    </div>
