@@ -2,6 +2,7 @@
     $(function () {
         // ページ最下部に移動
         $('#sample_payment-info').appendTo($('#form1 > div.c-contentsArea__cols > div > div'));
+        $('#sample_payment-cvsinfo').appendTo($('#form1 > div.c-contentsArea__cols > div > div'));
 
         // 取消処理実行
         $('#sample_payment-action__cancel').on('click', function () {
@@ -64,6 +65,40 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div id="sample_payment-cvsinfo" class="card rounded border-0 mb-4">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-8">
+                    <span class="card-title">{{ 'sample_payment.admin.order_edit.cvs_title'|trans }}</span>
+                </div>
+                <div class="col-4 text-right"><a data-toggle="collapse" href="#sample_payment-cvsinfo__body"
+                                                 aria-expanded="false" aria-controls="sample_payment-cvsinfo__body"><i
+                                                                                                                     class="fa fa-angle-up fa-lg"></i></a></div>
+            </div>
+        </div>
+        <div class="collapse show ec-cardCollapse" id="sample_payment-cvsinfo__body">
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-2"><span>{{ 'sample_payment.admin.order_edit.cvs_payment_status'|trans }}</span></div>
+                    <div class="col">
+                        {{ Order.sample_payment_cvs_payment_status is not empty ? Order.sample_payment_cvs_payment_status.name : '--' }}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-2"><span>{{ 'sample_payment.admin.order_edit.cvs_type'|trans }}</span></div>
+                    <div class="col">
+                        {{ Order.sample_payment_cvs_type is not empty ? Order.sample_payment_cvs_type.name : '--' }}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                決済状況変更のテストはこちらから:
+                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment\\Entity\\CvsPaymentStatus::COMPLETE') }}">決済完了</a>
+                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment\\Entity\\CvsPaymentStatus::EXPIRED') }}">期限切れ</a>
+                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment\\Entity\\CvsPaymentStatus::FAILURE') }}">決済失敗</a> 
             </div>
         </div>
     </div>

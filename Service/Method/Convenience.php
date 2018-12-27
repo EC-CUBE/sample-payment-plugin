@@ -127,19 +127,33 @@ class Convenience implements PaymentMethodInterface
         if (true) {
             $result = new PaymentResult();
             $result->setSuccess(true);
+
+            // 受注ステータスを新規受付へ変更
+            $OrderStatus = $this->orderStatusRepository->find(OrderStatus::NEW);
+            $this->Order->setOrderStatus($OrderStatus);
+
             $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::REQUEST);
             $this->Order->setSamplePaymentCvsPaymentStatus($PaymentStatus); // 決済要求成功に変更
             $message = 'コンビニ払込票番号：7192771999999';
             $this->Order->appendCompleteMessage($message);
             $this->Order->appendCompleteMailMessage($message);
+
+            // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
+            $this->purchaseFlow->commit($this->Order, new PurchaseContext());
         } else {
+            // 受注ステータスを購入処理中へ変更
+            $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PROCESSING);
+            $this->Order->setOrderStatus($OrderStatus);
+
             $result = new PaymentResult();
             $result->setSuccess(false);
             $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::FAILURE);
             $this->Order->setSamplePaymentCvsPaymentStatus($PaymentStatus); // 決済失敗
             $result->setErrors([trans('sample_payment.shopping.cvs.error')]);
-        }
 
+            // 失敗時はpurchaseFlow::rollbackを呼び出す.
+            $this->purchaseFlow->rollback($this->Order, new PurchaseContext());
+        }
 
         return $result;
     }
