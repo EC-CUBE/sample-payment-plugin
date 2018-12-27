@@ -163,7 +163,7 @@ class CreditCard implements PaymentMethodInterface
             $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
             $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
-            // 失敗時はpurchaseFlow::commitを呼び出す.
+            // 失敗時はpurchaseFlow::rollbackを呼び出す.
             $this->purchaseFlow->rollback($this->Order, new PurchaseContext());
 
             $result = new PaymentResult();
