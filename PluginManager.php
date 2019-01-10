@@ -21,7 +21,7 @@ use Plugin\SamplePayment\Entity\PaymentStatus;
 use Plugin\SamplePayment\Entity\CvsPaymentStatus;
 use Plugin\SamplePayment\Entity\CvsType;
 use Plugin\SamplePayment\Service\Method\LinkCreditCard;
-use Plugin\SamplePayment\Service\Method\Cvs;
+use Plugin\SamplePayment\Service\Method\Convenience;
 use Plugin\SamplePayment\Service\Method\CreditCard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -104,7 +104,7 @@ class PluginManager extends AbstractPluginManager
         $Payment->setSortNo($sortNo);
         $Payment->setVisible(true);
         $Payment->setMethod('コンビニ決済');
-        $Payment->setMethodClass(Cvs::class);
+        $Payment->setMethodClass(Convenience::class);
 
         $entityManager->persist($Payment);
         $entityManager->flush($Payment);
