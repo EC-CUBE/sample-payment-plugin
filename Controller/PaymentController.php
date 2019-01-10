@@ -22,12 +22,17 @@ use Eccube\Service\CartService;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
 use Eccube\Service\ShoppingService;
+use Eccube\Service\OrderStateMachine;
 use Plugin\SamplePayment\Entity\PaymentStatus;
+use Plugin\SamplePayment\Entity\CvsPaymentStatus;
 use Plugin\SamplePayment\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment\Repository\CvsPaymentStatusRepository;
+use Plugin\SamplePayment\Service\Method\Convenience;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -51,6 +56,11 @@ class PaymentController extends AbstractController
     protected $paymentStatusRepository;
 
     /**
+     * @var CvsPaymentStatusRepository
+     */
+    protected $cvsPaymentStatusRepository;
+
+    /**
      * @var PurchaseFlow
      */
     protected $purchaseFlow;
@@ -61,23 +71,38 @@ class PaymentController extends AbstractController
     protected $cartService;
 
     /**
+     * @var OrderStateMachine
+     */
+    protected $orderStateMachine;
+
+
+    /**
      * PaymentController constructor.
      *
      * @param OrderRepository $orderRepository
-     * @param ShoppingService $shoppingService
+     * @param OrderStatusRepository $orderStatusRepository
+     * @param PaymentStatusRepository $paymentStatusRepository
+     * @param CvsPaymentStatusRepository $CvsPaymentStatusRepository
+     * @param PurchaseFlow $shoppingPurchaseFlow,
+     * @param CartService $cartService
+     * @param OrderStateMachine $orderStateMachine
      */
     public function __construct(
         OrderRepository $orderRepository,
         OrderStatusRepository $orderStatusRepository,
         PaymentStatusRepository $paymentStatusRepository,
+        CvsPaymentStatusRepository $cvsPaymentStatusRepository,
         PurchaseFlow $shoppingPurchaseFlow,
-        CartService $cartService
+        CartService $cartService,
+        OrderStateMachine $orderStateMachine
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderStatusRepository = $orderStatusRepository;
         $this->paymentStatusRepository = $paymentStatusRepository;
+        $this->cvsPaymentStatusRepository = $cvsPaymentStatusRepository;
         $this->purchaseFlow = $shoppingPurchaseFlow;
         $this->cartService = $cartService;
+        $this->orderStateMachine = $orderStateMachine;
     }
 
     /**
@@ -173,6 +198,82 @@ class PaymentController extends AbstractController
 
         // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
         $this->purchaseFlow->commit($Order, new PurchaseContext());
+
+        $this->entityManager->flush();
+
+        return new Response('OK!!');
+    }
+
+    /**
+     * 結果通知URLを受け取る(コンビニ決済).
+     *
+     * @Route("/sample_payment_receive_cvs_status", name="sample_payment_receive_cvs_status")
+     */
+    public function receiveCvsStatus(Request $request)
+    {
+        // 決済会社から受注番号を受け取る
+        $orderNo = $request->get('no');
+        /** @var Order $Order */
+        $Order = $this->orderRepository->findOneBy([
+            'order_no' => $orderNo,
+        ]);
+
+        if (!$Order) {
+            throw new NotFoundHttpException();
+        }
+
+        if ($Order->getPayment()->getMethodClass() !== Convenience::class) {
+            throw new BadRequestHttpException();
+        }
+
+        $cvs_status = $request->get('cvs_status');
+
+        switch ($cvs_status) {
+            // 決済失敗
+            case CvsPaymentStatus::FAILURE:
+                // 受注ステータスをキャンセルへ変更
+                $OrderStatus = $this->orderStatusRepository->find(OrderStatus::CANCEL);
+                if ($this->orderStateMachine->can($Order, $OrderStatus)) {
+                    $this->orderStateMachine->apply($Order, $OrderStatus);
+
+                    // 決済ステータスを決済失敗へ変更
+                    $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::FAILURE);
+                    $Order->setSamplePaymentCvsPaymentStatus($PaymentStatus);
+                } else {
+                    throw new BadRequestHttpException();
+                }
+
+                break;
+            // 期限切れ
+            case CvsPaymentStatus::EXPIRED:
+                // 受注ステータスをキャンセルへ変更
+                $OrderStatus = $this->orderStatusRepository->find(OrderStatus::CANCEL);
+                if ($this->orderStateMachine->can($Order, $OrderStatus)) {
+                    $this->orderStateMachine->apply($Order, $OrderStatus);
+
+                    // 決済ステータスを期限切れへ変更
+                    $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::EXPIRED);
+                    $Order->setSamplePaymentCvsPaymentStatus($PaymentStatus);
+                } else {
+                    throw new BadRequestHttpException();
+                }
+
+                break;
+            // 決済完了
+            case CvsPaymentStatus::COMPLETE:
+            default:
+                // 受注ステータスを対応中へ変更
+                $OrderStatus = $this->orderStatusRepository->find(OrderStatus::IN_PROGRESS);
+                if ($this->orderStateMachine->can($Order, $OrderStatus)) {
+                    $this->orderStateMachine->apply($Order, $OrderStatus);
+
+                    // 決済ステータスを決済完了へ変更
+                    $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::COMPLETE);
+                    $Order->setSamplePaymentCvsPaymentStatus($PaymentStatus);
+                } else {
+                    throw new BadRequestHttpException();
+                }
+        }
 
         $this->entityManager->flush();
 

@@ -40,17 +40,44 @@ trait OrderTrait
     private $sample_payment_card_no_last4;
 
     /**
+     * コンビニ用種別を保持するカラム.
+     *
+     * dtb_order.sample_payment_cvs_type_id
+     *
+     * @var CvsType
+     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment\Entity\CvsType")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="sample_payment_cvs_type_id", referencedColumnName="id")
+     * })
+     */
+    private $SamplePaymentCvsType;
+
+
+    /**
      * 決済ステータスを保持するカラム.
      *
      * dtb_order.sample_payment_payment_status_id
      *
-     * @var PaymentStatus
+     * @var SamplePaymentPaymentStatus
      * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment\Entity\PaymentStatus")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="sample_payment_payment_status_id", referencedColumnName="id")
      * })
      */
     private $SamplePaymentPaymentStatus;
+
+    /**
+     * コンビニ用決済ステータスを保持するカラム.
+     *
+     * dtb_order.sample_payment_payment_status_id
+     *
+     * @var SamplePaymentCvsPaymentStatus
+     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment\Entity\CvsPaymentStatus")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="sample_payment_cvs_payment_status_id", referencedColumnName="id")
+     * })
+     */
+    private $SamplePaymentCvsPaymentStatus;
 
     /**
      * @return string
@@ -89,6 +116,22 @@ trait OrderTrait
     }
 
     /**
+     * @return CvsType
+     */
+    public function getSamplePaymentCvsType()
+    {
+        return $this->SamplePaymentCvsType;
+    }
+
+    /**
+     * @param CvsType $SamplePaymentCvsType
+     */
+    public function setSamplePaymentCvsType(CvsType $SamplePaymentCvsType)
+    {
+        $this->SamplePaymentCvsType = $SamplePaymentCvsType;
+    }
+
+    /**
      * @return PaymentStatus
      */
     public function getSamplePaymentPaymentStatus()
@@ -102,5 +145,21 @@ trait OrderTrait
     public function setSamplePaymentPaymentStatus(PaymentStatus $SamplePaymentPaymentStatus = null)
     {
         $this->SamplePaymentPaymentStatus = $SamplePaymentPaymentStatus;
+    }
+
+    /**
+     * @return CvsPaymentStatus
+     */
+    public function getSamplePaymentCvsPaymentStatus()
+    {
+        return $this->SamplePaymentCvsPaymentStatus;
+    }
+
+    /**
+     * @param CvsPaymentStatus $SamplePaymentCvsPaymentStatus|null
+     */
+    public function setSamplePaymentCvsPaymentStatus(CvsPaymentStatus $SamplePaymentCvsPaymentStatus = null)
+    {
+        $this->SamplePaymentCvsPaymentStatus = $SamplePaymentCvsPaymentStatus;
     }
 }

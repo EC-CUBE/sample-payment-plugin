@@ -13,10 +13,14 @@
 
 namespace Plugin\SamplePayment\Form\Extension;
 
+use Doctrine\ORM\EntityRepository;
 use Eccube\Entity\Order;
 use Eccube\Form\Type\Shopping\OrderType;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment\Service\Method\CreditCard;
+use Plugin\SamplePayment\Entity\CvsType;
+use Plugin\SamplePayment\Repository\CvsTypeRepository;
+use Plugin\SamplePayment\Service\Method\Convenience;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,18 +28,26 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
 /**
- * 注文手続き画面のFormを拡張し、カード入力フォームを追加する.
+ * 注文手続き画面のFormを拡張し、コンビニ選択フォームを追加する.
  * 支払い方法に応じてエクステンションを作成する.
  */
-class CreditCardExtention extends AbstractTypeExtension
+class CvsExtension extends AbstractTypeExtension
 {
     /**
      * @var PaymentRepository
      */
     protected $paymentRepository;
 
-    public function __construct(PaymentRepository $paymentRepository)
-    {
+    /**
+     * @var CvsTypeRepository
+     */
+    protected $cvsTypeRepository;
+
+    public function __construct(
+        CvsTypeRepository $cvsTypeRepository,
+        PaymentRepository $paymentRepository
+    ) {
+        $this->cvsTypeRepository = $cvsTypeRepository;
         $this->paymentRepository = $paymentRepository;
     }
 
@@ -43,12 +55,18 @@ class CreditCardExtention extends AbstractTypeExtension
     {
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             /** @var Order $data */
+            $data = $event->getData();
             $form = $event->getForm();
 
-            // 支払い方法が一致する場合
-            $form->add('sample_payment_token', HiddenType::class, [
-                'required' => false,
-                'mapped' => true, // Orderエンティティに追加したカラムなので、mappedはtrue
+            $form->add('SamplePaymentCvsType', EntityType::class, [
+                'class' => CvsType::class,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('p')
+                        ->orderBy('p.id', 'ASC');
+                },
+                'choice_label' => 'name',
+                'multiple' => false,
+                'expanded' => true,
             ]);
         });
 
@@ -66,6 +84,13 @@ class CreditCardExtention extends AbstractTypeExtension
                 $Order->getPayment()->getId();
 
                 return;
+            } else {
+
+                $Payment = $this->paymentRepository->findOneBy(['method_class' => Convenience::class]);
+
+                $data = $event->getData();
+                $form = $event->getForm();
+
             }
         });
     }

@@ -19,7 +19,10 @@ sample_payment.admin.config.api_url: API URL
 sample_payment.admin.config.api_id: API ID
 sample_payment.admin.config.api_password: API パスワード
 sample_payment.admin.order_edit.title: 決済情報
+sample_payment.admin.order_edit.cvs_title: コンビニ決済情報
 sample_payment.admin.order_edit.payment_status: 決済種別
+sample_payment.admin.order_edit.cvs_payment_status: コンビニ決済状況
+sample_payment.admin.order_edit.cvs_type: コンビニ種別
 sample_payment.admin.order_edit.payment_action: 決済操作
 sample_payment.admin.order_edit.payment_action_cancel: 取消実行
 sample_payment.admin.order_edit.payment_action_change_price: 金額変更
@@ -49,3 +52,4 @@ sample_payment.admin.payment_status.bulk_modal_action_cancel: キャンセル
 sample_payment.admin.payment_status.bulk_alert: 選択されていません
 sample_payment.shopping.checkout.error: カード決済に失敗しました。
 sample_payment.shopping.verify.error: カードを利用することができません。
+sample_payment.shopping.cvs.error: コンビニ決済に失敗しました。

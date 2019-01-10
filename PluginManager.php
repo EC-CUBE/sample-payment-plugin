@@ -18,7 +18,10 @@ use Eccube\Plugin\AbstractPluginManager;
 use Eccube\Repository\PaymentRepository;
 use Plugin\SamplePayment\Entity\Config;
 use Plugin\SamplePayment\Entity\PaymentStatus;
+use Plugin\SamplePayment\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment\Entity\CvsType;
 use Plugin\SamplePayment\Service\Method\LinkCreditCard;
+use Plugin\SamplePayment\Service\Method\Cvs;
 use Plugin\SamplePayment\Service\Method\CreditCard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -28,13 +31,16 @@ class PluginManager extends AbstractPluginManager
     {
         $this->createTokenPayment($container);
         $this->createLinkPayment($container);
+        $this->createCvsPayment($container);
         $this->createConfig($container);
         $this->createPaymentStatuses($container);
+        $this->createCvsPaymentStatuses($container);
+        $this->createCvsTypes($container);
     }
 
     private function createTokenPayment(ContainerInterface $container)
     {
-        $entityManager = $container->get('doctrine.orm.entity_manager');
+        $entityManager = $container->get('doctrine')->getManager();
         $paymentRepository = $container->get(PaymentRepository::class);
 
         $Payment = $paymentRepository->findOneBy([], ['sort_no' => 'DESC']);
@@ -58,7 +64,7 @@ class PluginManager extends AbstractPluginManager
 
     private function createLinkPayment(ContainerInterface $container)
     {
-        $entityManager = $container->get('doctrine.orm.entity_manager');
+        $entityManager = $container->get('doctrine')->getManager();
         $paymentRepository = $container->get(PaymentRepository::class);
 
         $Payment = $paymentRepository->findOneBy([], ['sort_no' => 'DESC']);
@@ -75,6 +81,30 @@ class PluginManager extends AbstractPluginManager
         $Payment->setVisible(true);
         $Payment->setMethod('サンプル決済(リンク)'); // todo nameでいいんじゃないか
         $Payment->setMethodClass(LinkCreditCard::class);
+
+        $entityManager->persist($Payment);
+        $entityManager->flush($Payment);
+    }
+
+    private function createCvsPayment(ContainerInterface $container)
+    {
+        $entityManager = $container->get('doctrine')->getManager();
+        $paymentRepository = $container->get(PaymentRepository::class);
+
+        $Payment = $paymentRepository->findOneBy([], ['sort_no' => 'DESC']);
+        $sortNo = $Payment ? $Payment->getSortNo() + 1 : 1;
+
+        $Payment = $paymentRepository->findOneBy(['method_class' => Cvs::class]);
+        if ($Payment) {
+            return;
+        }
+
+        $Payment = new Payment();
+        $Payment->setCharge(0);
+        $Payment->setSortNo($sortNo);
+        $Payment->setVisible(true);
+        $Payment->setMethod('コンビニ決済');
+        $Payment->setMethodClass(Cvs::class);
 
         $entityManager->persist($Payment);
         $entityManager->flush($Payment);
@@ -97,22 +127,14 @@ class PluginManager extends AbstractPluginManager
         $entityManager->flush($Config);
     }
 
-    private function createPaymentStatuses(ContainerInterface $container)
+    private function createMasterData(ContainerInterface $container, array $statuses, $class)
     {
-        $entityManager = $container->get('doctrine.orm.entity_manager');
-        $statuses = [
-            1 => '未決済',
-            2 => '有効性チェック済',
-            3 => '仮売上',
-            4 => '実売上',
-            5 => 'キャンセル',
-        ];
+        $entityManager = $container->get('doctrine')->getManager();
         $i = 0;
         foreach ($statuses as $id => $name) {
-            // TODO プラグインが提供するレポジトリが利用できない
-            $PaymentStatus = $entityManager->find(PaymentStatus::class, $id);
+            $PaymentStatus = $entityManager->find($class, $id);
             if (!$PaymentStatus) {
-                $PaymentStatus = new PaymentStatus();
+                $PaymentStatus = new $class;
             }
             $PaymentStatus->setId($id);
             $PaymentStatus->setName($name);
@@ -120,5 +142,39 @@ class PluginManager extends AbstractPluginManager
             $entityManager->persist($PaymentStatus);
             $entityManager->flush($PaymentStatus);
         }
+    }
+
+    private function createPaymentStatuses(ContainerInterface $container)
+    {
+        $statuses = [
+            PaymentStatus::OUTSTANDING => '未決済',
+            PaymentStatus::ENABLED => '有効性チェック済',
+            PaymentStatus::PROVISIONAL_SALES => '仮売上',
+            PaymentStatus::ACTUAL_SALES => '実売上',
+            PaymentStatus::CANCEL => 'キャンセル',
+        ];
+        $this->createMasterData($container, $statuses, PaymentStatus::class);
+    }
+
+    private function createCvsPaymentStatuses(ContainerInterface $container)
+    {
+        $statuses = [
+            CvsPaymentStatus::OUTSTANDING => '未決済',
+            CvsPaymentStatus::REQUEST => '要求成功',
+            CvsPaymentStatus::COMPLETE => '決済完了',
+            CvsPaymentStatus::FAILURE => '決済失敗',
+            CvsPaymentStatus::EXPIRED => '期限切れ',
+        ];
+        $this->createMasterData($container, $statuses, CvsPaymentStatus::class);
+    }
+
+    private function createCvsTypes(ContainerInterface $container)
+    {
+        $statuses = [
+            CvsType::LAWSON => 'ローソン',
+            CvsType::MINISTOP => 'ミニストップ',
+            CvsType::SEVENELEVEN => 'セブンイレブン',
+        ];
+        $this->createMasterData($container, $statuses, CvsType::class);
     }
 }

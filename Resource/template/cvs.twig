@@ -1,0 +1,16 @@
+{#
+    Shopping/index.twigに以下のスニペットを追記
+    {{ include('@SamplePayment/cvs.twig', ignore_missing=true) }}
+#}
+{% if Order.Payment.getMethodClass == 'Plugin\\SamplePayment\\Service\\Method\\Convenience' %}
+    <div class="ec-orderPayment">
+        <div class="ec-rectHeading">
+            <h2>コンビニ決済</h2>
+        </div>
+        <div class="ec-radio">
+            {{ form_widget(form.SamplePaymentCvsType) }}
+        </div>
+    </div>
+{% else %}
+    {{ form_widget(form.SamplePaymentCvsType, { type: 'hidden' }) }}
+{% endif %}

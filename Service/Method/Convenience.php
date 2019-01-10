@@ -15,30 +15,32 @@ namespace Plugin\SamplePayment\Service\Method;
 
 use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
+use Eccube\Exception\ShoppingException;
 use Eccube\Repository\Master\OrderStatusRepository;
 use Eccube\Service\Payment\PaymentDispatcher;
 use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
-use Plugin\SamplePayment\Entity\PaymentStatus;
-use Plugin\SamplePayment\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment\Repository\CvsPaymentStatusRepository;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * クレジットカード(トークン決済)の決済処理を行う.
+ * コンビニ払いの決済処理を行う
  */
-class CreditCard implements PaymentMethodInterface
+class Convenience implements PaymentMethodInterface
 {
     /**
      * @var Order
      */
-    protected $Order;
+    private $Order;
 
     /**
      * @var FormInterface
      */
-    protected $form;
+    private $form;
 
     /**
      * @var OrderStatusRepository
@@ -46,9 +48,9 @@ class CreditCard implements PaymentMethodInterface
     private $orderStatusRepository;
 
     /**
-     * @var PaymentStatusRepository
+     * @var CvsPaymentStatusRepository
      */
-    private $paymentStatusRepository;
+    private $cvsPaymentStatusRepository;
 
     /**
      * @var PurchaseFlow
@@ -56,46 +58,33 @@ class CreditCard implements PaymentMethodInterface
     private $purchaseFlow;
 
     /**
-     * CreditCard constructor.
+     * LinkCreditCard constructor.
      *
      * @param OrderStatusRepository $orderStatusRepository
-     * @param PaymentStatusRepository $paymentStatusRepository
+     * @param CvsPaymentStatusRepository $cvsPaymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow
      */
     public function __construct(
         OrderStatusRepository $orderStatusRepository,
-        PaymentStatusRepository $paymentStatusRepository,
+        CvsPaymentStatusRepository $cvsPaymentStatusRepository,
         PurchaseFlow $shoppingPurchaseFlow
     ) {
         $this->orderStatusRepository = $orderStatusRepository;
-        $this->paymentStatusRepository = $paymentStatusRepository;
+        $this->cvsPaymentStatusRepository = $cvsPaymentStatusRepository;
         $this->purchaseFlow = $shoppingPurchaseFlow;
     }
 
     /**
      * 注文確認画面遷移時に呼び出される.
      *
-     * クレジットカードの有効性チェックを行う.
+     * コンビニ決済は使用しない.
      *
-     * @return PaymentResult
-     *
-     * @throws \Eccube\Service\PurchaseFlow\PurchaseException
+     * @return PaymentResult|void
      */
     public function verify()
     {
-        // 決済サーバとの通信処理(有効性チェックやカード番号の下4桁取得)
-        // ...
-        //
-
-        if (true) {
-            $result = new PaymentResult();
-            $result->setSuccess(true);
-            $this->Order->setSamplePaymentCardNoLast4('****-*****-****-1234');
-        } else {
-            $result = new PaymentResult();
-            $result->setSuccess(false);
-            $result->setErrors([trans('sample_payment.shopping.verify.error')]);
-        }
+        $result = new PaymentResult();
+        $result->setSuccess(true);
 
         return $result;
     }
@@ -103,10 +92,11 @@ class CreditCard implements PaymentMethodInterface
     /**
      * 注文時に呼び出される.
      *
-     * 受注ステータス, 決済ステータスを更新する.
-     * ここでは決済サーバとの通信は行わない.
+     * 決済サーバのカード入力画面へリダイレクトする.
      *
-     * @return PaymentDispatcher|null
+     * @return PaymentDispatcher
+     *
+     * @throws ShoppingException
      */
     public function apply()
     {
@@ -115,60 +105,54 @@ class CreditCard implements PaymentMethodInterface
         $this->Order->setOrderStatus($OrderStatus);
 
         // 決済ステータスを未決済へ変更
-        $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
-        $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
+        $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::OUTSTANDING);
+        $this->Order->setSamplePaymentCvsPaymentStatus($PaymentStatus);
 
         // purchaseFlow::prepareを呼び出し, 購入処理を進める.
         $this->purchaseFlow->prepare($this->Order, new PurchaseContext());
+        return null;
     }
 
     /**
      * 注文時に呼び出される.
      *
-     * クレジットカードの決済処理を行う.
-     *
      * @return PaymentResult
      */
     public function checkout()
     {
-        // 決済サーバに仮売上のリクエスト送る(設定等によって送るリクエストは異なる)
+        // 決済サーバとの通信処理(コンビニ払い込み情報等の取得)
         // ...
         //
-        $token = $this->Order->getSamplePaymentToken();
 
         if (true) {
+            $result = new PaymentResult();
+            $result->setSuccess(true);
+
             // 受注ステータスを新規受付へ変更
             $OrderStatus = $this->orderStatusRepository->find(OrderStatus::NEW);
             $this->Order->setOrderStatus($OrderStatus);
 
-            // 決済ステータスを仮売上へ変更
-            $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::PROVISIONAL_SALES);
-            $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
-
-            // 注文完了画面/注文完了メールにメッセージを追加
-            $this->Order->appendCompleteMessage('トークン -> '.$token);
-            $this->Order->appendCompleteMailMessage('トークン -> '.$token);
+            $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::REQUEST);
+            $this->Order->setSamplePaymentCvsPaymentStatus($PaymentStatus); // 決済要求成功に変更
+            $message = 'コンビニ払込票番号：7192771999999';
+            $this->Order->appendCompleteMessage($message);
+            $this->Order->appendCompleteMailMessage($message);
 
             // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
             $this->purchaseFlow->commit($this->Order, new PurchaseContext());
-
-            $result = new PaymentResult();
-            $result->setSuccess(true);
         } else {
             // 受注ステータスを購入処理中へ変更
             $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PROCESSING);
             $this->Order->setOrderStatus($OrderStatus);
 
-            // 決済ステータスを未決済へ変更
-            $PaymentStatus = $this->paymentStatusRepository->find(PaymentStatus::OUTSTANDING);
-            $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
+            $result = new PaymentResult();
+            $result->setSuccess(false);
+            $PaymentStatus = $this->cvsPaymentStatusRepository->find(CvsPaymentStatus::FAILURE);
+            $this->Order->setSamplePaymentCvsPaymentStatus($PaymentStatus); // 決済失敗
+            $result->setErrors([trans('sample_payment.shopping.cvs.error')]);
 
             // 失敗時はpurchaseFlow::rollbackを呼び出す.
             $this->purchaseFlow->rollback($this->Order, new PurchaseContext());
-
-            $result = new PaymentResult();
-            $result->setSuccess(false);
-            $result->setErrors([trans('sample_payment.shopping.checkout.error')]);
         }
 
         return $result;
