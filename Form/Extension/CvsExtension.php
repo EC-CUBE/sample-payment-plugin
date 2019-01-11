@@ -22,7 +22,6 @@ use Plugin\SamplePayment\Repository\CvsTypeRepository;
 use Plugin\SamplePayment\Service\Method\Convenience;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -53,6 +52,11 @@ class CvsExtension extends AbstractTypeExtension
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // ShoppingController::checkoutから呼ばれる場合は, フォーム項目の定義をスキップする.
+        if ($options['skip_add_form']) {
+            return;
+        }
+
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             /** @var Order $data */
             $data = $event->getData();
@@ -71,27 +75,14 @@ class CvsExtension extends AbstractTypeExtension
         });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-            $options = $event->getForm()->getConfig()->getOptions();
+            // サンプル決済では使用しないが、支払い方法に応じて処理を行う場合は
+            // $event->getData()ではなく、$event->getForm()->getData()でOrderエンティティを取得できる
 
-            // 注文確認->注文処理時はフォームは定義されない.
-            if ($options['skip_add_form']) {
+            /** @var Order $Order */
+            $Order = $event->getForm()->getData();
+            $Order->getPayment()->getId();
 
-                // サンプル決済では使用しないが、支払い方法に応じて処理を行う場合は
-                // $event->getData()ではなく、$event->getForm()->getData()でOrderエンティティを取得できる
-
-                /** @var Order $Order */
-                $Order = $event->getForm()->getData();
-                $Order->getPayment()->getId();
-
-                return;
-            } else {
-
-                $Payment = $this->paymentRepository->findOneBy(['method_class' => Convenience::class]);
-
-                $data = $event->getData();
-                $form = $event->getForm();
-
-            }
+            $Payment = $this->paymentRepository->findOneBy(['method_class' => Convenience::class]);
         });
     }
 

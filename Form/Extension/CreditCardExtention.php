@@ -41,6 +41,11 @@ class CreditCardExtention extends AbstractTypeExtension
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        // ShoppingController::checkoutから呼ばれる場合は, フォーム項目の定義をスキップする.
+        if ($options['skip_add_form']) {
+            return;
+        }
+
         $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
             /** @var Order $data */
             $form = $event->getForm();
@@ -53,20 +58,12 @@ class CreditCardExtention extends AbstractTypeExtension
         });
 
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-            $options = $event->getForm()->getConfig()->getOptions();
+            // サンプル決済では使用しないが、支払い方法に応じて処理を行う場合は
+            // $event->getData()ではなく、$event->getForm()->getData()でOrderエンティティを取得できる
 
-            // 注文確認->注文処理時はフォームは定義されない.
-            if ($options['skip_add_form']) {
-
-                // サンプル決済では使用しないが、支払い方法に応じて処理を行う場合は
-                // $event->getData()ではなく、$event->getForm()->getData()でOrderエンティティを取得できる
-
-                /** @var Order $Order */
-                $Order = $event->getForm()->getData();
-                $Order->getPayment()->getId();
-
-                return;
-            }
+            /** @var Order $Order */
+            $Order = $event->getForm()->getData();
+            $Order->getPayment()->getId();
         });
     }
 
