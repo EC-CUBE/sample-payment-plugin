@@ -242,7 +242,7 @@ class Event implements EventSubscriberInterface
 - 商品購入ページ
 ```twig
 {{ include('@SamplePayment/credit.twig', ignore_missing=true) }}
-{{ include('@SamplePayment/credit_confirm.twig', ignore_missing=true) }}
+{{ include('@SamplePayment/cvs.twig', ignore_missing=true) }}
 ```
 - 商品購入/ご注文確認ページ
 ```twig
