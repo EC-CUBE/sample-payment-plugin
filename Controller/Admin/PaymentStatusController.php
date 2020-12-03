@@ -16,6 +16,7 @@ namespace Plugin\SamplePayment\Controller\Admin;
 use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Order;
+use Eccube\Repository\Master\OrderStatusRepository;
 use Eccube\Repository\Master\PageMaxRepository;
 use Eccube\Repository\OrderRepository;
 use Eccube\Util\FormUtil;
@@ -26,6 +27,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * 決済状況管理
@@ -183,7 +185,7 @@ class PaymentStatusController extends AbstractController
      */
     public function bulkAction(Request $request, $id)
     {
-        if (!isset($this->bulkActions[$id])) {
+        if (!in_array($id, array_column($this->bulkActions, 'id'))) {
             throw new BadRequestHttpException();
         }
 

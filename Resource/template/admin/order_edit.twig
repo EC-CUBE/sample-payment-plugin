@@ -7,9 +7,15 @@
         // 取消処理実行
         $('#sample_payment-action__cancel').on('click', function () {
             $('#sample_payment-info__body button').prop('disabled', true);
+// nullエラー回避
+{% if Order.id is null %}
+    {% set order_id = 0 %}
+{% else %}
+    {% set order_id = Order.id %}
+{% endif %}
             $.ajax({
                 type: 'POST',
-                url: '{{ url('sample_payment_admin_order_cancel', { id: Order.id }) }}',
+                url: '{{ url('sample_payment_admin_order_cancel', { id: order_id }) }}',
             }).always(function () {
                 location.href = location.href;
             });
@@ -18,9 +24,15 @@
         // キャンセル処理実行
         $('#sample_payment-action__change_price').on('click', function () {
             $('#sample_payment-info__body button').prop('disabled', true);
+// nullエラー回避
+{% if Order.id is null %}
+    {% set order_id = 0 %}
+{% else %}
+    {% set order_id = Order.id %}
+{% endif %}
             $.ajax({
                 type: 'POST',
-                url: '{{ url('sample_payment_admin_order_change_price', { id: Order.id }) }}',
+                url: '{{ url('sample_payment_admin_order_change_price', { id: order_id }) }}',
             }).always(function () {
                 location.href = location.href;
             });
