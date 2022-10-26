@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Controller\Admin;
+namespace Plugin\SamplePayment42\Controller\Admin;
 
 use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
@@ -20,8 +20,8 @@ use Eccube\Repository\Master\PageMaxRepository;
 use Eccube\Repository\OrderRepository;
 use Eccube\Util\FormUtil;
 use Knp\Component\Pager\PaginatorInterface;
-use Plugin\SamplePayment\Form\Type\Admin\SearchPaymentType;
-use Plugin\SamplePayment\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment42\Form\Type\Admin\SearchPaymentType;
+use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;

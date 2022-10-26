@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Controller\Admin;
+namespace Plugin\SamplePayment42\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
-use Plugin\SamplePayment\Form\Type\Admin\ConfigType;
-use Plugin\SamplePayment\Repository\ConfigRepository;
+use Plugin\SamplePayment42\Form\Type\Admin\ConfigType;
+use Plugin\SamplePayment42\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;

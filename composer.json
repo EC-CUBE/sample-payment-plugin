@@ -1,11 +1,10 @@
 {
-  "name": "ec-cube/samplepayment",
-  "version": "1.0.0",
+  "name": "ec-cube/samplepayment42",
+  "version": "2.0.0",
   "description": "EC-CUBE Payment Sample Plugin",
   "type": "eccube-plugin",
   "extra": {
-    "code": "SamplePayment",
-    "id": 42
+    "code": "SamplePayment42"
   },
   "require": {
     "ec-cube/plugin-installer": "^2.0"
