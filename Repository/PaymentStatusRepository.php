@@ -13,9 +13,9 @@
 
 namespace Plugin\SamplePayment\Repository;
 
+use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 use Eccube\Repository\AbstractRepository;
 use Plugin\SamplePayment\Entity\PaymentStatus;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class PaymentStatusRepository extends AbstractRepository
 {

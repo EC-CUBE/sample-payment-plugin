@@ -13,9 +13,9 @@
 
 namespace Plugin\SamplePayment\Repository;
 
+use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 use Eccube\Repository\AbstractRepository;
 use Plugin\SamplePayment\Entity\CvsType;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class CvsTypeRepository extends AbstractRepository
 {
