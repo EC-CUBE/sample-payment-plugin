@@ -4,7 +4,8 @@
   "description": "EC-CUBE Payment Sample Plugin",
   "type": "eccube-plugin",
   "extra": {
-    "code": "SamplePayment42"
+    "code": "SamplePayment42",
+    "id": 999999
   },
   "require": {
     "ec-cube/plugin-installer": "^2.0"
