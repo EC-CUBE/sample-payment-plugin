@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  ec-cube:
+    entrypoint: >
+      /bin/bash -c "
+      docker-php-entrypoint ls &&
+      bin/console doctrine:query:sql \"UPDATE dtb_base_info SET authentication_key = '$${ECCUBE_AUTHENTICATION_KEY}'\" &&
+      composer config repositories.plugin '{\"type\": \"path\", \"url\": \"../plugin\"}' &&
+      bin/console eccube:composer:require ec-cube/SamplePayment &&
+      bin/console eccube:plugin:enable --code=SamplePayment &&
+      bin/console doctrine:query:sql \"INSERT INTO dtb_payment_option VALUES(1,7,'paymentoption');\" &&
+      bin/console doctrine:query:sql \"INSERT INTO dtb_payment_option VALUES(1,6,'paymentoption');\" &&
+      bin/console doctrine:query:sql \"INSERT INTO dtb_payment_option VALUES(1,5,'paymentoption');\" &&
+      apache2-foreground
+      "
+    environment:
+      USER_ID: ${UID:-}
+      GROUP_ID: ${GID:-}
+      ECCUBE_AUTHENTICATION_KEY: ${ECCUBE_AUTHENTICATION_KEY-aaa}
+      ## XXX 4.1 の package-api に接続して認証を回避する
+      ECCUBE_PACKAGE_API_URL: 'https://package-api-c2.ec-cube.net'
+      ## 4.0 の他のプラグインに依存する場合は 'https://package-api.ec-cube.net' を指定すること
+    volumes:
+      - ".:/var/www/plugin:cached"
