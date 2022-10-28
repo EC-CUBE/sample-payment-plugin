@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Entity;
+namespace Plugin\SamplePayment4\Entity;
 
 use Eccube\Annotation\EntityExtension;
 use Doctrine\ORM\Mapping as ORM;

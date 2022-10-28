@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Controller\Admin;
+namespace Plugin\SamplePayment4\Controller\Admin;
 
 use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
@@ -20,8 +20,8 @@ use Eccube\Repository\Master\PageMaxRepository;
 use Eccube\Repository\OrderRepository;
 use Eccube\Util\FormUtil;
 use Knp\Component\Pager\PaginatorInterface;
-use Plugin\SamplePayment\Form\Type\Admin\SearchPaymentType;
-use Plugin\SamplePayment\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment4\Form\Type\Admin\SearchPaymentType;
+use Plugin\SamplePayment4\Repository\PaymentStatusRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -76,7 +76,7 @@ class PaymentStatusController extends AbstractController
      *
      * @Route("/%eccube_admin_route%/sample_payment/payment_status", name="sample_payment_admin_payment_status")
      * @Route("/%eccube_admin_route%/sample_payment/payment_status/{page_no}", requirements={"page_no" = "\d+"}, name="sample_payment_admin_payment_status_pageno")
-     * @Template("@SamplePayment/admin/payment_status.twig")
+     * @Template("@SamplePayment4/admin/payment_status.twig")
      */
     public function index(Request $request, $page_no = null, PaginatorInterface $paginator)
     {

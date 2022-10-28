@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Controller\Admin;
+namespace Plugin\SamplePayment4\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Order;
