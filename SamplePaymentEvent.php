@@ -44,12 +44,12 @@ class SamplePaymentEvent implements EventSubscriberInterface
 
     public function onShoppingIndexTwig(TemplateEvent $event)
     {
-        $event->addSnippet('@SamplePayment/credit.twig');
+        $event->addSnippet('@SamplePayment4/credit.twig');
     }
 
     public function onShoppingConfirmTwig(TemplateEvent $event)
     {
-        $event->addSnippet('@SamplePayment/credit_confirm.twig');
+        $event->addSnippet('@SamplePayment4/credit_confirm.twig');
     }
 
     public function onAdminOrderEditTwig(TemplateEvent $event)
