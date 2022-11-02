@@ -11,18 +11,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment;
+namespace Plugin\SamplePayment42;
 
 use Eccube\Entity\Payment;
 use Eccube\Plugin\AbstractPluginManager;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment\Entity\Config;
-use Plugin\SamplePayment\Entity\PaymentStatus;
-use Plugin\SamplePayment\Entity\CvsPaymentStatus;
-use Plugin\SamplePayment\Entity\CvsType;
-use Plugin\SamplePayment\Service\Method\LinkCreditCard;
-use Plugin\SamplePayment\Service\Method\Convenience;
-use Plugin\SamplePayment\Service\Method\CreditCard;
+use Plugin\SamplePayment42\Entity\Config;
+use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment42\Entity\CvsType;
+use Plugin\SamplePayment42\Entity\PaymentStatus;
+use Plugin\SamplePayment42\Service\Method\Convenience;
+use Plugin\SamplePayment42\Service\Method\CreditCard;
+use Plugin\SamplePayment42\Service\Method\LinkCreditCard;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PluginManager extends AbstractPluginManager
@@ -41,7 +41,7 @@ class PluginManager extends AbstractPluginManager
     private function createTokenPayment(ContainerInterface $container)
     {
         $entityManager = $container->get('doctrine')->getManager();
-        $paymentRepository = $container->get(PaymentRepository::class);
+        $paymentRepository = $entityManager->getRepository(Payment::class);
 
         $Payment = $paymentRepository->findOneBy([], ['sort_no' => 'DESC']);
         $sortNo = $Payment ? $Payment->getSortNo() + 1 : 1;
@@ -65,7 +65,7 @@ class PluginManager extends AbstractPluginManager
     private function createLinkPayment(ContainerInterface $container)
     {
         $entityManager = $container->get('doctrine')->getManager();
-        $paymentRepository = $container->get(PaymentRepository::class);
+        $paymentRepository = $entityManager->getRepository(Payment::class);
 
         $Payment = $paymentRepository->findOneBy([], ['sort_no' => 'DESC']);
         $sortNo = $Payment ? $Payment->getSortNo() + 1 : 1;
@@ -89,7 +89,7 @@ class PluginManager extends AbstractPluginManager
     private function createCvsPayment(ContainerInterface $container)
     {
         $entityManager = $container->get('doctrine')->getManager();
-        $paymentRepository = $container->get(PaymentRepository::class);
+        $paymentRepository = $entityManager->getRepository(Payment::class);
 
         $Payment = $paymentRepository->findOneBy([], ['sort_no' => 'DESC']);
         $sortNo = $Payment ? $Payment->getSortNo() + 1 : 1;
@@ -112,7 +112,7 @@ class PluginManager extends AbstractPluginManager
 
     private function createConfig(ContainerInterface $container)
     {
-        $entityManager = $container->get('doctrine.orm.entity_manager');
+        $entityManager = $container->get('doctrine')->getManager();
         $Config = $entityManager->find(Config::class, 1);
         if ($Config) {
             return;

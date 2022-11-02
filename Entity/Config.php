@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Entity;
+namespace Plugin\SamplePayment42\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Config
  *
  * @ORM\Table(name="plg_sample_payment_config")
- * @ORM\Entity(repositoryClass="Plugin\SamplePayment\Repository\ConfigRepository")
+ * @ORM\Entity(repositoryClass="Plugin\SamplePayment42\Repository\ConfigRepository")
  */
 class Config
 {

@@ -11,10 +11,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Entity;
+namespace Plugin\SamplePayment42\Entity;
 
-use Eccube\Annotation\EntityExtension;
 use Doctrine\ORM\Mapping as ORM;
+use Eccube\Annotation\EntityExtension;
 
 /**
  * @EntityExtension("Eccube\Entity\Customer")
