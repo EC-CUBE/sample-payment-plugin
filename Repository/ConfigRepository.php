@@ -11,10 +11,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Repository;
+namespace Plugin\SamplePayment4\Repository;
 
 use Eccube\Repository\AbstractRepository;
-use Plugin\SamplePayment\Entity\Config;
+use Plugin\SamplePayment4\Entity\Config;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class ConfigRepository extends AbstractRepository

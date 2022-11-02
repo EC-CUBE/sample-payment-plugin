@@ -1,8 +1,8 @@
 {#
     Shopping/confirm.twigに以下のスニペットを追記
-    {{ include('@SamplePayment/credit_confirm.twig', ignore_missing=true) }}
+    {{ include('@SamplePayment4/credit_confirm.twig', ignore_missing=true) }}
 #}
-{% if Order.Payment.method_class == 'Plugin\\SamplePayment\\Service\\Method\\CreditCard' %}
+{% if Order.Payment.method_class == 'Plugin\\SamplePayment4\\Service\\Method\\CreditCard' %}
     <div class="ec-orderPayment">
         <div class="ec-rectHeading">
             <h2>クレジットカード番号(下4桁)</h2>

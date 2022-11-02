@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Controller;
+namespace Plugin\SamplePayment4\Controller;
 
 use Eccube\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -28,7 +28,7 @@ class PaymentCompanyController extends AbstractController
      * 決済サーバのカード入力画面.
      *
      * @Route("/payment_company")
-     * @Template("@SamplePayment/dummy.twig")
+     * @Template("@SamplePayment4/dummy.twig")
      */
     public function index(Request $request)
     {

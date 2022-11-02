@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment;
+namespace Plugin\SamplePayment4;
 
 use Eccube\Event\TemplateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -42,6 +42,6 @@ class SamplePaymentEvent implements EventSubscriberInterface
 
     public function onAdminOrderEditTwig(TemplateEvent $event)
     {
-        $event->addSnippet('@SamplePayment/admin/order_edit.twig');
+        $event->addSnippet('@SamplePayment4/admin/order_edit.twig');
     }
 }
