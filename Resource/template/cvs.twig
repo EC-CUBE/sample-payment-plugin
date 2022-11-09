@@ -1,6 +1,6 @@
 {#
     Shopping/index.twigに以下のスニペットを追記
-    {{ include('@SamplePayment4/cvs.twig', ignore_missing=true) }}
+    {{ include('@SamplePayment/cvs.twig', ignore_missing=true) }}
 #}
 {% if Order.Payment.getMethodClass == 'Plugin\\SamplePayment\\Service\\Method\\Convenience' %}
     <div class="ec-orderPayment">

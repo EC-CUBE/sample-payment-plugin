@@ -241,13 +241,13 @@ class Event implements EventSubscriberInterface
 
 - 商品購入ページ
 ```twig
-{{ include('@SamplePayment4/credit.twig', ignore_missing=true) }}
-{{ include('@SamplePayment4/cvs.twig', ignore_missing=true) }}
+{{ include('@SamplePayment/credit.twig', ignore_missing=true) }}
+{{ include('@SamplePayment/cvs.twig', ignore_missing=true) }}
 ```
 - 商品購入/ご注文確認ページ
 ```twig
-{{ include('@SamplePayment4/credit_confirm.twig', ignore_missing=true) }}
-{{ include('@SamplePayment4/cvs_confirm.twig', ignore_missing=true) }}
+{{ include('@SamplePayment/credit_confirm.twig', ignore_missing=true) }}
+{{ include('@SamplePayment/cvs_confirm.twig', ignore_missing=true) }}
 ```
 
 ### 画面への介入について
@@ -441,36 +441,36 @@ twigのソースコード内でメッセージを使用する場合には `trans
 
 ## ファイルごとの概要
 
-### [Plugin\SamplePayment4\Service\Method\CreditCard](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Service/Method/CreditCard.php)
+### [Plugin\SamplePayment\Service\Method\CreditCard](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Service/Method/CreditCard.php)
 
 トークン型クレジットカード払い用のビジネスロジッククラス
 
-### [Plugin\SamplePayment4\Service\Method\LinkCreditCard](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Service/Method/LinkCreditCard.php)
+### [Plugin\SamplePayment\Service\Method\LinkCreditCard](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Service/Method/LinkCreditCard.php)
 
 リンク型クレジットカード払い用のビジネスロジッククラス
 
-### [Plugin\SamplePayment4\Service\Method\Convenience](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Service/Method/Convenience.php)
+### [Plugin\SamplePayment\Service\Method\Convenience](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Service/Method/Convenience.php)
 
 コンビニ決済用のビジネスロジッククラス
 
-### [Plugin\SamplePayment4\Controller\Admin\ConfigController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/Admin/ConfigController.php)
+### [Plugin\SamplePayment\Controller\Admin\ConfigController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/Admin/ConfigController.php)
 
 プラグイン設定画面のコントローラクラス。
 
-### [Plugin\SamplePayment4\Controller\Admin\OrderController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/Admin/OrderController.php)
+### [Plugin\SamplePayment\Controller\Admin\OrderController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/Admin/OrderController.php)
 
 受注編集画面から Ajax で通信するコントローラクラス。
 主に管理画面の操作と連動して、決済サーバーとの通信を実装する
 
-### [Plugin\SamplePayment4\Controller\Admin\PaymentStatusController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/Admin/PaymentStatusController.php)
+### [Plugin\SamplePayment\Controller\Admin\PaymentStatusController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/Admin/PaymentStatusController.php)
 
 決済ステータス一括変更画面のコントローラクラス
 
-### [Plugin\SamplePayment4\Controller\PaymentCompanyController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/PaymentCompanyController.php)
+### [Plugin\SamplePayment\Controller\PaymentCompanyController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/PaymentCompanyController.php)
 
 リンク型決済のダミー画面。決済会社のカード入力フォームに相当する。
 
-### [Plugin\SamplePayment4\Controller\PaymentController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/PaymentController.php)
+### [Plugin\SamplePayment\Controller\PaymentController](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Controller/PaymentController.php)
 
 リンク型決済およびコンビニ決済と連携するためのコントローラクラス。
 
@@ -480,78 +480,78 @@ twigのソースコード内でメッセージを使用する場合には `trans
 
 などを実装する。
 
-### [Plugin\SamplePayment4\Entity\Config](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/Config.php)
+### [Plugin\SamplePayment\Entity\Config](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/Config.php)
 
 プラグイン設定画面のエンティティクラス。
 
-### [Plugin\SamplePayment4\Entity\CustomerTrait](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/CustomerTrait.php)
+### [Plugin\SamplePayment\Entity\CustomerTrait](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/CustomerTrait.php)
 
 Customer 拡張用のトレイト。決済会社から取得した、クレジットカード等の JSON データを格納する。
 
-### [Plugin\SamplePayment4\Entity\OrderTrait](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/OrderTrait.php)
+### [Plugin\SamplePayment\Entity\OrderTrait](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/OrderTrait.php)
 
 Order 拡張用のトレイト。クレジットカードのトークンや、決済ステータス、コンビニ種別などを格納する。
 
-### [Plugin\SamplePayment4\Entity\PaymentStatus](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/PaymentStatus.php)
+### [Plugin\SamplePayment\Entity\PaymentStatus](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/PaymentStatus.php)
 
 決済ステータスのエンティティクラス。
 
-### [Plugin\SamplePayment4\Entity\CvsPaymentStatus](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/CvsPaymentStatus.php)
+### [Plugin\SamplePayment\Entity\CvsPaymentStatus](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/CvsPaymentStatus.php)
 
 コンビニ決済の決済ステータスのエンティティクラス。
 
-### [Plugin\SamplePayment4\Entity\CvsType](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/CvsType.php)
+### [Plugin\SamplePayment\Entity\CvsType](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Entity/CvsType.php)
 
 コンビニの種別のエンティティクラス。
 
-### [Plugin\SamplePayment4\Event](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Event.php)
+### [Plugin\SamplePayment\Event](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Event.php)
 
 プラグインで使用する `EventSubscriber`
 管理画面のテンプレートを拡張するために使用している。
 
-### [Plugin\SamplePayment4\Form\Extension\CreditCardExtention](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Extension/CreditCardExtention.php)
+### [Plugin\SamplePayment\Form\Extension\CreditCardExtention](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Extension/CreditCardExtention.php)
 
 クレジットカード払い用のフォームエクステンション。
 ご注文情報入力画面に、クレジットカード入力フォームを実装するために使用する。
 
-### [Plugin\SamplePayment4\Form\Extension\CvsExtension](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Extension/CvsExtension.php)
+### [Plugin\SamplePayment\Form\Extension\CvsExtension](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Extension/CvsExtension.php)
 
 コンビニ決済用のフォームエクステンション。
 ご注文情報入力画面に、コンビニ選択フォームを実装するために使用する。
 
-### [Plugin\SamplePayment4\Form\Type\Admin\ConfigType](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Type/Admin/ConfigType.php)
+### [Plugin\SamplePayment\Form\Type\Admin\ConfigType](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Type/Admin/ConfigType.php)
 
 プラグイン設定画面用のフォームタイプ
 
-### [Plugin\SamplePayment4\Form\Type\Admin\SearchPaymentType](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Type/Admin/SearchPaymentType.php)
+### [Plugin\SamplePayment\Form\Type\Admin\SearchPaymentType](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Form/Type/Admin/SearchPaymentType.php)
 
 決済ステータス一括変更画面用のフォームタイプ
 
-### [Plugin\SamplePayment4\Nav](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Nav.php)
+### [Plugin\SamplePayment\Nav](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Nav.php)
 
 管理画面ナビ拡張用クラス
 
-### [Plugin\SamplePayment4\PluginManager](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/PluginManager.php)
+### [Plugin\SamplePayment\PluginManager](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/PluginManager.php)
 
 PluginManager クラス。 install/uninstall/enable/disable の処理を実装する。
 
-### [Plugin\SamplePayment4\PluginManager\Repository\ConfigRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/ConfigRepository.php)
+### [Plugin\SamplePayment\PluginManager\Repository\ConfigRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/ConfigRepository.php)
 
 プラグイン設定画面用のリポジトリクラス
 
-### [Plugin\SamplePayment4\PluginManager\Repository\PaymentStatusRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/PaymentStatusRepository.php)
+### [Plugin\SamplePayment\PluginManager\Repository\PaymentStatusRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/PaymentStatusRepository.php)
 
 決済ステータス用のリポジトリクラス
 
-### [Plugin\SamplePayment4\PluginManager\Repository\CvsPaymentStatusRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/CvsPaymentStatusRepository.php)
+### [Plugin\SamplePayment\PluginManager\Repository\CvsPaymentStatusRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/CvsPaymentStatusRepository.php)
 
 コンビニ決済ステータス用のリポジトリクラス
 
-### [Plugin\SamplePayment4\PluginManager\Repository\CvsTypeRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/CvsTypeRepository.php)
+### [Plugin\SamplePayment\PluginManager\Repository\CvsTypeRepository](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/Repository/CvsTypeRepository.php)
 
 コンビニ種別用のリポジトリクラス
 
-### [Plugin\SamplePayment4\TwigBlock](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/TwigBlock.php)
+### [Plugin\SamplePayment\TwigBlock](https://github.com/EC-CUBE/sample-payment-plugin/blob/4.0/TwigBlock.php)
 
 TwigBlock定義用クラス
 

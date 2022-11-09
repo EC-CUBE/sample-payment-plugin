@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment4;
+namespace Plugin\SamplePayment;
 
 use Eccube\Common\EccubeNav;
 

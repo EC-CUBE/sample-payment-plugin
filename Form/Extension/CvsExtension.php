@@ -11,15 +11,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment4\Form\Extension;
+namespace Plugin\SamplePayment\Form\Extension;
 
 use Doctrine\ORM\EntityRepository;
 use Eccube\Entity\Order;
 use Eccube\Form\Type\Shopping\OrderType;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment4\Entity\CvsType;
-use Plugin\SamplePayment4\Repository\CvsTypeRepository;
-use Plugin\SamplePayment4\Service\Method\Convenience;
+use Plugin\SamplePayment\Entity\CvsType;
+use Plugin\SamplePayment\Repository\CvsTypeRepository;
+use Plugin\SamplePayment\Service\Method\Convenience;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -92,13 +92,5 @@ class CvsExtension extends AbstractTypeExtension
     public function getExtendedType()
     {
         return OrderType::class;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getExtendedTypes()
-    {
-        yield OrderType::class;
     }
 }
