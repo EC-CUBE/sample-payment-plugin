@@ -11,12 +11,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment4\Form\Extension;
+namespace Plugin\SamplePayment\Form\Extension;
 
 use Eccube\Entity\Order;
 use Eccube\Form\Type\Shopping\OrderType;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment4\Service\Method\CreditCard;
+use Plugin\SamplePayment\Service\Method\CreditCard;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -73,13 +73,5 @@ class CreditCardExtention extends AbstractTypeExtension
     public function getExtendedType()
     {
         return OrderType::class;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function getExtendedTypes()
-    {
-        yield OrderType::class;
     }
 }
