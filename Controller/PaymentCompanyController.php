@@ -28,7 +28,7 @@ class PaymentCompanyController extends AbstractController
      * 決済サーバのカード入力画面.
      *
      * @Route("/payment_company")
-     * @Template("@SamplePayment/dummy.twig")
+     * @Template("@SamplePayment42/dummy.twig")
      */
     public function index(Request $request)
     {
