@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  ec-cube:
+    entrypoint: >
+      /bin/bash -c "
+      docker-php-entrypoint ls &&
+      composer config repositories.plugin '{\"type\": \"path\", \"url\": \"../plugin\"}' &&
+      bin/console eccube:composer:require ec-cube/samplepayment4 &&
+      bin/console eccube:plugin:enable --code=SamplePayment4 &&
+      bin/console doctrine:query:sql \"INSERT INTO dtb_payment_option VALUES(1,7,'paymentoption');\" &&
+      bin/console doctrine:query:sql \"INSERT INTO dtb_payment_option VALUES(1,6,'paymentoption');\" &&
+      bin/console doctrine:query:sql \"INSERT INTO dtb_payment_option VALUES(1,5,'paymentoption');\" &&
+      apache2-foreground
+      "
+    environment:
+      USER_ID: ${UID:-}
+      GROUP_ID: ${GID:-}
+    volumes:
+      - ".:/var/www/plugin:cached"

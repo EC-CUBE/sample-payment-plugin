@@ -1,0 +1,47 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ '4.1' ]
+  pull_request:
+    paths:
+      - '**'
+      - '!*.md'
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ ubuntu-20.04 ]
+        db: [ mysql, pgsql, sqlite3 ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup environment
+      if: matrix.db != 'sqlite3'
+      env:
+        DB_TYPE: ${{ matrix.db }}
+      run: echo "COMPOSE_FILE=docker-compose.yml:docker-compose.${DB_TYPE}.yml:docker-compose.dev.yml" >> $GITHUB_ENV
+    - name: Setup environment
+      if: matrix.db == 'sqlite3'
+      env:
+        DB_TYPE: ${{ matrix.db }}
+      run: echo "COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml" >> $GITHUB_ENV
+    - name: Setup EC-CUBE
+      run: docker compose up -d --wait
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install
+    - run: docker-compose logs ec-cube
+    - name: Run Playwright tests
+      env:
+        CI: 1
+        FORCE_COLOR: 1
+      run: yarn playwright test
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
