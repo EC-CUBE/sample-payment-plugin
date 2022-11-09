@@ -19,7 +19,7 @@ volumes:
 services:
   ### ECCube4 ##################################
   ec-cube:
-    image: ghcr.io/nanasess/ec-cube-php:7.4-apache-4.0
+    image: ghcr.io/nanasess/ec-cube-php:7.4-apache-4.1
     ports:
       - 8080:80
       - 4430:443

@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment\Controller\Admin;
+namespace Plugin\SamplePayment4\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
-use Plugin\SamplePayment\Form\Type\Admin\ConfigType;
-use Plugin\SamplePayment\Repository\ConfigRepository;
+use Plugin\SamplePayment4\Form\Type\Admin\ConfigType;
+use Plugin\SamplePayment4\Repository\ConfigRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +39,7 @@ class ConfigController extends AbstractController
 
     /**
      * @Route("/%eccube_admin_route%/sample_payment/config", name="sample_payment_admin_config")
-     * @Template("@SamplePayment/admin/config.twig")
+     * @Template("@SamplePayment4/admin/config.twig")
      */
     public function index(Request $request)
     {
