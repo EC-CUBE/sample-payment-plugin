@@ -13,6 +13,10 @@
 
 namespace Plugin\SamplePayment42;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Eccube\Entity\Layout;
+use Eccube\Entity\Page;
+use Eccube\Entity\PageLayout;
 use Eccube\Entity\Payment;
 use Eccube\Plugin\AbstractPluginManager;
 use Eccube\Repository\PaymentRepository;
@@ -27,6 +31,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PluginManager extends AbstractPluginManager
 {
+    private $pages = [
+        [
+            'name' => 'カード情報変更',
+            'url' => 'sample_payment_mypage_card_info',
+            'filename' => 'SamplePayment42/Resource/template/card_info.twig',
+        ],
+        [
+            'name' => 'カード情報変更(完了)',
+            'url' => 'sample_payment_mypage_card_info_complete',
+            'filename' => 'SamplePayment42/Resource/template/card_info_complete.twig',
+        ],
+    ];
+
     public function enable(array $meta, ContainerInterface $container)
     {
         $this->createTokenPayment($container);
@@ -36,6 +53,7 @@ class PluginManager extends AbstractPluginManager
         $this->createPaymentStatuses($container);
         $this->createCvsPaymentStatuses($container);
         $this->createCvsTypes($container);
+        $this->createPages($container);
     }
 
     private function createTokenPayment(ContainerInterface $container)
@@ -176,5 +194,38 @@ class PluginManager extends AbstractPluginManager
             CvsType::SEVENELEVEN => 'セブンイレブン',
         ];
         $this->createMasterData($container, $statuses, CvsType::class);
+    }
+
+    private function createPages(ContainerInterface $container)
+    {
+        $em = $container->get('doctrine.orm.entity_manager');
+
+        foreach ($this->pages as $pageInfo) {
+            $Page = $em->getRepository(Page::class)->findOneBy(['url' => $pageInfo['url']]);
+            if (null === $Page) {
+                $this->createPage($em, $pageInfo['name'], $pageInfo['url'], $pageInfo['filename']);
+            }
+        }
+    }
+
+    private function createPage(EntityManagerInterface $em, $name, $url, $filename)
+    {
+        $Page = new Page();
+        $Page->setEditType(Page::EDIT_TYPE_DEFAULT);
+        $Page->setName($name);
+        $Page->setUrl($url);
+        $Page->setFileName($filename);
+
+        $em->persist($Page);
+        $em->flush($Page);
+        $Layout = $em->find(Layout::class, Layout::DEFAULT_LAYOUT_UNDERLAYER_PAGE);
+        $PageLayout = new PageLayout();
+        $PageLayout->setPage($Page)
+            ->setPageId($Page->getId())
+            ->setLayout($Layout)
+            ->setLayoutId($Layout->getId())
+            ->setSortNo(0);
+        $em->persist($PageLayout);
+        $em->flush($PageLayout);
     }
 }
