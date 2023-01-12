@@ -34,7 +34,7 @@ class MypageController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // カード番号の更新処理
-            // カード番号は非保持可する必要があります。実際にはやり取りしないようにしてください。
+            // カード番号は非保持化する必要があります。実際にはやり取りしないようにしてください。
 
             return $this->redirectToRoute('sample_payment_mypage_card_info_complete');
         }
