@@ -4,3 +4,13 @@
 
 # コンテナ定義
 #services:
+
+# スロットリングの定義
+eccube:
+  rate_limiter:
+    sample_payment_mypage_card_info:
+      route: sample_payment_mypage_card_info
+      method: ['POST']
+      type: ['ip', 'customer']
+      limit: 5
+      interval: '60 minutes'

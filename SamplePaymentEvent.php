@@ -39,6 +39,7 @@ class SamplePaymentEvent implements EventSubscriberInterface
             'Shopping/index.twig' => 'onShoppingIndexTwig',
             'Shopping/confirm.twig' => 'onShoppingConfirmTwig',
             '@admin/Order/edit.twig' => 'onAdminOrderEditTwig',
+            'Mypage/navi.twig' => 'onMypageNaviTwig',
         ];
     }
 
@@ -55,5 +56,12 @@ class SamplePaymentEvent implements EventSubscriberInterface
     public function onAdminOrderEditTwig(TemplateEvent $event)
     {
         $event->addSnippet('@SamplePayment42/admin/order_edit.twig');
+    }
+
+    public function onMypageNaviTwig(TemplateEvent $event)
+    {
+        $source = $event->getSource();
+        $source .= file_get_contents(__DIR__.'/Resource/template/navi.twig');
+        $event->setSource($source);
     }
 }

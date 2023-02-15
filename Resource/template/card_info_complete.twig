@@ -1,0 +1,41 @@
+{#
+This file is part of EC-CUBE
+
+Copyright(c) EC-CUBE CO.,LTD. All Rights Reserved.
+
+http://www.ec-cube.co.jp/
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% extends 'default_frame.twig' %}
+
+{% set mypageno = 'sample_payment_mypage_card_info' %}
+
+{% set body_class = 'mypage' %}
+
+{% block main %}
+    <div class="ec-layoutRole__main">
+        <div class="ec-mypageRole">
+            <div class="ec-pageHeader">
+                <h1>{{ 'front.mypage.title'|trans }}/カード情報変更(完了)</h1>
+            </div>
+            {% include 'Mypage/navi.twig' %}
+        </div>
+        <div class="ec-registerCompleteRole">
+            <div class="ec-reportHeading">
+                <h2>カード情報の変更が完了しました</h2>
+            </div>
+            <div class="ec-off2Grid ec-text-ac">
+                <div class="ec-off2Grid__cell">
+                    <p class="ec-reportDescription">カード情報の変更が完了しました</p>
+                </div>
+            </div>
+            <div class="ec-off4Grid">
+                <div class="ec-off4Grid__cell">
+                    <a class="ec-blockBtn--cancel" href="{{ url('homepage') }}">{{ 'common.back'|trans }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
