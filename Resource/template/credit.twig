@@ -3,7 +3,7 @@
      $(".ec-orderPayment").last().after($("#credit").detach());
  });
 </script>
-{% if Order.Payment.getMethodClass == 'Plugin\\SamplePayment42\\Service\\Method\\CreditCard' %}
+{% if Order.Payment.getMethodClass == 'Plugin\\SamplePayment43\\Service\\Method\\CreditCard' %}
     <div id="credit" class="ec-orderPaymentCard">
         <div class="ec-rectHeading">
             <h2>カード(暫定実装)</h2>

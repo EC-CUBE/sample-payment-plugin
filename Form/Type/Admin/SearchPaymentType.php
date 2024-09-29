@@ -11,12 +11,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Type\Admin;
+namespace Plugin\SamplePayment43\Form\Type\Admin;
 
 use Doctrine\ORM\EntityRepository;
 use Eccube\Form\Type\Master\OrderStatusType;
 use Eccube\Form\Type\Master\PaymentType;
-use Plugin\SamplePayment42\Entity\PaymentStatus;
+use Plugin\SamplePayment43\Entity\PaymentStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

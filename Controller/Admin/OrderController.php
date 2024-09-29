@@ -11,12 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller\Admin;
+namespace Plugin\SamplePayment43\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Order;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -25,8 +24,7 @@ class OrderController extends AbstractController
     /**
      * 受注編集 > 決済のキャンセル処理
      *
-     * @Method("POST")
-     * @Route("/%eccube_admin_route%/sample_payment/order/cancel/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_cancel")
+     * @Route("/%eccube_admin_route%/sample_payment/order/cancel/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_cancel", methods={"POST"})
      */
     public function cancel(Request $request, Order $Order)
     {
@@ -44,8 +42,7 @@ class OrderController extends AbstractController
     /**
      * 受注編集 > 決済の金額変更
      *
-     * @Method("POST")
-     * @Route("/%eccube_admin_route%/sample_payment/order/change_price/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_change_price")
+     * @Route("/%eccube_admin_route%/sample_payment/order/change_price/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_change_price", methods={"POST"})
      */
     public function changePrice(Request $request, Order $Order)
     {

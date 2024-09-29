@@ -96,9 +96,9 @@
             </div>
             <div class="card-body">
                 決済状況変更のテストはこちらから:
-                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment\\Entity\\CvsPaymentStatus::COMPLETE') }}">決済完了</a>
-                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment\\Entity\\CvsPaymentStatus::EXPIRED') }}">期限切れ</a>
-                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment\\Entity\\CvsPaymentStatus::FAILURE') }}">決済失敗</a> 
+                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment43\\Entity\\CvsPaymentStatus::COMPLETE') }}">決済完了</a>
+                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment43\\Entity\\CvsPaymentStatus::EXPIRED') }}">期限切れ</a>
+                <a target="_blank" href="{{ url('sample_payment_receive_cvs_status') }}?no={{ Order.orderNo }}&cvs_status={{ constant('Plugin\\SamplePayment43\\Entity\\CvsPaymentStatus::FAILURE') }}">決済失敗</a> 
             </div>
         </div>
     </div>

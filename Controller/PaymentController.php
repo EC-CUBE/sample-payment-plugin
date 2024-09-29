@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller;
+namespace Plugin\SamplePayment43\Controller;
 
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Master\OrderStatus;
@@ -23,12 +23,12 @@ use Eccube\Service\OrderStateMachine;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
 use Eccube\Service\ShoppingService;
-use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
-use Plugin\SamplePayment42\Entity\PaymentStatus;
-use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
-use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
-use Plugin\SamplePayment42\Service\Method\Convenience;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Plugin\SamplePayment43\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment43\Entity\PaymentStatus;
+use Plugin\SamplePayment43\Repository\CvsPaymentStatusRepository;
+use Plugin\SamplePayment43\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment43\Service\Method\Convenience;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

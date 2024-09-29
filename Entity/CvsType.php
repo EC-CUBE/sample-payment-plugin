@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Entity;
+namespace Plugin\SamplePayment43\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Eccube\Entity\Master\AbstractMasterEntity;
@@ -20,7 +20,7 @@ use Eccube\Entity\Master\AbstractMasterEntity;
  * コンビニ種別
  *
  * @ORM\Table(name="plg_sample_payment_cvs_type")
- * @ORM\Entity(repositoryClass="Plugin\SamplePayment42\Repository\CvsTypeRepository")
+ * @ORM\Entity(repositoryClass="Plugin\SamplePayment43\Repository\CvsTypeRepository")
  */
 class CvsType extends AbstractMasterEntity
 {

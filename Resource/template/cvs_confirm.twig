@@ -2,7 +2,7 @@
     Shopping/confirm.twigに以下のスニペットを追記
     {{ include('@SamplePayment/cvs_confirm.twig', ignore_missing=true) }}
 #}
-{% if Order.Payment.getMethodClass == 'Plugin\\SamplePayment\\Service\\Method\\Convenience' %}
+{% if Order.Payment.getMethodClass == 'Plugin\\SamplePayment43\\Service\\Method\\Convenience' %}
     <div class="ec-orderPayment">
         <div class="ec-rectHeading">
             <h2>コンビニ決済</h2>

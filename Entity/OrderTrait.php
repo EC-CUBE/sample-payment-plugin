@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Entity;
+namespace Plugin\SamplePayment43\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Eccube\Annotation\EntityExtension;
@@ -45,7 +45,7 @@ trait OrderTrait
      * dtb_order.sample_payment_cvs_type_id
      *
      * @var CvsType
-     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment42\Entity\CvsType")
+     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment43\Entity\CvsType")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="sample_payment_cvs_type_id", referencedColumnName="id")
      * })
@@ -59,7 +59,7 @@ trait OrderTrait
      * dtb_order.sample_payment_payment_status_id
      *
      * @var SamplePaymentPaymentStatus
-     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment42\Entity\PaymentStatus")
+     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment43\Entity\PaymentStatus")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="sample_payment_payment_status_id", referencedColumnName="id")
      * })
@@ -72,7 +72,7 @@ trait OrderTrait
      * dtb_order.sample_payment_payment_status_id
      *
      * @var SamplePaymentCvsPaymentStatus
-     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment42\Entity\CvsPaymentStatus")
+     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment43\Entity\CvsPaymentStatus")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="sample_payment_cvs_payment_status_id", referencedColumnName="id")
      * })

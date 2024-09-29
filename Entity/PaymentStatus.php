@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Entity;
+namespace Plugin\SamplePayment43\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Eccube\Entity\Master\AbstractMasterEntity;
@@ -20,7 +20,7 @@ use Eccube\Entity\Master\AbstractMasterEntity;
  * PaymentStatus
  *
  * @ORM\Table(name="plg_sample_payment_payment_status")
- * @ORM\Entity(repositoryClass="Plugin\SamplePayment42\Repository\PaymentStatusRepository")
+ * @ORM\Entity(repositoryClass="Plugin\SamplePayment43\Repository\PaymentStatusRepository")
  */
 class PaymentStatus extends AbstractMasterEntity
 {

@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Repository;
+namespace Plugin\SamplePayment43\Repository;
 
 use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 use Eccube\Repository\AbstractRepository;
-use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment43\Entity\CvsPaymentStatus;
 
 class CvsPaymentStatusRepository extends AbstractRepository
 {

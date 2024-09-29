@@ -11,9 +11,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Type\Admin;
+namespace Plugin\SamplePayment43\Form\Type\Admin;
 
-use Plugin\SamplePayment42\Entity\Config;
+use Plugin\SamplePayment43\Entity\Config;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;

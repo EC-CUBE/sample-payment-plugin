@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42;
+namespace Plugin\SamplePayment43;
 
 use Eccube\Event\TemplateEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -45,17 +45,17 @@ class SamplePaymentEvent implements EventSubscriberInterface
 
     public function onShoppingIndexTwig(TemplateEvent $event)
     {
-        $event->addSnippet('@SamplePayment42/credit.twig');
+        $event->addSnippet('@SamplePayment43/credit.twig');
     }
 
     public function onShoppingConfirmTwig(TemplateEvent $event)
     {
-        $event->addSnippet('@SamplePayment42/credit_confirm.twig');
+        $event->addSnippet('@SamplePayment43/credit_confirm.twig');
     }
 
     public function onAdminOrderEditTwig(TemplateEvent $event)
     {
-        $event->addSnippet('@SamplePayment42/admin/order_edit.twig');
+        $event->addSnippet('@SamplePayment43/admin/order_edit.twig');
     }
 
     public function onMypageNaviTwig(TemplateEvent $event)

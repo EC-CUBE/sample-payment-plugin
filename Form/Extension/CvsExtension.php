@@ -11,15 +11,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Extension;
+namespace Plugin\SamplePayment43\Form\Extension;
 
 use Doctrine\ORM\EntityRepository;
 use Eccube\Entity\Order;
 use Eccube\Form\Type\Shopping\OrderType;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment42\Entity\CvsType;
-use Plugin\SamplePayment42\Repository\CvsTypeRepository;
-use Plugin\SamplePayment42\Service\Method\Convenience;
+use Plugin\SamplePayment43\Entity\CvsType;
+use Plugin\SamplePayment43\Repository\CvsTypeRepository;
+use Plugin\SamplePayment43\Service\Method\Convenience;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;

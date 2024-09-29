@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller;
+namespace Plugin\SamplePayment43\Controller;
 
 use Eccube\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -23,7 +23,7 @@ class MypageController extends AbstractController
 {
     /**
      * @Route("/mypage/sample_payment_card_info", name="sample_payment_mypage_card_info", methods={"GET", "POST"})
-     * @Template("@SamplePayment42/card_info.twig")
+     * @Template("@SamplePayment43/card_info.twig")
      */
     public function index(Request $request)
     {
@@ -46,7 +46,7 @@ class MypageController extends AbstractController
 
     /**
      * @Route("/mypage/sample_payment_card_info_complete", name="sample_payment_mypage_card_info_complete", methods={"GET"})
-     * @Template("@SamplePayment42/card_info_complete.twig")
+     * @Template("@SamplePayment43/card_info_complete.twig")
      */
     public function complete(Request $request)
     {

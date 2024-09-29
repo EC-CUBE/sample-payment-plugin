@@ -11,10 +11,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller;
+namespace Plugin\SamplePayment43\Controller;
 
 use Eccube\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class PaymentCompanyController extends AbstractController
      * 決済サーバのカード入力画面.
      *
      * @Route("/payment_company")
-     * @Template("@SamplePayment42/dummy.twig")
+     * @Template("@SamplePayment43/dummy.twig")
      */
     public function index(Request $request)
     {
