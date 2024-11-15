@@ -22,8 +22,7 @@ use Eccube\Util\FormUtil;
 use Knp\Component\Pager\PaginatorInterface;
 use Plugin\SamplePayment42\Form\Type\Admin\SearchPaymentType;
 use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -178,8 +177,7 @@ class PaymentStatusController extends AbstractController
     /**
      * 一括処理.
      *
-     * @Method("POST")
-     * @Route("/%eccube_admin_route%/sample_payment/payment_status/bulk_action/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_payment_status_bulk_action")
+     * @Route("/%eccube_admin_route%/sample_payment/payment_status/bulk_action/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_payment_status_bulk_action", methods={"POST"})
      */
     public function bulkAction(Request $request, $id)
     {

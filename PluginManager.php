@@ -27,7 +27,7 @@ use Plugin\SamplePayment42\Entity\PaymentStatus;
 use Plugin\SamplePayment42\Service\Method\Convenience;
 use Plugin\SamplePayment42\Service\Method\CreditCard;
 use Plugin\SamplePayment42\Service\Method\LinkCreditCard;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
 class PluginManager extends AbstractPluginManager
 {
