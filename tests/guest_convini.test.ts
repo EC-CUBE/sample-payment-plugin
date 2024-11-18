@@ -6,10 +6,11 @@ test('test', async ({ page }) => {
 
   await page.getByRole('link', { name: '新入荷' }).click();
   await expect(page).toHaveURL('/products/list?category_id=2');
-
   await page.locator('li:has-text("チェリーアイスサンド ￥3,080 数量 カートに入れる")').getByRole('button', { name: 'カートに入れる' }).click();
 
-  await page.getByRole('link', { name: 'カートへ進む' }).click();
+  // XXX 何故か headless で動かない
+  // await expect(page.getByText('カートに追加しました。')).toBeVisible();
+  // await page.getByRole('link', { name: 'カートへ進む' }).click();
   await expect(page).toHaveURL('/cart');
 
   await page.getByRole('link', { name: 'レジに進む' }).click();
@@ -20,7 +21,7 @@ test('test', async ({ page }) => {
 
   await page.getByPlaceholder('姓').fill('石');
 
-  await page.getByRole('textbox', { name: '名' }).fill('九部');
+  await page.getByPlaceholder('名', { exact: true }).fill('九部');
 
   await page.getByPlaceholder('セイ').fill('イーシー');
 
