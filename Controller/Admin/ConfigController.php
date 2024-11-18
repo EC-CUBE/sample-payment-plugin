@@ -16,7 +16,7 @@ namespace Plugin\SamplePayment42\Controller\Admin;
 use Eccube\Controller\AbstractController;
 use Plugin\SamplePayment42\Form\Type\Admin\ConfigType;
 use Plugin\SamplePayment42\Repository\ConfigRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 

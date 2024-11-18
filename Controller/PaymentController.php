@@ -28,7 +28,7 @@ use Plugin\SamplePayment42\Entity\PaymentStatus;
 use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
 use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
 use Plugin\SamplePayment42\Service\Method\Convenience;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
