@@ -1,22 +1,24 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 /**
- * リグレッションテスト: 受注編集画面の Twig RuntimeError
+ * 受注編集まわりのリグレッションテスト。
  *
- * 受注編集画面へ自動注入される order_edit.twig (`@admin/Order/edit.twig` にフック) が、
- * version-less の名前空間 `Plugin\SamplePayment\Entity\CvsPaymentStatus` を
- * `constant()` で参照していたため、以下の RuntimeError (HTTP 500) になっていた:
+ * 1. order_edit.twig の Twig RuntimeError 回帰防止
+ *    受注編集画面へ自動注入される order_edit.twig (`@admin/Order/edit.twig` にフック) が、
+ *    version-less の名前空間 `Plugin\SamplePayment\Entity\CvsPaymentStatus` を
+ *    `constant()` で参照していたため "Constant ... is undefined" の RuntimeError (HTTP 500)
+ *    になっていた。正しい名前空間 `Plugin\SamplePayment44` へ修正したことの回帰防止。
+ *    order_edit.twig の `constant()` は `<div class="d-none">` 内で決済種別に関わらず
+ *    常に評価されるため、修正前はコンビニ注文に限らず全注文の受注編集で再現していた。
  *
- *   Constant "Plugin\SamplePayment\Entity\CvsPaymentStatus::COMPLETE" is undefined
- *
- * 正しい名前空間 `Plugin\SamplePayment44` へ修正したことの回帰防止。
- * order_edit.twig の `constant()` は `<div class="d-none">` 内で決済種別に関わらず
- * 常に評価されるため、修正前はコンビニ注文に限らず全注文の受注編集で再現していた。
- * 本テストでは確実性のためコンビニ決済の注文を作成して検証する。
+ * 2. changePrice の bcmath 金額計算サンプルが実行時に動くことの確認
+ *    OrderController::changePrice は bcmath (bcadd/bcsub/bcmul/bcdiv) で金額を計算する
+ *    サンプル。bcmath 拡張が無い環境でも nanasess/bcmath-polyfill 経由で動作することを
+ *    エンドポイント経由で確認する。
  */
 
-test('受注編集画面が constant() エラーなく描画され決済状況変更リンクが正しい', async ({ page }) => {
-  // --- 1. ゲストでコンビニ決済の注文を作成 ---
+/** ゲストでコンビニ決済の注文を 1 件作成する */
+async function createConviniOrder(page: Page): Promise<void> {
   await page.goto('/');
 
   await page.getByRole('link', { name: '新入荷' }).click();
@@ -56,32 +58,71 @@ test('受注編集画面が constant() エラーなく描画され決済状況�
 
   await page.getByRole('button', { name: '注文する' }).click();
   await expect(page).toHaveURL('/shopping/complete');
+}
 
-  // --- 2. 管理画面ログイン ---
+/** 管理画面にログインする */
+async function adminLogin(page: Page): Promise<void> {
   await page.goto('/admin/login');
   await page.fill('input[name="login_id"]', 'admin');
   await page.fill('input[name="password"]', 'password');
   await page.locator('button[type="submit"]').click();
   await expect(page).toHaveURL('/admin/');
+}
 
-  // --- 3. 受注一覧から最新 (作成したコンビニ注文) の受注編集を開く ---
+/** 受注一覧から最新の受注編集リンクと受注ID を取得する */
+async function latestOrderEditHref(page: Page): Promise<{ href: string; id: string }> {
   await page.goto('/admin/order');
-  const editHref = await page
+  const href = await page
     .locator('a[href*="/admin/order/"][href*="/edit"]')
     .first()
     .getAttribute('href');
-  expect(editHref).toBeTruthy();
+  expect(href).toBeTruthy();
+  const matched = (href as string).match(/\/admin\/order\/(\d+)\/edit/);
+  expect(matched).toBeTruthy();
+  return { href: href as string, id: (matched as RegExpMatchArray)[1] };
+}
 
-  const editResponse = await page.goto(editHref as string);
+test('受注編集画面が constant() エラーなく描画され決済状況変更リンクが正しい', async ({ page }) => {
+  await createConviniOrder(page);
+  await adminLogin(page);
 
-  // --- 4. 修正前は Twig RuntimeError で HTTP 500 になっていた ---
+  const { href } = await latestOrderEditHref(page);
+  const editResponse = await page.goto(href);
+
+  // 修正前は Twig RuntimeError で HTTP 500 になっていた
   expect(editResponse?.status()).toBe(200);
   await expect(page.locator('body')).not.toContainText('is undefined');
   await expect(page.locator('body')).not.toContainText('RuntimeError');
 
-  // --- 5. constant() が解決され、決済状況変更リンクが正しい cvs_status を持つこと ---
-  //        CvsPaymentStatus::COMPLETE=3 / EXPIRED=5 / FAILURE=4
+  // constant() が解決され、決済状況変更リンクが正しい cvs_status を持つこと
+  // CvsPaymentStatus::COMPLETE=3 / EXPIRED=5 / FAILURE=4
   await expect(page.locator('a', { hasText: '決済完了' })).toHaveAttribute('href', /cvs_status=3/);
   await expect(page.locator('a', { hasText: '期限切れ' })).toHaveAttribute('href', /cvs_status=5/);
   await expect(page.locator('a', { hasText: '決済失敗' })).toHaveAttribute('href', /cvs_status=4/);
+});
+
+test('決済金額変更(changePrice)が bcmath で計算され HTTP 200 を返す', async ({ page }) => {
+  await createConviniOrder(page);
+  await adminLogin(page);
+
+  const { id } = await latestOrderEditHref(page);
+
+  // 管理画面の AJAX は ECCUBE-CSRF-TOKEN ヘッダで CSRF を検証する
+  const token = await page.getAttribute('meta[name="eccube-csrf-token"]', 'content');
+  expect(token).toBeTruthy();
+
+  // changePrice は決済総額から bcmath で手数料(+)・割引(-)を計算して返すサンプル。
+  // bcmath 拡張が無くても nanasess/bcmath-polyfill 経由で計算できる (= 500 にならない)。
+  const response = await page.request.post(`/admin/sample_payment/order/change_price/${id}`, {
+    headers: {
+      'ECCUBE-CSRF-TOKEN': token as string,
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+  });
+
+  expect(response.status()).toBe(200);
+  const body = await response.json();
+  // bcmath で算出された請求額 (正の整数文字列) が返ること
+  expect(String(body.price)).toMatch(/^\d+$/);
+  expect(Number(body.price)).toBeGreaterThan(0);
 });
