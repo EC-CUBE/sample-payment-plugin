@@ -19,7 +19,6 @@ use Eccube\Entity\Page;
 use Eccube\Entity\PageLayout;
 use Eccube\Entity\Payment;
 use Eccube\Plugin\AbstractPluginManager;
-use Eccube\Repository\PaymentRepository;
 use Plugin\SamplePayment42\Entity\Config;
 use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
 use Plugin\SamplePayment42\Entity\CvsType;
@@ -44,7 +43,7 @@ class PluginManager extends AbstractPluginManager
         ],
     ];
 
-    public function enable(array $meta, ContainerInterface $container)
+    public function enable(array $meta, ContainerInterface $container): void
     {
         $this->createTokenPayment($container);
         $this->createLinkPayment($container);
@@ -152,7 +151,7 @@ class PluginManager extends AbstractPluginManager
         foreach ($statuses as $id => $name) {
             $PaymentStatus = $entityManager->find($class, $id);
             if (!$PaymentStatus) {
-                $PaymentStatus = new $class;
+                $PaymentStatus = new $class();
             }
             $PaymentStatus->setId($id);
             $PaymentStatus->setName($name);

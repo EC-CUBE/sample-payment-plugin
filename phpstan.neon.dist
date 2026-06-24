@@ -1,0 +1,26 @@
+# EC-CUBE 本体に組み込んだ状態 (Docker コンテナ内) で実行する前提の設定.
+# bootstrapFiles / objectManagerLoader は本体側の絶対パス (/var/www/html) を参照する.
+# 実行例:
+#   docker compose ... run --rm --no-deps --entrypoint bash ec-cube \
+#     -c 'cd /var/www/plugin && /var/www/html/vendor/bin/phpstan analyse'
+parameters:
+  level: 6
+  bootstrapFiles:
+    - /var/www/html/vendor/autoload.php
+  doctrine:
+    objectManagerLoader: /var/www/html/tests/object-manager.php
+    ormRepositoryClass: Eccube\Repository\AbstractRepository
+  excludePaths:
+    - vendor/*
+    - node_modules/*
+  paths:
+    - Controller
+    - Entity
+    - Form
+    - Repository
+    - Service
+    - Util
+    - PluginManager.php
+    - SamplePaymentEvent.php
+    - SamplePaymentNav.php
+    - SamplePaymentTwigBlock.php

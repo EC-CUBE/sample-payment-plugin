@@ -13,19 +13,19 @@
 
 namespace Plugin\SamplePayment42\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Eccube\Annotation\EntityExtension;
+use Eccube\Attribute\EntityExtension;
+use Eccube\Entity\Customer;
 
-/**
- * @EntityExtension("Eccube\Entity\Customer")
- */
+#[EntityExtension(Customer::class)]
 trait CustomerTrait
 {
     /**
      * カードの記憶用カラム.
      *
      * @var string
-     * @ORM\Column(type="smallint", nullable=true)
      */
-    public $sample_payment_cards;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    public ?int $sample_payment_cards = null;
 }

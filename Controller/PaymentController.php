@@ -22,18 +22,17 @@ use Eccube\Service\CartService;
 use Eccube\Service\OrderStateMachine;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
-use Eccube\Service\ShoppingService;
 use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
 use Plugin\SamplePayment42\Entity\PaymentStatus;
 use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
 use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
 use Plugin\SamplePayment42\Service\Method\Convenience;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * リンク式決済の注文/戻る/完了通知を処理する.
@@ -41,77 +40,26 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class PaymentController extends AbstractController
 {
     /**
-     * @var OrderRepository
-     */
-    protected $orderRepository;
-
-    /**
-     * @var OrderStatusRepository
-     */
-    protected $orderStatusRepository;
-
-    /**
-     * @var PaymentStatusRepository
-     */
-    protected $paymentStatusRepository;
-
-    /**
-     * @var CvsPaymentStatusRepository
-     */
-    protected $cvsPaymentStatusRepository;
-
-    /**
-     * @var PurchaseFlow
-     */
-    protected $purchaseFlow;
-
-    /**
-     * @var CartService
-     */
-    protected $cartService;
-
-    /**
-     * @var OrderStateMachine
-     */
-    protected $orderStateMachine;
-
-
-    /**
      * PaymentController constructor.
      *
      * @param OrderRepository $orderRepository
      * @param OrderStatusRepository $orderStatusRepository
      * @param PaymentStatusRepository $paymentStatusRepository
-     * @param CvsPaymentStatusRepository $CvsPaymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow,
      * @param CartService $cartService
      * @param OrderStateMachine $orderStateMachine
+     * @param CvsPaymentStatusRepository $CvsPaymentStatusRepository
      */
-    public function __construct(
-        OrderRepository $orderRepository,
-        OrderStatusRepository $orderStatusRepository,
-        PaymentStatusRepository $paymentStatusRepository,
-        CvsPaymentStatusRepository $cvsPaymentStatusRepository,
-        PurchaseFlow $shoppingPurchaseFlow,
-        CartService $cartService,
-        OrderStateMachine $orderStateMachine
-    ) {
-        $this->orderRepository = $orderRepository;
-        $this->orderStatusRepository = $orderStatusRepository;
-        $this->paymentStatusRepository = $paymentStatusRepository;
-        $this->cvsPaymentStatusRepository = $cvsPaymentStatusRepository;
-        $this->purchaseFlow = $shoppingPurchaseFlow;
-        $this->cartService = $cartService;
-        $this->orderStateMachine = $orderStateMachine;
+    public function __construct(protected OrderRepository $orderRepository, protected OrderStatusRepository $orderStatusRepository, protected PaymentStatusRepository $paymentStatusRepository, protected CvsPaymentStatusRepository $cvsPaymentStatusRepository, protected PurchaseFlow $shoppingPurchaseFlow, protected CartService $cartService, protected OrderStateMachine $orderStateMachine)
+    {
     }
 
     /**
-     * @Route("/sample_payment_back", name="sample_payment_back")
-     *
      * @param Request $request
      *
      * @return RedirectResponse
      */
+    #[Route(path: '/sample_payment_back', name: 'sample_payment_back')]
     public function back(Request $request)
     {
         $orderNo = $request->get('no');
@@ -134,7 +82,7 @@ class PaymentController extends AbstractController
         $Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
         // purchaseFlow::rollbackを呼び出し, 購入処理をロールバックする.
-        $this->purchaseFlow->rollback($Order, new PurchaseContext());
+        $this->shoppingPurchaseFlow->rollback($Order, new PurchaseContext());
 
         $this->entityManager->flush();
 
@@ -143,10 +91,9 @@ class PaymentController extends AbstractController
 
     /**
      * 完了画面へ遷移する.
-     *
-     * @Route("/sample_payment_complete", name="sample_payment_complete")
      */
-    public function complete(Request $request)
+    #[Route(path: '/sample_payment_complete', name: 'sample_payment_complete')]
+    public function complete(Request $request): RedirectResponse
     {
         $orderNo = $request->get('no');
         $Order = $this->getOrderByNo($orderNo);
@@ -172,10 +119,9 @@ class PaymentController extends AbstractController
 
     /**
      * 結果通知URLを受け取る.
-     *
-     * @Route("/sample_payment_receive_complete", name="sample_payment_receive_complete")
      */
-    public function receiveComplete(Request $request)
+    #[Route(path: '/sample_payment_receive_complete', name: 'sample_payment_receive_complete')]
+    public function receiveComplete(Request $request): Response
     {
         // 決済会社から受注番号を受け取る
         $orderNo = $request->get('no');
@@ -197,7 +143,7 @@ class PaymentController extends AbstractController
         $Order->appendCompleteMailMessage('');
 
         // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
-        $this->purchaseFlow->commit($Order, new PurchaseContext());
+        $this->shoppingPurchaseFlow->commit($Order, new PurchaseContext());
 
         $this->entityManager->flush();
 
@@ -206,10 +152,9 @@ class PaymentController extends AbstractController
 
     /**
      * 結果通知URLを受け取る(コンビニ決済).
-     *
-     * @Route("/sample_payment_receive_cvs_status", name="sample_payment_receive_cvs_status")
      */
-    public function receiveCvsStatus(Request $request)
+    #[Route(path: '/sample_payment_receive_cvs_status', name: 'sample_payment_receive_cvs_status')]
+    public function receiveCvsStatus(Request $request): Response
     {
         // 決済会社から受注番号を受け取る
         $orderNo = $request->get('no');
@@ -244,7 +189,7 @@ class PaymentController extends AbstractController
                 }
 
                 break;
-            // 期限切れ
+                // 期限切れ
             case CvsPaymentStatus::EXPIRED:
                 // 受注ステータスをキャンセルへ変更
                 $OrderStatus = $this->orderStatusRepository->find(OrderStatus::CANCEL);
@@ -259,7 +204,7 @@ class PaymentController extends AbstractController
                 }
 
                 break;
-            // 決済完了
+                // 決済完了
             case CvsPaymentStatus::COMPLETE:
             default:
                 // 受注ステータスを対応中へ変更
@@ -287,7 +232,7 @@ class PaymentController extends AbstractController
      *
      * @return Order
      */
-    private function getOrderByNo($orderNo)
+    private function getOrderByNo($orderNo): Order
     {
         /** @var OrderStatus $pendingOrderStatus */
         $pendingOrderStatus = $this->orderStatusRepository->find(OrderStatus::PENDING);

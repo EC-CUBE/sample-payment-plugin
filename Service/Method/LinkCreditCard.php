@@ -35,27 +35,12 @@ class LinkCreditCard implements PaymentMethodInterface
     /**
      * @var Order
      */
-    private $Order;
+    private Order $Order;
 
     /**
      * @var FormInterface
      */
-    private $form;
-
-    /**
-     * @var OrderStatusRepository
-     */
-    private $orderStatusRepository;
-
-    /**
-     * @var PaymentStatusRepository
-     */
-    private $paymentStatusRepository;
-
-    /**
-     * @var PurchaseFlow
-     */
-    private $purchaseFlow;
+    private FormInterface $form;
 
     /**
      * LinkCreditCard constructor.
@@ -64,14 +49,8 @@ class LinkCreditCard implements PaymentMethodInterface
      * @param PaymentStatusRepository $paymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow
      */
-    public function __construct(
-        OrderStatusRepository $orderStatusRepository,
-        PaymentStatusRepository $paymentStatusRepository,
-        PurchaseFlow $shoppingPurchaseFlow
-    ) {
-        $this->orderStatusRepository = $orderStatusRepository;
-        $this->paymentStatusRepository = $paymentStatusRepository;
-        $this->purchaseFlow = $shoppingPurchaseFlow;
+    public function __construct(private readonly OrderStatusRepository $orderStatusRepository, private readonly PaymentStatusRepository $paymentStatusRepository, private readonly PurchaseFlow $shoppingPurchaseFlow)
+    {
     }
 
     /**
@@ -79,14 +58,11 @@ class LinkCreditCard implements PaymentMethodInterface
      *
      * リンク式は使用しない.
      *
-     * @return PaymentResult|void
+     * @return PaymentResult|bool
      */
-    public function verify()
+    public function verify(): PaymentResult|bool
     {
-        $result = new PaymentResult();
-        $result->setSuccess(true);
-
-        return $result;
+        return false;
     }
 
     /**
@@ -98,7 +74,7 @@ class LinkCreditCard implements PaymentMethodInterface
      *
      * @throws ShoppingException
      */
-    public function apply()
+    public function apply(): PaymentDispatcher
     {
         // 受注ステータスを決済処理中へ変更
         $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PENDING);
@@ -109,7 +85,7 @@ class LinkCreditCard implements PaymentMethodInterface
         $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
         // purchaseFlow::prepareを呼び出し, 購入処理を進める.
-        $this->purchaseFlow->prepare($this->Order, new PurchaseContext());
+        $this->shoppingPurchaseFlow->prepare($this->Order, new PurchaseContext());
 
         // 決済サーバのカード入力画面へリダイレクトする.
         $url = '/payment_company?no='.$this->Order->getOrderNo();
@@ -126,7 +102,7 @@ class LinkCreditCard implements PaymentMethodInterface
      *
      * @return PaymentResult
      */
-    public function checkout()
+    public function checkout(): PaymentResult
     {
         $result = new PaymentResult();
         $result->setSuccess(true);
@@ -137,16 +113,20 @@ class LinkCreditCard implements PaymentMethodInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormType(FormInterface $form)
+    public function setFormType(FormInterface $form): PaymentMethodInterface
     {
         $this->form = $form;
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOrder(Order $Order)
+    public function setOrder(Order $Order): PaymentMethodInterface
     {
         $this->Order = $Order;
+
+        return $this;
     }
 }

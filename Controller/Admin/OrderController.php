@@ -15,18 +15,18 @@ namespace Plugin\SamplePayment42\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
 use Eccube\Entity\Order;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 
 class OrderController extends AbstractController
 {
     /**
      * 受注編集 > 決済のキャンセル処理
-     *
-     * @Route("/%eccube_admin_route%/sample_payment/order/cancel/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_cancel", methods={"POST"})
      */
-    public function cancel(Request $request, Order $Order)
+    #[Route(path: '/%eccube_admin_route%/sample_payment/order/cancel/{id}', requirements: ['id' => '\d+'], name: 'sample_payment_admin_order_cancel', methods: ['POST'])]
+    public function cancel(Request $request, Order $Order): JsonResponse
     {
         if ($request->isXmlHttpRequest() && $this->isTokenValid()) {
             // 通信処理
@@ -41,10 +41,9 @@ class OrderController extends AbstractController
 
     /**
      * 受注編集 > 決済の金額変更
-     *
-     * @Route("/%eccube_admin_route%/sample_payment/order/change_price/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_order_change_price", methods={"POST"})
      */
-    public function changePrice(Request $request, Order $Order)
+    #[Route(path: '/%eccube_admin_route%/sample_payment/order/change_price/{id}', requirements: ['id' => '\d+'], name: 'sample_payment_admin_order_change_price', methods: ['POST'])]
+    public function changePrice(Request $request, Order $Order): JsonResponse
     {
         if ($request->isXmlHttpRequest() && $this->isTokenValid()) {
             // 通信処理

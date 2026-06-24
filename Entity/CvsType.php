@@ -15,13 +15,13 @@ namespace Plugin\SamplePayment42\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Eccube\Entity\Master\AbstractMasterEntity;
+use Plugin\SamplePayment42\Repository\CvsTypeRepository;
 
 /**
  * コンビニ種別
- *
- * @ORM\Table(name="plg_sample_payment_cvs_type")
- * @ORM\Entity(repositoryClass="Plugin\SamplePayment42\Repository\CvsTypeRepository")
  */
+#[ORM\Table(name: 'plg_sample_payment_cvs_type')]
+#[ORM\Entity(repositoryClass: CvsTypeRepository::class)]
 class CvsType extends AbstractMasterEntity
 {
     /**
@@ -31,14 +31,14 @@ class CvsType extends AbstractMasterEntity
     /**
      * ローソン
      */
-    const LAWSON = '00001';
+    public const LAWSON = '00001';
     /**
      * ミニストップ
      */
-    const MINISTOP = '00005';
+    public const MINISTOP = '00005';
 
     /**
      * セブンイレブン
      */
-    const SEVENELEVEN = '00007';
+    public const SEVENELEVEN = '00007';
 }

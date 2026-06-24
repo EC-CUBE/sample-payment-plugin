@@ -25,7 +25,6 @@ use Eccube\Service\PurchaseFlow\PurchaseFlow;
 use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
 use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * コンビニ払いの決済処理を行う
@@ -35,27 +34,12 @@ class Convenience implements PaymentMethodInterface
     /**
      * @var Order
      */
-    private $Order;
+    private Order $Order;
 
     /**
      * @var FormInterface
      */
-    private $form;
-
-    /**
-     * @var OrderStatusRepository
-     */
-    private $orderStatusRepository;
-
-    /**
-     * @var CvsPaymentStatusRepository
-     */
-    private $cvsPaymentStatusRepository;
-
-    /**
-     * @var PurchaseFlow
-     */
-    private $purchaseFlow;
+    private FormInterface $form;
 
     /**
      * LinkCreditCard constructor.
@@ -64,14 +48,8 @@ class Convenience implements PaymentMethodInterface
      * @param CvsPaymentStatusRepository $cvsPaymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow
      */
-    public function __construct(
-        OrderStatusRepository $orderStatusRepository,
-        CvsPaymentStatusRepository $cvsPaymentStatusRepository,
-        PurchaseFlow $shoppingPurchaseFlow
-    ) {
-        $this->orderStatusRepository = $orderStatusRepository;
-        $this->cvsPaymentStatusRepository = $cvsPaymentStatusRepository;
-        $this->purchaseFlow = $shoppingPurchaseFlow;
+    public function __construct(private readonly OrderStatusRepository $orderStatusRepository, private readonly CvsPaymentStatusRepository $cvsPaymentStatusRepository, private readonly PurchaseFlow $shoppingPurchaseFlow)
+    {
     }
 
     /**
@@ -79,14 +57,11 @@ class Convenience implements PaymentMethodInterface
      *
      * コンビニ決済は使用しない.
      *
-     * @return PaymentResult|void
+     * @return PaymentResult|bool
      */
-    public function verify()
+    public function verify(): PaymentResult|bool
     {
-        $result = new PaymentResult();
-        $result->setSuccess(true);
-
-        return $result;
+        return false;
     }
 
     /**
@@ -94,11 +69,11 @@ class Convenience implements PaymentMethodInterface
      *
      * 決済サーバのカード入力画面へリダイレクトする.
      *
-     * @return PaymentDispatcher
+     * @return PaymentDispatcher|bool
      *
      * @throws ShoppingException
      */
-    public function apply()
+    public function apply(): PaymentDispatcher|bool
     {
         // 受注ステータスを決済処理中へ変更
         $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PENDING);
@@ -109,8 +84,9 @@ class Convenience implements PaymentMethodInterface
         $this->Order->setSamplePaymentCvsPaymentStatus($PaymentStatus);
 
         // purchaseFlow::prepareを呼び出し, 購入処理を進める.
-        $this->purchaseFlow->prepare($this->Order, new PurchaseContext());
-        return null;
+        $this->shoppingPurchaseFlow->prepare($this->Order, new PurchaseContext());
+
+        return false;
     }
 
     /**
@@ -118,7 +94,7 @@ class Convenience implements PaymentMethodInterface
      *
      * @return PaymentResult
      */
-    public function checkout()
+    public function checkout(): PaymentResult
     {
         // 決済サーバとの通信処理(コンビニ払い込み情報等の取得)
         // ...
@@ -139,7 +115,7 @@ class Convenience implements PaymentMethodInterface
             $this->Order->appendCompleteMailMessage($message);
 
             // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
-            $this->purchaseFlow->commit($this->Order, new PurchaseContext());
+            $this->shoppingPurchaseFlow->commit($this->Order, new PurchaseContext());
         } else {
             // 受注ステータスを購入処理中へ変更
             $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PROCESSING);
@@ -152,7 +128,7 @@ class Convenience implements PaymentMethodInterface
             $result->setErrors([trans('sample_payment.shopping.cvs.error')]);
 
             // 失敗時はpurchaseFlow::rollbackを呼び出す.
-            $this->purchaseFlow->rollback($this->Order, new PurchaseContext());
+            $this->shoppingPurchaseFlow->rollback($this->Order, new PurchaseContext());
         }
 
         return $result;
@@ -161,16 +137,20 @@ class Convenience implements PaymentMethodInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormType(FormInterface $form)
+    public function setFormType(FormInterface $form): PaymentMethodInterface
     {
         $this->form = $form;
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOrder(Order $Order)
+    public function setOrder(Order $Order): PaymentMethodInterface
     {
         $this->Order = $Order;
+
+        return $this;
     }
 }

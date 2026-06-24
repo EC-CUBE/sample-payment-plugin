@@ -19,7 +19,7 @@ volumes:
 services:
   ### ECCube4 ##################################
   ec-cube:
-    image: ghcr.io/ec-cube/ec-cube-php:7.4-apache-4.2
+    image: ghcr.io/ec-cube/ec-cube-php:8.2-apache-4.4
     ports:
       - 8080:80
       - 4430:443

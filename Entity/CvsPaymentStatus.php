@@ -15,13 +15,13 @@ namespace Plugin\SamplePayment42\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Eccube\Entity\Master\AbstractMasterEntity;
+use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
 
 /**
  * CvsPaymentStatus
- *
- * @ORM\Table(name="plg_sample_payment_cvs_payment_status")
- * @ORM\Entity(repositoryClass="Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository")
  */
+#[ORM\Table(name: 'plg_sample_payment_cvs_payment_status')]
+#[ORM\Entity(repositoryClass: CvsPaymentStatusRepository::class)]
 class CvsPaymentStatus extends AbstractMasterEntity
 {
     /**
@@ -31,21 +31,21 @@ class CvsPaymentStatus extends AbstractMasterEntity
     /**
      * 未決済
      */
-    const OUTSTANDING = 1;
+    public const OUTSTANDING = 1;
     /**
      * 要求成功
      */
-    const REQUEST = 2;
+    public const REQUEST = 2;
     /**
      * 決済完了
      */
-    const COMPLETE = 3;
+    public const COMPLETE = 3;
     /**
      * 決済失敗
      */
-    const FAILURE = 4;
+    public const FAILURE = 4;
     /**
      * 期限切れ
      */
-    const EXPIRED = 5;
+    public const EXPIRED = 5;
 }

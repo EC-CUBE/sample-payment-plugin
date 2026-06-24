@@ -13,50 +13,47 @@
 
 namespace Plugin\SamplePayment42\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Plugin\SamplePayment42\Repository\ConfigRepository;
 
 /**
  * Config
- *
- * @ORM\Table(name="plg_sample_payment_config")
- * @ORM\Entity(repositoryClass="Plugin\SamplePayment42\Repository\ConfigRepository")
  */
+#[ORM\Table(name: 'plg_sample_payment_config')]
+#[ORM\Entity(repositoryClass: ConfigRepository::class)]
 class Config
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer", options={"unsigned":true})
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    #[ORM\Column(name: 'id', type: Types::INTEGER, options: ['unsigned' => true])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    private ?int $id = null;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="api_url", type="string", length=1024, nullable=true)
      */
-    private $api_url;
+    #[ORM\Column(name: 'api_url', type: Types::STRING, length: 1024, nullable: true)]
+    private ?string $api_url = null;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="api_id", type="string", length=255, nullable=true)
      */
-    private $api_id;
+    #[ORM\Column(name: 'api_id', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $api_id = null;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="api_password", type="string", length=255, nullable=true)
      */
-    private $api_password;
+    #[ORM\Column(name: 'api_password', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $api_password = null;
 
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -64,7 +61,7 @@ class Config
     /**
      * @return string
      */
-    public function getApiUrl()
+    public function getApiUrl(): string
     {
         return $this->api_url;
     }
@@ -74,7 +71,7 @@ class Config
      *
      * @return $this;
      */
-    public function setApiUrl($api_url)
+    public function setApiUrl(string $api_url)
     {
         $this->api_url = $api_url;
 
@@ -84,7 +81,7 @@ class Config
     /**
      * @return string
      */
-    public function getApiId()
+    public function getApiId(): string
     {
         return $this->api_id;
     }
@@ -94,7 +91,7 @@ class Config
      *
      * @return $this;
      */
-    public function setApiId($api_id)
+    public function setApiId(string $api_id)
     {
         $this->api_id = $api_id;
 
@@ -104,7 +101,7 @@ class Config
     /**
      * @return string
      */
-    public function getApiPassword()
+    public function getApiPassword(): string
     {
         return $this->api_password;
     }
@@ -114,7 +111,7 @@ class Config
      *
      * @return $this
      */
-    public function setApiPassword($api_password)
+    public function setApiPassword(string $api_password)
     {
         $this->api_password = $api_password;
 

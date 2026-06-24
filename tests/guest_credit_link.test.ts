@@ -9,9 +9,9 @@ test('test', async ({ page }) => {
 
   await page.locator('li:has-text("チェリーアイスサンド ￥3,080 数量 カートに入れる")').getByRole('button', { name: 'カートに入れる' }).click();
 
-  // XXX 何故か headless で動かない
-  // await page.getByRole('link', { name: 'カートへ進む' }).click();
-  // await expect(page).toHaveURL('/cart');
+  // EC-CUBE 4.4 ではカートボタンが AJAX リクエストを送るため完了を待ってから遷移
+  await page.waitForLoadState('networkidle');
+  await page.goto('/cart');
 
   await page.getByRole('link', { name: 'レジに進む' }).click();
   await expect(page).toHaveURL('/shopping/login');

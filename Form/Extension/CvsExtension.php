@@ -32,25 +32,11 @@ use Symfony\Component\Form\FormEvents;
  */
 class CvsExtension extends AbstractTypeExtension
 {
-    /**
-     * @var PaymentRepository
-     */
-    protected $paymentRepository;
-
-    /**
-     * @var CvsTypeRepository
-     */
-    protected $cvsTypeRepository;
-
-    public function __construct(
-        CvsTypeRepository $cvsTypeRepository,
-        PaymentRepository $paymentRepository
-    ) {
-        $this->cvsTypeRepository = $cvsTypeRepository;
-        $this->paymentRepository = $paymentRepository;
+    public function __construct(protected CvsTypeRepository $cvsTypeRepository, protected PaymentRepository $paymentRepository)
+    {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // ShoppingController::checkoutから呼ばれる場合は, フォーム項目の定義をスキップする.
         if ($options['skip_add_form']) {
@@ -64,10 +50,8 @@ class CvsExtension extends AbstractTypeExtension
 
             $form->add('SamplePaymentCvsType', EntityType::class, [
                 'class' => CvsType::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('p')
-                        ->orderBy('p.id', 'ASC');
-                },
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('p')
+                    ->orderBy('p.id', 'ASC'),
                 'choice_label' => 'name',
                 'multiple' => false,
                 'expanded' => true,

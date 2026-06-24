@@ -20,11 +20,11 @@ class SamplePaymentTwigBlock implements EccubeTwigBlock
     /**
      * @return array
      */
-    public static function getTwigBlock()
+    public static function getTwigBlock(): array
     {
         return [
-            '@SamplePayment/credit.twig',
-            '@SamplePayment/credit_confirm.twig',
+            '@SamplePayment42/credit.twig',
+            '@SamplePayment42/credit_confirm.twig',
         ];
     }
 }

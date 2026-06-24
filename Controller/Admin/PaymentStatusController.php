@@ -22,9 +22,10 @@ use Eccube\Util\FormUtil;
 use Knp\Component\Pager\PaginatorInterface;
 use Plugin\SamplePayment42\Form\Type\Admin\SearchPaymentType;
 use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * 決済状況管理
@@ -32,24 +33,9 @@ use Symfony\Component\HttpFoundation\Request;
 class PaymentStatusController extends AbstractController
 {
     /**
-     * @var PaymentStatusRepository
-     */
-    protected $paymentStatusRepository;
-
-    /**
-     * @var PageMaxRepository
-     */
-    protected $pageMaxRepository;
-
-    /**
-     * @var OrderRepository
-     */
-    protected $orderRepository;
-
-    /**
      * @var array
      */
-    protected $bulkActions = [
+    protected array $bulkActions = [
         ['id' => 1, 'name' => '一括売上'],
         ['id' => 2, 'name' => '一括取消'],
         ['id' => 3, 'name' => '一括再オーソリ'],
@@ -60,24 +46,17 @@ class PaymentStatusController extends AbstractController
      *
      * @param OrderStatusRepository $orderStatusRepository
      */
-    public function __construct(
-        PaymentStatusRepository $paymentStatusRepository,
-        PageMaxRepository $pageMaxRepository,
-        OrderRepository $orderRepository
-    ) {
-        $this->paymentStatusRepository = $paymentStatusRepository;
-        $this->pageMaxRepository = $pageMaxRepository;
-        $this->orderRepository = $orderRepository;
+    public function __construct(protected PaymentStatusRepository $paymentStatusRepository, protected PageMaxRepository $pageMaxRepository, protected OrderRepository $orderRepository, private readonly PaginatorInterface $paginator)
+    {
     }
 
     /**
      * 決済状況一覧画面
-     *
-     * @Route("/%eccube_admin_route%/sample_payment/payment_status", name="sample_payment_admin_payment_status")
-     * @Route("/%eccube_admin_route%/sample_payment/payment_status/{page_no}", requirements={"page_no" = "\d+"}, name="sample_payment_admin_payment_status_pageno")
-     * @Template("@SamplePayment/admin/payment_status.twig")
      */
-    public function index(Request $request, $page_no = null, PaginatorInterface $paginator)
+    #[Route(path: '/%eccube_admin_route%/sample_payment/payment_status', name: 'sample_payment_admin_payment_status')]
+    #[Route(path: '/%eccube_admin_route%/sample_payment/payment_status/{page_no}', requirements: ['page_no' => '\d+'], name: 'sample_payment_admin_payment_status_pageno')]
+    #[Template(template: '@SamplePayment42/admin/payment_status.twig')]
+    public function index(Request $request, $page_no = null): array
     {
         $searchForm = $this->createForm(SearchPaymentType::class);
 
@@ -157,7 +136,7 @@ class PaymentStatusController extends AbstractController
         }
 
         $qb = $this->createQueryBuilder($searchData);
-        $pagination = $paginator->paginate(
+        $pagination = $this->paginator->paginate(
             $qb,
             $page_no,
             $page_count
@@ -176,10 +155,9 @@ class PaymentStatusController extends AbstractController
 
     /**
      * 一括処理.
-     *
-     * @Route("/%eccube_admin_route%/sample_payment/payment_status/bulk_action/{id}", requirements={"id" = "\d+"}, name="sample_payment_admin_payment_status_bulk_action", methods={"POST"})
      */
-    public function bulkAction(Request $request, $id)
+    #[Route(path: '/%eccube_admin_route%/sample_payment/payment_status/bulk_action/{id}', requirements: ['id' => '\d+'], name: 'sample_payment_admin_payment_status_bulk_action', methods: ['POST'])]
+    public function bulk(Request $request, string $id): RedirectResponse
     {
         if (!isset($this->bulkActions[$id])) {
             throw new BadRequestHttpException();
@@ -198,12 +176,12 @@ class PaymentStatusController extends AbstractController
                     // 通信処理
                     // Order等の更新処理
                     break;
-                // 一括取消
+                    // 一括取消
                 case 2:
                     // 通信処理
                     // Order等の更新処理
                     break;
-                // 一括再オーソリ
+                    // 一括再オーソリ
                 case 3:
                     // 通信処理
                     // Order等の更新処理

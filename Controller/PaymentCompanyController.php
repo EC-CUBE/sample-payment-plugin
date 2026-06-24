@@ -14,10 +14,10 @@
 namespace Plugin\SamplePayment42\Controller;
 
 use Eccube\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * リンク式決済のカード番号入力画面.
@@ -26,10 +26,9 @@ class PaymentCompanyController extends AbstractController
 {
     /**
      * 決済サーバのカード入力画面.
-     *
-     * @Route("/payment_company")
-     * @Template("@SamplePayment42/dummy.twig")
      */
+    #[Route(path: '/payment_company')]
+    #[Template(template: '@SamplePayment42/dummy.twig')]
     public function index(Request $request)
     {
         $orderNo = $request->get('no');

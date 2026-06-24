@@ -16,31 +16,23 @@ namespace Plugin\SamplePayment42\Controller\Admin;
 use Eccube\Controller\AbstractController;
 use Plugin\SamplePayment42\Form\Type\Admin\ConfigType;
 use Plugin\SamplePayment42\Repository\ConfigRepository;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
 class ConfigController extends AbstractController
 {
-    /**
-     * @var ConfigRepository
-     */
-    protected $configRepository;
-
     /**
      * ConfigController constructor.
      *
      * @param ConfigRepository $configRepository
      */
-    public function __construct(ConfigRepository $configRepository)
+    public function __construct(protected ConfigRepository $configRepository)
     {
-        $this->configRepository = $configRepository;
     }
 
-    /**
-     * @Route("/%eccube_admin_route%/sample_payment/config", name="sample_payment_admin_config")
-     * @Template("@SamplePayment/admin/config.twig")
-     */
+    #[Route(path: '/%eccube_admin_route%/sample_payment/config', name: 'sample_payment_admin_config')]
+    #[Template(template: '@SamplePayment42/admin/config.twig')]
     public function index(Request $request)
     {
         $Config = $this->configRepository->get();

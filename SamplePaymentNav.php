@@ -20,7 +20,7 @@ class SamplePaymentNav implements EccubeNav
     /**
      * @return array
      */
-    public static function getNav()
+    public static function getNav(): array
     {
         return [
             'order' => [

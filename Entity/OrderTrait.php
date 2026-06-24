@@ -13,12 +13,12 @@
 
 namespace Plugin\SamplePayment42\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Eccube\Annotation\EntityExtension;
+use Eccube\Attribute\EntityExtension;
+use Eccube\Entity\Order;
 
-/**
- * @EntityExtension("Eccube\Entity\Order")
- */
+#[EntityExtension(Order::class)]
 trait OrderTrait
 {
     /**
@@ -27,9 +27,9 @@ trait OrderTrait
      * dtb_order.sample_payment_token
      *
      * @var string
-     * @ORM\Column(type="string", nullable=true)
      */
-    private $sample_payment_token;
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $sample_payment_token = null;
 
     /**
      * クレジットカード番号の末尾4桁.
@@ -37,7 +37,7 @@ trait OrderTrait
      *
      * @var string
      */
-    private $sample_payment_card_no_last4;
+    private string $sample_payment_card_no_last4;
 
     /**
      * コンビニ用種別を保持するカラム.
@@ -45,13 +45,10 @@ trait OrderTrait
      * dtb_order.sample_payment_cvs_type_id
      *
      * @var CvsType
-     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment42\Entity\CvsType")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="sample_payment_cvs_type_id", referencedColumnName="id")
-     * })
      */
-    private $SamplePaymentCvsType;
-
+    #[ORM\JoinColumn(name: 'sample_payment_cvs_type_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: CvsType::class)]
+    private ?CvsType $SamplePaymentCvsType = null;
 
     /**
      * 決済ステータスを保持するカラム.
@@ -59,12 +56,10 @@ trait OrderTrait
      * dtb_order.sample_payment_payment_status_id
      *
      * @var SamplePaymentPaymentStatus
-     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment42\Entity\PaymentStatus")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="sample_payment_payment_status_id", referencedColumnName="id")
-     * })
      */
-    private $SamplePaymentPaymentStatus;
+    #[ORM\JoinColumn(name: 'sample_payment_payment_status_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: PaymentStatus::class)]
+    private ?PaymentStatus $SamplePaymentPaymentStatus = null;
 
     /**
      * コンビニ用決済ステータスを保持するカラム.
@@ -72,17 +67,15 @@ trait OrderTrait
      * dtb_order.sample_payment_payment_status_id
      *
      * @var SamplePaymentCvsPaymentStatus
-     * @ORM\ManyToOne(targetEntity="Plugin\SamplePayment42\Entity\CvsPaymentStatus")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="sample_payment_cvs_payment_status_id", referencedColumnName="id")
-     * })
      */
-    private $SamplePaymentCvsPaymentStatus;
+    #[ORM\JoinColumn(name: 'sample_payment_cvs_payment_status_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: CvsPaymentStatus::class)]
+    private ?CvsPaymentStatus $SamplePaymentCvsPaymentStatus = null;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSamplePaymentToken()
+    public function getSamplePaymentToken(): ?string
     {
         return $this->sample_payment_token;
     }
@@ -92,7 +85,7 @@ trait OrderTrait
      *
      * @return $this
      */
-    public function setSamplePaymentToken($sample_payment_token)
+    public function setSamplePaymentToken(string $sample_payment_token)
     {
         $this->sample_payment_token = $sample_payment_token;
 
@@ -100,25 +93,25 @@ trait OrderTrait
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSamplePaymentCardNoLast4()
+    public function getSamplePaymentCardNoLast4(): ?string
     {
-        return $this->sample_payment_card_no_last4;
+        return $this->sample_payment_card_no_last4 ?? null;
     }
 
     /**
      * @param string $sample_payment_card_no_last4
      */
-    public function setSamplePaymentCardNoLast4($sample_payment_card_no_last4)
+    public function setSamplePaymentCardNoLast4(string $sample_payment_card_no_last4)
     {
         $this->sample_payment_card_no_last4 = $sample_payment_card_no_last4;
     }
 
     /**
-     * @return CvsType
+     * @return CvsType|null
      */
-    public function getSamplePaymentCvsType()
+    public function getSamplePaymentCvsType(): ?CvsType
     {
         return $this->SamplePaymentCvsType;
     }
@@ -132,33 +125,33 @@ trait OrderTrait
     }
 
     /**
-     * @return PaymentStatus
+     * @return PaymentStatus|null
      */
-    public function getSamplePaymentPaymentStatus()
+    public function getSamplePaymentPaymentStatus(): ?PaymentStatus
     {
         return $this->SamplePaymentPaymentStatus;
     }
 
     /**
-     * @param PaymentStatus $SamplePaymentPaymentStatus|null
+     * @param PaymentStatus|null $SamplePaymentPaymentStatus
      */
-    public function setSamplePaymentPaymentStatus(PaymentStatus $SamplePaymentPaymentStatus = null)
+    public function setSamplePaymentPaymentStatus(?PaymentStatus $SamplePaymentPaymentStatus = null)
     {
         $this->SamplePaymentPaymentStatus = $SamplePaymentPaymentStatus;
     }
 
     /**
-     * @return CvsPaymentStatus
+     * @return CvsPaymentStatus|null
      */
-    public function getSamplePaymentCvsPaymentStatus()
+    public function getSamplePaymentCvsPaymentStatus(): ?CvsPaymentStatus
     {
         return $this->SamplePaymentCvsPaymentStatus;
     }
 
     /**
-     * @param CvsPaymentStatus $SamplePaymentCvsPaymentStatus|null
+     * @param CvsPaymentStatus|null $SamplePaymentCvsPaymentStatus
      */
-    public function setSamplePaymentCvsPaymentStatus(CvsPaymentStatus $SamplePaymentCvsPaymentStatus = null)
+    public function setSamplePaymentCvsPaymentStatus(?CvsPaymentStatus $SamplePaymentCvsPaymentStatus = null)
     {
         $this->SamplePaymentCvsPaymentStatus = $SamplePaymentCvsPaymentStatus;
     }
