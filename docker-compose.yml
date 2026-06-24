@@ -19,7 +19,9 @@ volumes:
 services:
   ### ECCube4 ##################################
   ec-cube:
-    image: ghcr.io/ec-cube/ec-cube-php:8.2-apache-4.4
+    ### 別バージョンの PHP でテストする場合は環境変数 TAG を指定します
+    ## TAG=8.3-apache-4.4 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --wait
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_NAME:-ec-cube/ec-cube-php}:${TAG:-8.2-apache-4.4}
     ports:
       - 8080:80
       - 4430:443
