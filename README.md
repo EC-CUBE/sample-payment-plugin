@@ -106,7 +106,7 @@ http://doc4.ec-cube.net/quickstart_install
 
 ### ルーティングの追加
 
-`@Route` アノテーションを付与したクラスファイルを `Controller` 以下に配置することで、サイトに新しいルーティングを追加することが可能です。
+`#[Route]` アトリビュートを付与したクラスファイルを `Controller` 以下に配置することで、サイトに新しいルーティングを追加することが可能です。（EC-CUBE 4.4 / Symfony 7 ではアノテーションは廃止され、PHP アトリビュートを使用します）
 
 Controllerファイルについては開発ドキュメント・マニュアルの[Controllerのカスタマイズ](http://doc4.ec-cube.net/customize_controller)ページをご確認ください。
 
@@ -114,9 +114,9 @@ Controllerファイルについては開発ドキュメント・マニュアル�
 
 クラスファイルを `Entity` 以下に配置することで新しいEntityを追加可能です。
 
-traitと `@EntityExtension` アノテーションを使用して、既存Entityのフィールドを拡張可能です。
+traitと `#[EntityExtension]` アトリビュートを使用して、既存Entityのフィールドを拡張可能です。
 
-また、`@EntityExtension` アノテーションで拡張したフィールドに `@FormAppend` アノテーションを追加することで、フォームを自動生成できます。
+また、`#[EntityExtension]` アトリビュートで拡張したフィールドに `#[FormAppend]` アトリビュートを追加することで、フォームを自動生成できます。
 
 Entityファイルについては開発ドキュメント・マニュアルの[Entityのカスタマイズ](http://doc4.ec-cube.net/customize_entity)ページをご確認ください。
 
@@ -137,7 +137,7 @@ FormExtensionについては開発ドキュメント・マニュアルの[FormTy
 ```php
 class Event implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return ['eventName' => 'methodName'];
     }
@@ -159,7 +159,7 @@ class Event implements EventSubscriberInterface
 ```php
 class Nav implements EccubeNav
 {
-    public static function getNav()
+    public static function getNav(): array
     {
         return [
             'product' => [
@@ -221,7 +221,7 @@ twig内で変数を使用する場合は、TemplateEventで渡します。
 ```php
 class Event implements EventSubscriberInterface
 {
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'xxx.twig' => 'onXxxTwig',
@@ -264,12 +264,10 @@ EC-CUBE4からはTemplateEventに新たな関数を用意し、それを利用�
  * ここで追加したコードは, <head></head>内に出力される
  * javascriptの読み込みやcssの読み込みに利用する.
  *
- * @param $asset
+ * @param string $asset
  * @param bool $include twigファイルとしてincludeするかどうか
- *
- * @return $this
  */
-public function addAsset($asset, $include = true)
+public function addAsset(string $asset, bool $include = true): static
 {
     $this->assets[$asset] = $include;
 
@@ -283,12 +281,10 @@ public function addAsset($asset, $include = true)
  *
  * ここで追加したコードは, </body>タグ直前に出力される
  *
- * @param $snippet
+ * @param string $snippet
  * @param bool $include twigファイルとしてincludeするかどうか
- *
- * @return $this
  */
-public function addSnippet($snippet, $include = true)
+public function addSnippet(string $snippet, bool $include = true): static
 {
     $this->snippets[$snippet] = $include;
 
@@ -310,10 +306,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AdminSampleEvent implements EventSubscriberInterface
 {
-    /**
-     * @return array
-     */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             '@admin/Product/index.twig' => 'productList',
@@ -371,16 +364,17 @@ class AdminSampleEvent implements EventSubscriberInterface
 
 注文手続き画面でsubmitされた時に実行する処理を実装します。
 主に、クレジットカード決済の有効性チェックをするために使用します。
-このメソッドは、 `PaymentResult` を返します。
-`PaymentResult` には、実行結果、エラーメッセージなどを設定します。
-`Response` を設定して、他の画面にリダイレクトしたり、独自の出力を実装することも可能です。
+このメソッドの戻り型は EC-CUBE 4.4 / Symfony 7 で `PaymentResult|bool` に変更されました。
+**確認画面へ進めたい（成功）場合は `false` を返します。** 失敗時のみ `PaymentResult` を返し、実行結果・エラーメッセージなどを設定します。
+（成功時に `PaymentResult` を返すと本体 `ShoppingController` が `getResponse()->isRedirection()` を null に対して呼び出し 500 エラーになります）
+リダイレクトや独自の出力が必要な場合は、`PaymentResult` に `Response` を設定します。
 
 #### `apply()`
 
 注文確認画面でsubmitされた時に、他の Controller へ処理を移譲する実装をします。
 主にリンク型決済や、キャリア決済など、決済会社の画面へ遷移する必要がある場合に使用します。
 また、独自に作成した Controller に遷移する場合にも使用できます。
-このメソッドは `PaymentDispatcher` を返します。
+このメソッドの戻り型は EC-CUBE 4.4 / Symfony 7 で `PaymentDispatcher|bool` に変更されました。リダイレクトが不要な場合は `false` を返します。
 `PaymentDispatcher` は、他の Controller へ `Redirect` もしくは `Forward` させるための情報を設定します。
 決済会社の画面など、サイト外へ遷移させる場合は、 `Response` を設定します。
 
@@ -432,7 +426,7 @@ twigのソースコード内でメッセージを使用する場合には `trans
 
 ### DBの更新方法
 
-1. Entity拡張のORMアノテーションでDBの設定を更新
+1. Entity拡張のORMアトリビュート（`#[ORM\Column]` 等）でDBの設定を更新
 1. コマンドラインからプロキシファイルを作成 `bin/console eccube:generate:proxies`
 1. DBの更新内容の確認 `bin/console doctrine:schema:update --dump-sql`
 1. DBの更新を実行 `bin/console doctrine:schema:update --dump-sql --force`
