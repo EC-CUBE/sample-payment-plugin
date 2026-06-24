@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42;
+namespace Plugin\SamplePayment44;
 
 use Eccube\Common\EccubeNav;
 
@@ -20,7 +20,7 @@ class SamplePaymentNav implements EccubeNav
     /**
      * @return array
      */
-    public static function getNav()
+    public static function getNav(): array
     {
         return [
             'order' => [

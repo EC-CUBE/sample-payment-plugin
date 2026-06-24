@@ -11,9 +11,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Type\Admin;
+namespace Plugin\SamplePayment44\Form\Type\Admin;
 
-use Plugin\SamplePayment42\Entity\Config;
+use Plugin\SamplePayment44\Entity\Config;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ConfigType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('api_id', TextType::class, [
@@ -43,7 +43,7 @@ class ConfigType extends AbstractType
             ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Config::class,

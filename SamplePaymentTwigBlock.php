@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42;
+namespace Plugin\SamplePayment44;
 
 use Eccube\Common\EccubeTwigBlock;
 
@@ -20,11 +20,11 @@ class SamplePaymentTwigBlock implements EccubeTwigBlock
     /**
      * @return array
      */
-    public static function getTwigBlock()
+    public static function getTwigBlock(): array
     {
         return [
-            '@SamplePayment/credit.twig',
-            '@SamplePayment/credit_confirm.twig',
+            '@SamplePayment44/credit.twig',
+            '@SamplePayment44/credit_confirm.twig',
         ];
     }
 }

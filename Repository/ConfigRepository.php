@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Repository;
+namespace Plugin\SamplePayment44\Repository;
 
 use Doctrine\Persistence\ManagerRegistry as RegistryInterface;
 use Eccube\Repository\AbstractRepository;
-use Plugin\SamplePayment42\Entity\Config;
+use Plugin\SamplePayment44\Entity\Config;
 
 class ConfigRepository extends AbstractRepository
 {

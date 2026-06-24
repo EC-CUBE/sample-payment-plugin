@@ -11,19 +11,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Type\Admin;
+namespace Plugin\SamplePayment44\Form\Type\Admin;
 
 use Doctrine\ORM\EntityRepository;
 use Eccube\Form\Type\Master\OrderStatusType;
 use Eccube\Form\Type\Master\PaymentType;
-use Plugin\SamplePayment42\Entity\PaymentStatus;
+use Plugin\SamplePayment44\Entity\PaymentStatus;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class SearchPaymentType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('Payments', PaymentType::class, [
@@ -36,10 +36,8 @@ class SearchPaymentType extends AbstractType
             ])
             ->add('PaymentStatuses', EntityType::class, [
                 'class' => PaymentStatus::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('p')
-                        ->orderBy('p.id', 'ASC');
-                },
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('p')
+                    ->orderBy('p.id', 'ASC'),
                 'choice_label' => 'name',
                 'multiple' => true,
                 'expanded' => true,

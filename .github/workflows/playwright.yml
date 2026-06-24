@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ '4.2' ]
+    branches: [ '4.4' ]
   pull_request:
     paths:
       - '**'
@@ -10,13 +10,15 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ matrix.tag }}
     strategy:
       fail-fast: false
       matrix:
-        operating-system: [ ubuntu-20.04 ]
+        tag: [ '8.2-apache-4.4', '8.3-apache-4.4', '8.4-apache-4.4', '8.5-apache-4.4' ]
         db: [ mysql, pgsql, sqlite3 ]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup environment
       if: matrix.db != 'sqlite3'
       env:
@@ -24,24 +26,22 @@ jobs:
       run: echo "COMPOSE_FILE=docker-compose.yml:docker-compose.${DB_TYPE}.yml:docker-compose.dev.yml" >> $GITHUB_ENV
     - name: Setup environment
       if: matrix.db == 'sqlite3'
-      env:
-        DB_TYPE: ${{ matrix.db }}
       run: echo "COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml" >> $GITHUB_ENV
     - name: Setup EC-CUBE
       run: docker compose up -d --wait
     - name: Install dependencies
-      run: npm ci
+      run: yarn install --frozen-lockfile
     - name: Install Playwright Browsers
-      run: npx playwright install
+      run: yarn playwright install
     - run: docker compose logs ec-cube
     - name: Run Playwright tests
       env:
         CI: 1
         FORCE_COLOR: 1
       run: yarn playwright test
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-report
+        name: playwright-report-${{ matrix.tag }}-${{ matrix.db }}
         path: playwright-report/
         retention-days: 30

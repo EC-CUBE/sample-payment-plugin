@@ -11,15 +11,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Extension;
+namespace Plugin\SamplePayment44\Form\Extension;
 
 use Doctrine\ORM\EntityRepository;
 use Eccube\Entity\Order;
 use Eccube\Form\Type\Shopping\OrderType;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment42\Entity\CvsType;
-use Plugin\SamplePayment42\Repository\CvsTypeRepository;
-use Plugin\SamplePayment42\Service\Method\Convenience;
+use Plugin\SamplePayment44\Entity\CvsType;
+use Plugin\SamplePayment44\Repository\CvsTypeRepository;
+use Plugin\SamplePayment44\Service\Method\Convenience;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,25 +32,11 @@ use Symfony\Component\Form\FormEvents;
  */
 class CvsExtension extends AbstractTypeExtension
 {
-    /**
-     * @var PaymentRepository
-     */
-    protected $paymentRepository;
-
-    /**
-     * @var CvsTypeRepository
-     */
-    protected $cvsTypeRepository;
-
-    public function __construct(
-        CvsTypeRepository $cvsTypeRepository,
-        PaymentRepository $paymentRepository
-    ) {
-        $this->cvsTypeRepository = $cvsTypeRepository;
-        $this->paymentRepository = $paymentRepository;
+    public function __construct(protected CvsTypeRepository $cvsTypeRepository, protected PaymentRepository $paymentRepository)
+    {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // ShoppingController::checkoutから呼ばれる場合は, フォーム項目の定義をスキップする.
         if ($options['skip_add_form']) {
@@ -64,10 +50,8 @@ class CvsExtension extends AbstractTypeExtension
 
             $form->add('SamplePaymentCvsType', EntityType::class, [
                 'class' => CvsType::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('p')
-                        ->orderBy('p.id', 'ASC');
-                },
+                'query_builder' => fn (EntityRepository $er) => $er->createQueryBuilder('p')
+                    ->orderBy('p.id', 'ASC'),
                 'choice_label' => 'name',
                 'multiple' => false,
                 'expanded' => true,

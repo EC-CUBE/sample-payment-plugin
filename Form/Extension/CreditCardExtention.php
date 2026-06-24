@@ -11,12 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Form\Extension;
+namespace Plugin\SamplePayment44\Form\Extension;
 
 use Eccube\Entity\Order;
 use Eccube\Form\Type\Shopping\OrderType;
 use Eccube\Repository\PaymentRepository;
-use Plugin\SamplePayment42\Service\Method\CreditCard;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,17 +28,11 @@ use Symfony\Component\Form\FormEvents;
  */
 class CreditCardExtention extends AbstractTypeExtension
 {
-    /**
-     * @var PaymentRepository
-     */
-    protected $paymentRepository;
-
-    public function __construct(PaymentRepository $paymentRepository)
+    public function __construct(protected PaymentRepository $paymentRepository)
     {
-        $this->paymentRepository = $paymentRepository;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // ShoppingController::checkoutから呼ばれる場合は, フォーム項目の定義をスキップする.
         if ($options['skip_add_form']) {

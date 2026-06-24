@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Service\Method;
+namespace Plugin\SamplePayment44\Service\Method;
 
 use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
@@ -20,9 +20,10 @@ use Eccube\Service\Payment\PaymentDispatcher;
 use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
+use Eccube\Service\PurchaseFlow\PurchaseException;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
-use Plugin\SamplePayment42\Entity\PaymentStatus;
-use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment44\Entity\PaymentStatus;
+use Plugin\SamplePayment44\Repository\PaymentStatusRepository;
 use Symfony\Component\Form\FormInterface;
 
 /**
@@ -33,27 +34,12 @@ class CreditCard implements PaymentMethodInterface
     /**
      * @var Order
      */
-    protected $Order;
+    protected Order $Order;
 
     /**
      * @var FormInterface
      */
-    protected $form;
-
-    /**
-     * @var OrderStatusRepository
-     */
-    private $orderStatusRepository;
-
-    /**
-     * @var PaymentStatusRepository
-     */
-    private $paymentStatusRepository;
-
-    /**
-     * @var PurchaseFlow
-     */
-    private $purchaseFlow;
+    protected FormInterface $form;
 
     /**
      * CreditCard constructor.
@@ -62,14 +48,8 @@ class CreditCard implements PaymentMethodInterface
      * @param PaymentStatusRepository $paymentStatusRepository
      * @param PurchaseFlow $shoppingPurchaseFlow
      */
-    public function __construct(
-        OrderStatusRepository $orderStatusRepository,
-        PaymentStatusRepository $paymentStatusRepository,
-        PurchaseFlow $shoppingPurchaseFlow
-    ) {
-        $this->orderStatusRepository = $orderStatusRepository;
-        $this->paymentStatusRepository = $paymentStatusRepository;
-        $this->purchaseFlow = $shoppingPurchaseFlow;
+    public function __construct(private readonly OrderStatusRepository $orderStatusRepository, private readonly PaymentStatusRepository $paymentStatusRepository, private readonly PurchaseFlow $shoppingPurchaseFlow)
+    {
     }
 
     /**
@@ -77,25 +57,26 @@ class CreditCard implements PaymentMethodInterface
      *
      * クレジットカードの有効性チェックを行う.
      *
-     * @return PaymentResult
+     * @return PaymentResult|bool 成功時は false を返す(EC-CUBE 4.4 以降の仕様)
      *
-     * @throws \Eccube\Service\PurchaseFlow\PurchaseException
+     * @throws PurchaseException
      */
-    public function verify()
+    public function verify(): PaymentResult|bool
     {
         // 決済サーバとの通信処理(有効性チェックやカード番号の下4桁取得)
         // ...
         //
 
         if (true) {
-            $result = new PaymentResult();
-            $result->setSuccess(true);
+            // 成功: カード下4桁を設定して確認画面へ進む
             $this->Order->setSamplePaymentCardNoLast4('****-*****-****-1234');
-        } else {
-            $result = new PaymentResult();
-            $result->setSuccess(false);
-            $result->setErrors([trans('sample_payment.shopping.verify.error')]);
+
+            return false;
         }
+
+        $result = new PaymentResult();
+        $result->setSuccess(false);
+        $result->setErrors([trans('sample_payment.shopping.verify.error')]);
 
         return $result;
     }
@@ -106,9 +87,9 @@ class CreditCard implements PaymentMethodInterface
      * 受注ステータス, 決済ステータスを更新する.
      * ここでは決済サーバとの通信は行わない.
      *
-     * @return PaymentDispatcher|null
+     * @return PaymentDispatcher|bool
      */
-    public function apply()
+    public function apply(): PaymentDispatcher|bool
     {
         // 受注ステータスを決済処理中へ変更
         $OrderStatus = $this->orderStatusRepository->find(OrderStatus::PENDING);
@@ -119,7 +100,9 @@ class CreditCard implements PaymentMethodInterface
         $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
         // purchaseFlow::prepareを呼び出し, 購入処理を進める.
-        $this->purchaseFlow->prepare($this->Order, new PurchaseContext());
+        $this->shoppingPurchaseFlow->prepare($this->Order, new PurchaseContext());
+
+        return false;
     }
 
     /**
@@ -129,7 +112,7 @@ class CreditCard implements PaymentMethodInterface
      *
      * @return PaymentResult
      */
-    public function checkout()
+    public function checkout(): PaymentResult
     {
         // 決済サーバに仮売上のリクエスト送る(設定等によって送るリクエストは異なる)
         // ...
@@ -150,7 +133,7 @@ class CreditCard implements PaymentMethodInterface
             $this->Order->appendCompleteMailMessage('トークン -> '.$token);
 
             // purchaseFlow::commitを呼び出し, 購入処理を完了させる.
-            $this->purchaseFlow->commit($this->Order, new PurchaseContext());
+            $this->shoppingPurchaseFlow->commit($this->Order, new PurchaseContext());
 
             $result = new PaymentResult();
             $result->setSuccess(true);
@@ -164,7 +147,7 @@ class CreditCard implements PaymentMethodInterface
             $this->Order->setSamplePaymentPaymentStatus($PaymentStatus);
 
             // 失敗時はpurchaseFlow::rollbackを呼び出す.
-            $this->purchaseFlow->rollback($this->Order, new PurchaseContext());
+            $this->shoppingPurchaseFlow->rollback($this->Order, new PurchaseContext());
 
             $result = new PaymentResult();
             $result->setSuccess(false);
@@ -177,16 +160,20 @@ class CreditCard implements PaymentMethodInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormType(FormInterface $form)
+    public function setFormType(FormInterface $form): PaymentMethodInterface
     {
         $this->form = $form;
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setOrder(Order $Order)
+    public function setOrder(Order $Order): PaymentMethodInterface
     {
         $this->Order = $Order;
+
+        return $this;
     }
 }
