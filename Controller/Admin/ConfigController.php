@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller\Admin;
+namespace Plugin\SamplePayment44\Controller\Admin;
 
 use Eccube\Controller\AbstractController;
-use Plugin\SamplePayment42\Form\Type\Admin\ConfigType;
-use Plugin\SamplePayment42\Repository\ConfigRepository;
+use Plugin\SamplePayment44\Form\Type\Admin\ConfigType;
+use Plugin\SamplePayment44\Repository\ConfigRepository;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -32,7 +32,7 @@ class ConfigController extends AbstractController
     }
 
     #[Route(path: '/%eccube_admin_route%/sample_payment/config', name: 'sample_payment_admin_config')]
-    #[Template(template: '@SamplePayment42/admin/config.twig')]
+    #[Template(template: '@SamplePayment44/admin/config.twig')]
     public function index(Request $request)
     {
         $Config = $this->configRepository->get();

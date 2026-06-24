@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42;
+namespace Plugin\SamplePayment44;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Eccube\Entity\Layout;
@@ -19,13 +19,13 @@ use Eccube\Entity\Page;
 use Eccube\Entity\PageLayout;
 use Eccube\Entity\Payment;
 use Eccube\Plugin\AbstractPluginManager;
-use Plugin\SamplePayment42\Entity\Config;
-use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
-use Plugin\SamplePayment42\Entity\CvsType;
-use Plugin\SamplePayment42\Entity\PaymentStatus;
-use Plugin\SamplePayment42\Service\Method\Convenience;
-use Plugin\SamplePayment42\Service\Method\CreditCard;
-use Plugin\SamplePayment42\Service\Method\LinkCreditCard;
+use Plugin\SamplePayment44\Entity\Config;
+use Plugin\SamplePayment44\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment44\Entity\CvsType;
+use Plugin\SamplePayment44\Entity\PaymentStatus;
+use Plugin\SamplePayment44\Service\Method\Convenience;
+use Plugin\SamplePayment44\Service\Method\CreditCard;
+use Plugin\SamplePayment44\Service\Method\LinkCreditCard;
 use Psr\Container\ContainerInterface;
 
 class PluginManager extends AbstractPluginManager
@@ -34,12 +34,12 @@ class PluginManager extends AbstractPluginManager
         [
             'name' => 'カード情報変更',
             'url' => 'sample_payment_mypage_card_info',
-            'filename' => 'SamplePayment42/Resource/template/card_info.twig',
+            'filename' => 'SamplePayment44/Resource/template/card_info.twig',
         ],
         [
             'name' => 'カード情報変更(完了)',
             'url' => 'sample_payment_mypage_card_info_complete',
-            'filename' => 'SamplePayment42/Resource/template/card_info_complete.twig',
+            'filename' => 'SamplePayment44/Resource/template/card_info_complete.twig',
         ],
     ];
 

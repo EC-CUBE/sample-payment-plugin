@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller;
+namespace Plugin\SamplePayment44\Controller;
 
 use Eccube\Controller\AbstractController;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -28,7 +28,7 @@ class PaymentCompanyController extends AbstractController
      * 決済サーバのカード入力画面.
      */
     #[Route(path: '/payment_company')]
-    #[Template(template: '@SamplePayment42/dummy.twig')]
+    #[Template(template: '@SamplePayment44/dummy.twig')]
     public function index(Request $request)
     {
         $orderNo = $request->get('no');

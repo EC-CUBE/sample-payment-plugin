@@ -10,7 +10,7 @@ EC-CUBE 4 系の**決済プラグイン実装サンプル**。実際の決済代
 - **トークン型クレジットカード決済** (`CreditCard`) — トークンを受け取り自サイト内で完結する方式
 - **コンビニ決済** (`Convenience`) — 入金待ちステータスを持つ方式
 
-プラグインコードは `SamplePayment42`、Composer パッケージ名は `ec-cube/samplepayment42`。コード中の Twig 名前空間・クラス名前空間・トランス キーはすべて `SamplePayment42` 接頭辞を使う。
+プラグインコードは `SamplePayment44`、Composer パッケージ名は `ec-cube/samplepayment44`。コード中の Twig 名前空間・クラス名前空間・トランス キーはすべて `SamplePayment44` 接頭辞を使う。
 
 ### ブランチ運用
 
@@ -97,11 +97,11 @@ Plugin\:
     exclude: '../../../app/Plugin/*/{Entity,Resource,ServiceProvider,Tests,Codeception,DoctrineMigrations}'
 ```
 
-`app/Plugin/SamplePayment42/` 直下のすべての `*.php` が「サービスクラス」として読み込まれるため、ルートに `rector.php` を置くと Symfony が `Plugin\SamplePayment42\rector` クラスを期待し、見つからず **EC-CUBE 全体が 500 エラー**になる (実際に遭遇したエラー):
+`app/Plugin/SamplePayment44/` 直下のすべての `*.php` が「サービスクラス」として読み込まれるため、ルートに `rector.php` を置くと Symfony が `Plugin\SamplePayment44\rector` クラスを期待し、見つからず **EC-CUBE 全体が 500 エラー**になる (実際に遭遇したエラー):
 
 ```
-Expected to find class "Plugin\SamplePayment42\rector" in file
-".../app/Plugin/SamplePayment42/rector.php" while importing services from
+Expected to find class "Plugin\SamplePayment44\rector" in file
+".../app/Plugin/SamplePayment44/rector.php" while importing services from
 resource "../../../app/Plugin/*", but it was not found!
 ```
 

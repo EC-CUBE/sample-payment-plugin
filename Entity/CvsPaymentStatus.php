@@ -11,11 +11,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Entity;
+namespace Plugin\SamplePayment44\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Eccube\Entity\Master\AbstractMasterEntity;
-use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
+use Plugin\SamplePayment44\Repository\CvsPaymentStatusRepository;
 
 /**
  * CvsPaymentStatus

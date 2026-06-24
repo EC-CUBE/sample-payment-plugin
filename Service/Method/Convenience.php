@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Service\Method;
+namespace Plugin\SamplePayment44\Service\Method;
 
 use Eccube\Entity\Master\OrderStatus;
 use Eccube\Entity\Order;
@@ -22,8 +22,8 @@ use Eccube\Service\Payment\PaymentMethodInterface;
 use Eccube\Service\Payment\PaymentResult;
 use Eccube\Service\PurchaseFlow\PurchaseContext;
 use Eccube\Service\PurchaseFlow\PurchaseFlow;
-use Plugin\SamplePayment42\Entity\CvsPaymentStatus;
-use Plugin\SamplePayment42\Repository\CvsPaymentStatusRepository;
+use Plugin\SamplePayment44\Entity\CvsPaymentStatus;
+use Plugin\SamplePayment44\Repository\CvsPaymentStatusRepository;
 use Symfony\Component\Form\FormInterface;
 
 /**

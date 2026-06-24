@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\SamplePayment42\Controller\Admin;
+namespace Plugin\SamplePayment44\Controller\Admin;
 
 use Eccube\Common\Constant;
 use Eccube\Controller\AbstractController;
@@ -20,8 +20,8 @@ use Eccube\Repository\Master\PageMaxRepository;
 use Eccube\Repository\OrderRepository;
 use Eccube\Util\FormUtil;
 use Knp\Component\Pager\PaginatorInterface;
-use Plugin\SamplePayment42\Form\Type\Admin\SearchPaymentType;
-use Plugin\SamplePayment42\Repository\PaymentStatusRepository;
+use Plugin\SamplePayment44\Form\Type\Admin\SearchPaymentType;
+use Plugin\SamplePayment44\Repository\PaymentStatusRepository;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +55,7 @@ class PaymentStatusController extends AbstractController
      */
     #[Route(path: '/%eccube_admin_route%/sample_payment/payment_status', name: 'sample_payment_admin_payment_status')]
     #[Route(path: '/%eccube_admin_route%/sample_payment/payment_status/{page_no}', requirements: ['page_no' => '\d+'], name: 'sample_payment_admin_payment_status_pageno')]
-    #[Template(template: '@SamplePayment42/admin/payment_status.twig')]
+    #[Template(template: '@SamplePayment44/admin/payment_status.twig')]
     public function index(Request $request, $page_no = null): array
     {
         $searchForm = $this->createForm(SearchPaymentType::class);
