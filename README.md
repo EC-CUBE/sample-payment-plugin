@@ -32,19 +32,19 @@ http://doc4.ec-cube.net/quickstart_install
 
 本サンプルプラグインの場合は以下のようになります。
 
-`/app/Plugin/SamplePayment`
+`/app/Plugin/SamplePayment44`
 
 ## コマンドラインインタフェース
 
 ### 利用例
 - インストール
-`bin/console eccube:plugin:install --code=SamplePayment`
+`bin/console eccube:plugin:install --code=SamplePayment44`
 - 有効化
-`bin/console eccube:plugin:enable --code=SamplePayment`
+`bin/console eccube:plugin:enable --code=SamplePayment44`
 - 無効化
-`bin/console eccube:plugin:disable --code=SamplePayment`
+`bin/console eccube:plugin:disable --code=SamplePayment44`
 - 削除
-`bin/console eccube:plugin:uninstall --code=SamplePayment`
+`bin/console eccube:plugin:uninstall --code=SamplePayment44`
 
 ### プラグインジェネレータ
 
@@ -241,13 +241,13 @@ class Event implements EventSubscriberInterface
 
 - 商品購入ページ
 ```twig
-{{ include('@SamplePayment/credit.twig', ignore_missing=true) }}
-{{ include('@SamplePayment/cvs.twig', ignore_missing=true) }}
+{{ include('@SamplePayment44/credit.twig', ignore_missing=true) }}
+{{ include('@SamplePayment44/cvs.twig', ignore_missing=true) }}
 ```
 - 商品購入/ご注文確認ページ
 ```twig
-{{ include('@SamplePayment/credit_confirm.twig', ignore_missing=true) }}
-{{ include('@SamplePayment/cvs_confirm.twig', ignore_missing=true) }}
+{{ include('@SamplePayment44/credit_confirm.twig', ignore_missing=true) }}
+{{ include('@SamplePayment44/cvs_confirm.twig', ignore_missing=true) }}
 ```
 
 ### 画面への介入について
