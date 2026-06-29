@@ -3,7 +3,12 @@
   # sample_payment.xxx: 1
 
 # コンテナ定義
-#services:
+# 具象クラス (ハンドラ・ゲートウェイ) は本体の Plugin\ glob が autowire+autoconfigure で自動登録するため、
+# ここでは型の解決に必要なエイリアスのみ宣言する (決済ハンドラのタグも本体 _instanceof が自動付与)。
+services:
+  # エージェント決済ゲートウェイ実装の束ね先 (Stripe 実装へ差し替える場合はここを変更)。
+  Plugin\SamplePayment44\Service\AgentCommerce\Gateway\AgentPaymentGatewayInterface:
+    alias: Plugin\SamplePayment44\Service\AgentCommerce\Gateway\MockAgentPaymentGateway
 
 # スロットリングの定義
 eccube:
