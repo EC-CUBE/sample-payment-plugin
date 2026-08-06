@@ -1,0 +1,97 @@
+name: PHPUnit
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+    paths:
+      - '**'
+      - '!*.md'
+  pull_request:
+    paths:
+      - '**'
+      - '!*.md'
+jobs:
+  # PHPStan は本体へ組み込んだ状態のパスを前提とする phpstan.neon.dist (docker 実行用) を使うため、
+  # 本ワークフローでは実行しない (README のコマンドで docker から実行する)。
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        eccube_version: [ '4.4' ]
+        php: [ '8.2', '8.3', '8.4', '8.5' ]
+        plugin_code: [ 'SamplePayment44' ]
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: eccube_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      APP_ENV: 'test'
+      APP_DEBUG: 0
+      DATABASE_URL: 'postgres://postgres:password@127.0.0.1:5432/eccube_db'
+      DATABASE_SERVER_VERSION: 18
+      DATABASE_CHARSET: utf8
+      ECCUBE_PACKAGE_API_URL: 'http://127.0.0.1:8080'
+      PLUGIN_CODE: ${{ matrix.plugin_code }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          github-token: ''
+          extensions: :xdebug
+
+      - name: Archive Plugin
+        run: tar cvzf ${GITHUB_WORKSPACE}/${PLUGIN_CODE}.tar.gz ./*
+
+      - name: Setup mock-package-api
+        run: |
+          mkdir -p /tmp/repos
+          cp ${GITHUB_WORKSPACE}/${PLUGIN_CODE}.tar.gz /tmp/repos/${PLUGIN_CODE}.tgz
+          docker run --name package-api -d -v /tmp/repos:/repos -e MOCK_REPO_DIR=/repos -p 8080:8080 eccube/mock-package-api:composer2
+
+      - name: Checkout EC-CUBE
+        uses: actions/checkout@v4
+        with:
+          repository: 'EC-CUBE/ec-cube'
+          ref: ${{ matrix.eccube_version }}
+          path: 'ec-cube'
+
+      - name: Install to composer
+        working-directory: 'ec-cube'
+        run: composer install --dev --no-interaction -o --apcu-autoloader
+
+      - name: Setup EC-CUBE
+        working-directory: 'ec-cube'
+        run: |
+          bin/console doctrine:database:create
+          bin/console doctrine:schema:create
+          bin/console eccube:fixtures:load
+
+      - name: Setup Plugin
+        working-directory: 'ec-cube'
+        run: |
+          bin/console doctrine:query:sql "update dtb_base_info set authentication_key='dummy'"
+          bin/console eccube:composer:require ec-cube/samplepayment44
+          bin/console eccube:plugin:enable --code=${PLUGIN_CODE}
+          bin/console doctrine:schema:update --force --dump-sql
+          bin/console cache:clear --no-warmup
+
+
+      - name: Run PHPUnit
+        working-directory: 'ec-cube'
+        run: |
+          bin/console cache:clear --no-warmup
+          ./vendor/bin/phpunit -c app/Plugin/${PLUGIN_CODE}/phpunit.xml.dist app/Plugin/${PLUGIN_CODE}/Tests

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../../vendor/phpunit/phpunit/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="Tests/bootstrap.php"
+>
+    <php>
+        <ini name="memory_limit" value="-1" />
+        <ini name="display_errors" value="1" />
+        <ini name="error_reporting" value="-1" />
+        <server name="KERNEL_CLASS" value="Eccube\Kernel" />
+        <server name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+        <server name="APP_ENV" value="test" force="true" />
+        <server name="SHELL_VERBOSITY" value="-1" />
+    </php>
+
+    <!-- テストの場所 -->
+    <testsuites>
+        <testsuite name="Plugin Test Suite">
+            <directory>./Tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- カバレッジのターゲット -->
+    <source>
+        <include>
+            <directory suffix=".php">./</directory>
+        </include>
+        <exclude>
+            <directory suffix=".php">./Tests</directory>
+            <directory suffix=".php">./Resource</directory>
+            <file>./PluginManager.php</file>
+        </exclude>
+    </source>
+
+    <!-- DAMA DoctrineTestBundle によりテストごとに DB をトランザクションでロールバックする -->
+    <extensions>
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
+</phpunit>

@@ -20,47 +20,128 @@ namespace Plugin\SamplePayment44\Service\AgentCommerce\Gateway;
  * (本体↔プラグイン) を Stripe/ChatGPT 非依存で緑化するための実装であり、stripe-payment-plugin
  * では本クラスを {@link AgentPaymentGatewayInterface} の Stripe 実装へ差し替える。
  *
- * トークン規約 (instrument['token'] の部分一致):
- * - `*-3ds*`        : 追加認証 (REQUIRES_ACTION)。再開時に `authentication_result` を伴えば成功。
- * - `*-decline*`    : 与信拒否 (FAILED・再試行可)。
- * - `*-fraud*`      : 不正検知 (FAILED・再試行不可)。
- * - `*-processing*` : 非同期処理中 (PROCESSING)。
- * - それ以外        : 与信成功 (REQUIRES_CAPTURE) → capture で SUCCEEDED。
+ * ## トークン規約
+ *
+ * `instrument['token']` に対する **大文字小文字を区別する部分一致**で判定する
+ * (`e2e-acp-spt-3ds` は `-3ds` を含むので追加認証シナリオ。`3DS` や `3ds` 単体では一致しない)。
+ * 複数のマーカーを含むトークンのために**評価順を規定**する。上から順に最初に一致したものを採用する:
+ *
+ * | 順 | マーカー          | authorize の結果                                     |
+ * |----|-------------------|------------------------------------------------------|
+ * | 1  | `-fraud`          | 不正検知 (FAILED・再試行不可 → セッションは canceled) |
+ * | 2  | `-decline`        | 与信拒否 (FAILED・再試行可 → セッションは ready)      |
+ * | 3  | `-3ds`            | 追加認証 (REQUIRES_ACTION)。※下記                     |
+ * | 4  | `-processing`     | 非同期処理中 (PROCESSING)                             |
+ * | 5  | `-capture-fail`   | 与信は成功 (REQUIRES_CAPTURE) し capture で失敗する    |
+ * | 6  | それ以外          | 与信成功 (REQUIRES_CAPTURE) → capture で SUCCEEDED    |
+ *
+ * ※ `-3ds` は `authentication_result` を伴わない場合のみ REQUIRES_ACTION。伴う場合は認証済みとして
+ *   与信へ進む (再開 complete)。`authentication_result` は**空でない文字列または空でない配列**のみ
+ *   認証済みと見なす (`null` / `''` / `[]` / `false` は未認証)。
+ *
+ * ## 実 PSP の制約を模す
+ *
+ * 冪等で寛容なモックは呼び出し側の誤りを隠す。以下は実 PSP で必ず失敗する操作なので、モックでも失敗させる:
+ *
+ * - トークン無しの与信 (ハンドラ側の検証漏れに対する二次防衛)
+ * - 同一トークンを別注文で再償還する (共有支払トークンは 1 取引限り)
+ * - 与信していない取引 / 既に capture 済みの取引に対する capture
+ * - 与信額と異なる金額での capture
+ *
+ * 台帳はインスタンス変数のためリクエスト内でのみ有効 (プロセスを跨ぐ検証はユニットテストで行う)。
  */
 class MockAgentPaymentGateway implements AgentPaymentGatewayInterface
 {
+    private const MARKER_FRAUD = '-fraud';
+
+    private const MARKER_DECLINE = '-decline';
+
+    private const MARKER_3DS = '-3ds';
+
+    private const MARKER_PROCESSING = '-processing';
+
+    private const MARKER_CAPTURE_FAIL = '-capture-fail';
+
+    /**
+     * 与信済み取引の台帳.
+     *
+     * @var array<string, array{token: string, currency: string, amount: int, captured: bool}>
+     */
+    private array $transactions = [];
+
+    /**
+     * 償還済みトークン → 紐づく注文参照 (共有支払トークンのワンショット性を模す).
+     *
+     * @var array<string, string>
+     */
+    private array $redeemedTokens = [];
+
     public function authorize(string $currencyCode, int $amount, array $instrument, array $context = []): GatewayResult
     {
         $token = $this->token($instrument);
-        $transactionId = $this->transactionId($currencyCode, $amount, $token);
-
-        // 3DS challenge の再開: authentication_result を伴えば認証完了として与信する。
-        $hasAuthenticationResult = ($instrument['authentication_result'] ?? null) !== null
-            && $instrument['authentication_result'] !== '';
-
-        if (str_contains($token, 'fraud')) {
-            return GatewayResult::failed('card_not_supported', 'The card was blocked by fraud detection.', false);
+        if ($token === '') {
+            return GatewayResult::failed('invalid_payment_data', 'A payment token is required to authorize.', true);
         }
 
-        if (str_contains($token, 'decline')) {
-            return GatewayResult::failed('card_declined', 'The card was declined.', true);
+        $orderReference = $this->orderReference($context);
+        $redeemedFor = $this->redeemedTokens[$token] ?? null;
+        if ($redeemedFor !== null && $redeemedFor !== $orderReference) {
+            // 共有支払トークンは 1 取引にしか使えない。別注文での再利用は不可逆な失敗とする。
+            return GatewayResult::failed('token_already_redeemed', 'The payment token has already been redeemed for another order.', false);
+        }
+        $this->redeemedTokens[$token] = $orderReference;
+
+        $transactionId = $this->transactionId($currencyCode, $amount, $token, $orderReference);
+        $metadata = $this->metadata($transactionId, $currencyCode, $amount);
+
+        if (str_contains($token, self::MARKER_FRAUD)) {
+            return GatewayResult::failed('card_not_supported', 'The card was blocked by fraud detection.', false, $transactionId);
         }
 
-        if (str_contains($token, '3ds') && !$hasAuthenticationResult) {
-            return GatewayResult::requiresAction($this->authenticationActionData(), $transactionId);
+        if (str_contains($token, self::MARKER_DECLINE)) {
+            return GatewayResult::failed('card_declined', 'The card was declined.', true, $transactionId);
         }
 
-        if (str_contains($token, 'processing')) {
-            return GatewayResult::processing($transactionId, $this->metadata($transactionId, $currencyCode, $amount));
+        if (str_contains($token, self::MARKER_3DS) && !$this->isAuthenticated($instrument)) {
+            // 追加認証の中断。再開時に PSP 参照を辿れるよう metadata も返す。
+            return GatewayResult::requiresAction($this->authenticationActionData(), $transactionId, $metadata);
         }
 
-        return GatewayResult::requiresCapture($transactionId, $this->metadata($transactionId, $currencyCode, $amount));
+        if (str_contains($token, self::MARKER_PROCESSING)) {
+            return GatewayResult::processing($transactionId, $metadata);
+        }
+
+        $this->transactions[$transactionId] = [
+            'token' => $token,
+            'currency' => $currencyCode,
+            'amount' => $amount,
+            'captured' => false,
+        ];
+
+        return GatewayResult::requiresCapture($transactionId, $metadata);
     }
 
-    public function capture(string $currencyCode, int $amount, array $instrument, array $context = []): GatewayResult
+    public function capture(string $currencyCode, int $amount, string $transactionId, array $context = []): GatewayResult
     {
-        $token = $this->token($instrument);
-        $transactionId = $this->transactionId($currencyCode, $amount, $token);
+        $transaction = $this->transactions[$transactionId] ?? null;
+        if ($transaction === null) {
+            return GatewayResult::failed('transaction_not_found', 'No authorized transaction matches the given reference.', false, $transactionId);
+        }
+
+        if ($transaction['captured']) {
+            return GatewayResult::failed('transaction_already_captured', 'The transaction has already been captured.', false, $transactionId);
+        }
+
+        if ($transaction['currency'] !== $currencyCode || $transaction['amount'] !== $amount) {
+            return GatewayResult::failed('capture_amount_mismatch', 'The capture amount does not match the authorized amount.', false, $transactionId);
+        }
+
+        if (str_contains($transaction['token'], self::MARKER_CAPTURE_FAIL)) {
+            // 与信は通ったが売上確定に失敗する系。与信自体は PSP 側に残るため再試行可とする。
+            return GatewayResult::failed('capture_failed', 'The capture was rejected by the gateway.', true, $transactionId);
+        }
+
+        $this->transactions[$transactionId]['captured'] = true;
 
         return GatewayResult::succeeded(
             $transactionId,
@@ -75,15 +156,64 @@ class MockAgentPaymentGateway implements AgentPaymentGatewayInterface
     {
         $token = $instrument['token'] ?? '';
 
-        return is_string($token) ? $token : '';
+        return is_string($token) ? trim($token) : '';
     }
 
     /**
-     * 取引識別子を決定的に導出する (authorize と capture で一致させ、状態を持たないため).
+     * 追加認証が完了しているか.
+     *
+     * ACP の `authentication_result` は文字列とも構造体とも成り得るため、**空でない文字列**または
+     * **空でない配列**のみ認証済みと見なす。`null` / `''` / `[]` / `false` / 数値は未認証扱い
+     * (緩い判定は 3DS 中断シナリオを誤って成功させる)。
+     *
+     * @param array<string, mixed> $instrument
      */
-    private function transactionId(string $currencyCode, int $amount, string $token): string
+    private function isAuthenticated(array $instrument): bool
     {
-        return 'pi_mock_'.substr(hash('sha256', $currencyCode.':'.$amount.':'.$token), 0, 24);
+        $result = $instrument['authentication_result'] ?? null;
+
+        if (is_string($result)) {
+            return trim($result) !== '';
+        }
+
+        if (is_array($result)) {
+            return $result !== [];
+        }
+
+        return false;
+    }
+
+    /**
+     * 取引識別子を決定的に導出する (状態を持たずに authorize と capture・再開 complete で一致させる).
+     *
+     * 通貨・金額・トークンだけでは、同額・同トークンの別注文が同じ識別子になってしまうため
+     * 注文参照も混ぜる。同一注文なら値は変わらないので、3DS 再開時にも同じ識別子が得られる。
+     */
+    private function transactionId(string $currencyCode, int $amount, string $token, string $orderReference): string
+    {
+        $seed = implode(':', [$currencyCode, (string) $amount, $token, $orderReference]);
+
+        return 'pi_mock_'.substr(hash('sha256', $seed), 0, 24);
+    }
+
+    /**
+     * 注文を識別する文字列 (受注番号 → 受注 ID の順に採用).
+     *
+     * @param array<string, mixed> $context
+     */
+    private function orderReference(array $context): string
+    {
+        foreach (['order_no', 'order_id'] as $key) {
+            $value = $context[$key] ?? null;
+            if (is_string($value) && trim($value) !== '') {
+                return trim($value);
+            }
+            if (is_int($value)) {
+                return (string) $value;
+            }
+        }
+
+        return '';
     }
 
     /**

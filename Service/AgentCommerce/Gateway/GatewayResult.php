@@ -69,8 +69,14 @@ final readonly class GatewayResult
         return new self(GatewayStatus::PROCESSING, $transactionId, $metadata);
     }
 
-    public static function failed(string $errorCode, string $errorMessage = '', bool $retryable = true): self
+    /**
+     * 失敗時も PSP 参照を残せるよう、他のファクトリと同じく transactionId / metadata を受け取る
+     * (与信済みの取引を capture で失敗させた場合、取消・照会に取引識別子が要る).
+     *
+     * @param array<string, mixed> $metadata
+     */
+    public static function failed(string $errorCode, string $errorMessage = '', bool $retryable = true, ?string $transactionId = null, array $metadata = []): self
     {
-        return new self(GatewayStatus::FAILED, null, [], [], $errorCode, $errorMessage, $retryable);
+        return new self(GatewayStatus::FAILED, $transactionId, $metadata, [], $errorCode, $errorMessage, $retryable);
     }
 }

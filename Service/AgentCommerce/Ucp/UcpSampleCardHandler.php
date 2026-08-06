@@ -16,6 +16,7 @@ namespace Plugin\SamplePayment44\Service\AgentCommerce\Ucp;
 use Eccube\Entity\Master\AgentProtocol;
 use Eccube\Service\AgentCommerce\Payment\UcpPaymentHandlerInterface;
 use Plugin\SamplePayment44\Service\AgentCommerce\AbstractAgentCardHandler;
+use Plugin\SamplePayment44\Service\AgentCommerce\PaymentTokenExtractor;
 
 /**
  * UCP (Payment Token Exchange) 向けのサンプルカード決済ハンドラ.
@@ -38,8 +39,15 @@ class UcpSampleCardHandler extends AbstractAgentCardHandler implements UcpPaymen
     {
         // 実 PSP ではクレデンシャルをゲートウェイトークンへ交換する。サンプルでは中立 instrument へ整形し、
         // モックゲートウェイがトークン規約でシナリオを判定できるようトークンを保持する。
+        //
+        // 本メソッドは complete の状態機械の外側 (controller のペイロード解決時) で呼ばれるため
+        // **例外を投げない**。解決できないトークンは null のまま返し、authorize 側 (toGatewayInstrument)
+        // で fail-closed に失敗させる (ここで投げるとビジネス系エラーでなく HTTP 500 になる)。
         return [
-            'token' => $this->extractToken($credential),
+            'token' => PaymentTokenExtractor::findToken($credential),
+            // UCP は ACP と異なり、追加認証の結果もクレデンシャル経由でしか届かない。ここで落とすと
+            // 再開 complete で認証済みと判定できず、requires_action から永久に復帰できなくなる。
+            'authentication_result' => $credential['authentication_result'] ?? null,
             'exchanged' => true,
         ];
     }
@@ -51,21 +59,10 @@ class UcpSampleCardHandler extends AbstractAgentCardHandler implements UcpPaymen
 
     protected function toGatewayInstrument(array $paymentData): array
     {
-        // UCP は controller の resolvePaymentData() で exchangePaymentToken() 済みの中立データを受け取る。
-        return $paymentData;
-    }
-
-    /**
-     * クレデンシャルから支払トークンを取り出す (`token` 直下、または文字列のクレデンシャル).
-     *
-     * @param array<string, mixed> $credential
-     */
-    private function extractToken(array $credential): string
-    {
-        if (is_string($credential['token'] ?? null)) {
-            return $credential['token'];
-        }
-
-        return '';
+        // UCP は controller の resolvePaymentData() が exchangePaymentToken() 済みの中立データを渡す。
+        // ただし handler_id を解決できないときは空配列が渡るため、トークンの検証はここでも行う (fail-closed)。
+        return array_merge($paymentData, [
+            'token' => PaymentTokenExtractor::requireToken($paymentData),
+        ]);
     }
 }

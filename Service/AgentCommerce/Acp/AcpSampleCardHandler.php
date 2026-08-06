@@ -16,6 +16,7 @@ namespace Plugin\SamplePayment44\Service\AgentCommerce\Acp;
 use Eccube\Entity\Master\AgentProtocol;
 use Eccube\Service\AgentCommerce\Payment\AcpPaymentHandlerInterface;
 use Plugin\SamplePayment44\Service\AgentCommerce\AbstractAgentCardHandler;
+use Plugin\SamplePayment44\Service\AgentCommerce\PaymentTokenExtractor;
 
 /**
  * ACP (Shared Payment Token) 向けのサンプルカード決済ハンドラ.
@@ -39,8 +40,9 @@ class AcpSampleCardHandler extends AbstractAgentCardHandler implements AcpPaymen
     {
         // 実 PSP では SPT を課金可能な参照へ償還する。サンプルでは中立 instrument へ整形し、
         // モックゲートウェイがトークン規約でシナリオ (成功/3DS/拒否) を判定できるようトークンを保持する。
+        // トークンを解決できない payment_data は例外にする (fail-closed)。
         return [
-            'token' => $this->extractToken($paymentData),
+            'token' => PaymentTokenExtractor::requireToken($paymentData),
             'authentication_result' => $paymentData['authentication_result'] ?? null,
             'redeemed' => true,
         ];
@@ -53,28 +55,8 @@ class AcpSampleCardHandler extends AbstractAgentCardHandler implements AcpPaymen
 
     protected function toGatewayInstrument(array $paymentData): array
     {
+        // SPT の償還はワンショットなので authorize からの 1 度だけ。capture は与信結果を使う
+        // (基底が capture でこのメソッドを呼ばないことでそれを保証している)。
         return $this->redeemSharedPaymentToken($paymentData);
-    }
-
-    /**
-     * payment_data から支払トークンを取り出す (`token` 直下、または `instrument.credential` 配下).
-     *
-     * @param array<string, mixed> $paymentData
-     */
-    private function extractToken(array $paymentData): string
-    {
-        if (is_string($paymentData['token'] ?? null)) {
-            return $paymentData['token'];
-        }
-
-        $credential = $paymentData['instrument']['credential'] ?? null;
-        if (is_array($credential) && is_string($credential['token'] ?? null)) {
-            return $credential['token'];
-        }
-        if (is_string($credential)) {
-            return $credential;
-        }
-
-        return '';
     }
 }

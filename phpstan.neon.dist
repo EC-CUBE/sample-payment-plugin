@@ -13,12 +13,15 @@ parameters:
   excludePaths:
     - vendor/*
     - node_modules/*
+    # 本体の autoload を読み込むだけのブートストラップ (解析対象外)
+    - Tests/bootstrap.php
   paths:
     - Controller
     - Entity
     - Form
     - Repository
     - Service
+    - Tests
     - Util
     - PluginManager.php
     - SamplePaymentEvent.php
