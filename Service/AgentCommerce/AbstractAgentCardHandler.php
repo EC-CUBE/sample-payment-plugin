@@ -86,8 +86,9 @@ abstract class AbstractAgentCardHandler
 
     /**
      * @param array<string, mixed> $paymentData
+     * @param array<string, mixed> $paymentReference 中断前の complete で保持した PSP 参照 (再開時のみ非空)
      */
-    public function authorize(Order $order, array $paymentData): PaymentOutcome
+    public function authorize(Order $order, array $paymentData, array $paymentReference = []): PaymentOutcome
     {
         try {
             $instrument = $this->toGatewayInstrument($paymentData);
@@ -95,6 +96,13 @@ abstract class AbstractAgentCardHandler
             // 支払データを解決できない要求は与信成功にしない (fail-closed)。エージェントが
             // payment_data を直して再送すれば回復できるため retryable (セッションは ready へ戻る)。
             return PaymentOutcome::failed('invalid_payment_data', $e->getMessage(), true);
+        }
+
+        // 再開 complete では中断前の取引を続行する。実 PSP では「既存の PaymentIntent を confirm する」に
+        // 相当し、支払トークンの再償還を避けるための情報。エージェント入力ではなくサーバ側の記録。
+        $transactionId = $paymentReference['transaction_id'] ?? null;
+        if (is_string($transactionId) && '' !== $transactionId) {
+            $instrument['transaction_id'] = $transactionId;
         }
 
         try {

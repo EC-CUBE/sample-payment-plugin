@@ -177,6 +177,19 @@ class MockAgentPaymentGatewayTest extends TestCase
         $this->assertSame($first->transactionId, $resumed->transactionId, '同一注文の再開では同じ取引識別子になる');
     }
 
+    public function testExistingTransactionIdIsReusedOnResume(): void
+    {
+        // 再開 complete では本体が中断前の PSP 参照を渡す。導出し直さずその取引を続行する。
+        $result = $this->authorize([
+            'token' => 'tok-3ds',
+            'authentication_result' => ['outcome' => 'authenticated'],
+            'transaction_id' => 'pi_mock_from_prior_attempt',
+        ]);
+
+        $this->assertSame(GatewayStatus::REQUIRES_CAPTURE, $result->status);
+        $this->assertSame('pi_mock_from_prior_attempt', $result->transactionId, '引き継がれた取引識別子をそのまま使う');
+    }
+
     public function testSameTokenCannotBeRedeemedForAnotherOrder(): void
     {
         $this->authorize(['token' => 'tok_shared'], ['order_no' => 'A-1']);

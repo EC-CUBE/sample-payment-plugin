@@ -91,7 +91,10 @@ class MockAgentPaymentGateway implements AgentPaymentGatewayInterface
         }
         $this->redeemedTokens[$token] = $orderReference;
 
-        $transactionId = $this->transactionId($currencyCode, $amount, $token, $orderReference);
+        // 再開 complete では中断前の取引を続行する (実 PSP の「既存 PaymentIntent を confirm」に相当)。
+        // 与えられなければ入力から決定的に導出する。
+        $transactionId = $this->existingTransactionId($instrument)
+            ?? $this->transactionId($currencyCode, $amount, $token, $orderReference);
         $metadata = $this->metadata($transactionId, $currencyCode, $amount);
 
         if (str_contains($token, self::MARKER_FRAUD)) {
@@ -181,6 +184,21 @@ class MockAgentPaymentGateway implements AgentPaymentGatewayInterface
         }
 
         return false;
+    }
+
+    /**
+     * 中断前の complete から引き継がれた取引識別子 (再開時のみ存在する).
+     *
+     * @param array<string, mixed> $instrument
+     */
+    private function existingTransactionId(array $instrument): ?string
+    {
+        $transactionId = $instrument['transaction_id'] ?? null;
+        if (!is_string($transactionId) || '' === trim($transactionId)) {
+            return null;
+        }
+
+        return trim($transactionId);
     }
 
     /**

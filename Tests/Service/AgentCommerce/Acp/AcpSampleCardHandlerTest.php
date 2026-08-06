@@ -169,11 +169,24 @@ class AcpSampleCardHandlerTest extends AgentCardHandlerTestCase
         $interrupted = $handler->authorize($order, ['token' => 'e2e-acp-spt-3ds']);
         $this->assertSame(PaymentOutcomeStatus::REQUIRES_ACTION, $interrupted->status, '3DS は失敗でなく中断');
 
-        $resumed = $handler->authorize($order, ['token' => 'e2e-acp-spt-3ds', 'authentication_result' => ['outcome' => 'authenticated']]);
+        // 本体は中断時の PSP 参照を payment_data に保持し、再開 complete で第 3 引数として渡す。
+        $paymentReference = ['transaction_id' => $interrupted->transactionId];
+        $resumed = $handler->authorize($order, ['token' => 'e2e-acp-spt-3ds', 'authentication_result' => ['outcome' => 'authenticated']], $paymentReference);
         $this->assertSame(PaymentOutcomeStatus::AUTHORIZED, $resumed->status, '認証結果を伴う再開で与信が成立する');
+        $this->assertSame($interrupted->transactionId, $resumed->transactionId, '再開は中断前と同じ取引を続行する');
 
         $captured = $handler->capture($order, ['token' => 'e2e-acp-spt-3ds'], $resumed);
         $this->assertSame(PaymentOutcomeStatus::COMPLETED, $captured->status);
+    }
+
+    public function testPaymentReferenceFromInterruptedAttemptIsPassedToGateway(): void
+    {
+        $spy = new SpyAgentPaymentGateway(GatewayResult::requiresCapture('pi_resumed'));
+        $order = $this->createOrder(AgentProtocol::ACP, CreditCard::class);
+
+        $this->handler($spy)->authorize($order, ['token' => 'tok_ok'], ['transaction_id' => 'pi_prior', 'gateway' => 'spy']);
+
+        $this->assertSame('pi_prior', $spy->authorizeCalls[0]['instrument']['transaction_id'] ?? null, '再開時は中断前の取引識別子を PSP へ引き継ぐ (トークンの再償還を避ける)');
     }
 
     private function handler(AgentPaymentGatewayInterface $gateway): AcpSampleCardHandler
