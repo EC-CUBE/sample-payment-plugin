@@ -76,7 +76,8 @@ jobs:
       - name: Setup EC-CUBE
         working-directory: 'ec-cube'
         run: |
-          bin/console doctrine:database:create
+          # postgres サービスが POSTGRES_DB で作成済みのため --if-not-exists を付ける
+          bin/console doctrine:database:create --if-not-exists
           bin/console doctrine:schema:create
           bin/console eccube:fixtures:load
 
