@@ -57,6 +57,20 @@ class UcpSampleCardHandler extends AbstractAgentCardHandler implements UcpPaymen
         return AgentProtocol::UCP;
     }
 
+    /**
+     * UCP の capture 失敗は**再試行を許す**.
+     *
+     * ready からの再 complete は新規 authorize から始まるが、UCP はエージェントが complete のたびに
+     * payment.instruments[].credential を送り直し、controller が {@link exchangePaymentToken()} で
+     * 交換をやり直す。つまり同じ入力から instrument を作り直せるため ready へ戻して再試行できる。
+     *
+     * ワンショットのクレデンシャルを扱う PSP へ差し替える場合は false を返すこと。
+     */
+    protected function captureFailureIsRetryable(): bool
+    {
+        return true;
+    }
+
     protected function toGatewayInstrument(array $paymentData): array
     {
         // UCP は controller の resolvePaymentData() が exchangePaymentToken() 済みの中立データを渡す。

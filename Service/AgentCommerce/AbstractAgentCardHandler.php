@@ -52,6 +52,18 @@ abstract class AbstractAgentCardHandler
     abstract protected function protocolId(): int;
 
     /**
+     * capture 失敗を再試行可能 (ready へ戻す) として返してよいか.
+     *
+     * コアは **capture 単独の再実行入口を持たない**。ready からの再 complete は新規 {@link authorize()}
+     * から始まり、保持した PSP 参照はハンドラへ渡らない
+     * ({@link \Eccube\Service\AgentCommerce\Payment\AgentCheckoutPaymentHandlerInterface::capture()})。
+     * したがって「同じ $paymentData から instrument を作り直せるか」がそのまま再試行可否になる。
+     *
+     * 作り直せないのに true を返すと、再試行は必ず失敗したうえ与信だけが PSP 側に残る。
+     */
+    abstract protected function captureFailureIsRetryable(): bool;
+
+    /**
      * complete リクエストの中立支払データを、ゲートウェイへ渡す instrument へ整形する.
      *
      * ACP は Shared Payment Token の償還、UCP は交換済みトークンの受け渡しを行う。
@@ -120,7 +132,7 @@ abstract class AbstractAgentCardHandler
             return PaymentOutcome::failed('payment_gateway_error', 'The payment gateway could not be reached.', true);
         }
 
-        return $this->toOutcome($result);
+        return $this->toAuthorizeOutcome($result);
     }
 
     /**
@@ -142,15 +154,20 @@ abstract class AbstractAgentCardHandler
                 $this->context($order),
             );
         } catch (\Throwable $e) {
-            // capture 中の失敗は authorize と扱いが異なる。コアは在庫を rollback する一方、PSP 側の与信は
-            // 残るため、retryable=true でセッションを ready に戻し、同一取引の再 capture / 取消を可能にする
-            // (canceled にすると与信が残ったまま不可逆になる)。
+            // 与信は PSP 側に残るため、取消・照会できるよう取引識別子と metadata を引き継ぐ。
+            // 再試行可否は「新規 authorize をやり直せるか」で決まる ({@link captureFailureIsRetryable()})。
             $this->logger->error('Agent payment capture failed.', ['exception' => $e, 'order_no' => $order->getOrderNo(), 'transaction_id' => $transactionId]);
 
-            return PaymentOutcome::failed('payment_capture_error', 'The payment gateway could not be reached.', true, $transactionId);
+            return PaymentOutcome::failed(
+                'payment_capture_error',
+                'The payment gateway could not be reached.',
+                $this->captureFailureIsRetryable(),
+                $transactionId,
+                $authorization->metadata,
+            );
         }
 
-        return $this->toOutcome($result);
+        return $this->toCaptureOutcome($result, $order);
     }
 
     /**
@@ -173,12 +190,52 @@ abstract class AbstractAgentCardHandler
     }
 
     /**
-     * ゲートウェイ結果をコアの {@link PaymentOutcome} へ写像する.
+     * capture のゲートウェイ結果をコアの {@link PaymentOutcome} へ写像する.
+     *
+     * **コアの契約は「capture の戻り値は COMPLETED か FAILED のみ」**。中間状態を返してもコアは
+     * 失敗として扱い在庫を回収するため、authorize 用の {@link toAuthorizeOutcome()} は流用せず
+     * ここで終端 2 値へ畳む。REQUIRES_CAPTURE / REQUIRES_ACTION / PROCESSING が返るのは
+     * ゲートウェイ実装の誤りなので、ログに残したうえで失敗にする (fail-closed)。
+     */
+    private function toCaptureOutcome(GatewayResult $result, Order $order): PaymentOutcome
+    {
+        if ($result->status === GatewayStatus::SUCCEEDED) {
+            return PaymentOutcome::completed($result->transactionId, $result->metadata);
+        }
+
+        if ($result->status === GatewayStatus::FAILED) {
+            return PaymentOutcome::failed(
+                $result->errorCode ?? 'capture_failed',
+                $result->errorMessage ?? '',
+                // ゲートウェイが不可逆と判断した失敗 (金額不一致等) は、再 authorize できても再試行させない。
+                $result->retryable && $this->captureFailureIsRetryable(),
+                $result->transactionId,
+                $result->metadata,
+            );
+        }
+
+        $this->logger->error('The payment gateway returned a non-terminal status from capture.', [
+            'order_no' => $order->getOrderNo(),
+            'status' => $result->status->value,
+            'transaction_id' => $result->transactionId,
+        ]);
+
+        return PaymentOutcome::failed(
+            'capture_unexpected_status',
+            'The payment could not be captured.',
+            $this->captureFailureIsRetryable(),
+            $result->transactionId,
+            $result->metadata,
+        );
+    }
+
+    /**
+     * authorize のゲートウェイ結果をコアの {@link PaymentOutcome} へ写像する.
      *
      * 与信のみ (REQUIRES_CAPTURE) と売上確定済 (SUCCEEDED) を区別する点が要。潰して COMPLETED に
      * すると、auto-capture 型 PSP へ差し替えたときにコアが capture を二重発行する。
      */
-    private function toOutcome(GatewayResult $result): PaymentOutcome
+    private function toAuthorizeOutcome(GatewayResult $result): PaymentOutcome
     {
         return match ($result->status) {
             GatewayStatus::REQUIRES_CAPTURE => PaymentOutcome::authorized($result->transactionId, $result->metadata),

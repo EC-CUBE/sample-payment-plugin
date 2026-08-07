@@ -17,6 +17,7 @@ use Eccube\Entity\Master\AgentProtocol;
 use Eccube\Service\AgentCommerce\MinorUnitConverter;
 use Eccube\Service\AgentCommerce\Payment\PaymentOutcome;
 use Eccube\Service\AgentCommerce\Payment\PaymentOutcomeStatus;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Plugin\SamplePayment44\Service\AgentCommerce\Acp\AcpSampleCardHandler;
 use Plugin\SamplePayment44\Service\AgentCommerce\Exception\InvalidPaymentDataException;
 use Plugin\SamplePayment44\Service\AgentCommerce\Gateway\AgentPaymentGatewayInterface;
@@ -122,17 +123,65 @@ class AcpSampleCardHandlerTest extends AgentCardHandlerTestCase
         $this->assertStringNotContainsString('connection reset', $outcome->errorMessage ?? '', 'PSP の内部メッセージをエージェントへ露出しない');
     }
 
-    public function testGatewayExceptionOnCaptureKeepsTransactionReferenceAndStaysRetryable(): void
+    public function testGatewayExceptionOnCaptureIsNotRetryableAndKeepsTransactionReference(): void
     {
-        $spy = new SpyAgentPaymentGateway(GatewayResult::requiresCapture('pi_4'), new \RuntimeException('timeout'));
+        $spy = new SpyAgentPaymentGateway(GatewayResult::requiresCapture('pi_4', ['gateway' => 'spy']), new \RuntimeException('timeout'));
         $order = $this->createOrder(AgentProtocol::ACP, CreditCard::class);
 
         $authorization = $this->handler($spy)->authorize($order, ['token' => 'tok_ok']);
         $outcome = $this->handler($spy)->capture($order, ['token' => 'tok_ok'], $authorization);
 
         $this->assertSame('payment_capture_error', $outcome->errorCode);
-        $this->assertTrue($outcome->retryable, '与信は PSP 側に残るため canceled にせず ready へ戻す');
+        // コアに capture 単独の再実行入口は無く、ready からの再試行は新規 authorize = SPT の再償還になる。
+        // ワンショットのため必ず失敗するので、ready へ戻さず canceled にする。
+        $this->assertFalse($outcome->retryable, 'SPT は再償還できないため capture 失敗を再試行させない');
         $this->assertSame('pi_4', $outcome->transactionId, '取消・照会のため取引識別子を残す');
+        $this->assertSame(['gateway' => 'spy'], $outcome->metadata, '照会に必要な metadata も引き継ぐ');
+    }
+
+    public function testGatewayCaptureFailureIsForcedNonRetryable(): void
+    {
+        // ゲートウェイが「再試行可」と言っても、ACP では再 authorize が成立しないため上書きする。
+        $spy = new SpyAgentPaymentGateway(
+            GatewayResult::requiresCapture('pi_6'),
+            GatewayResult::failed('capture_failed', 'The capture was rejected.', true, 'pi_6'),
+        );
+        $order = $this->createOrder(AgentProtocol::ACP, CreditCard::class);
+
+        $authorization = $this->handler($spy)->authorize($order, ['token' => 'tok_ok']);
+        $outcome = $this->handler($spy)->capture($order, ['token' => 'tok_ok'], $authorization);
+
+        $this->assertSame(PaymentOutcomeStatus::FAILED, $outcome->status);
+        $this->assertSame('capture_failed', $outcome->errorCode);
+        $this->assertFalse($outcome->retryable);
+    }
+
+    #[DataProvider('nonTerminalCaptureResults')]
+    public function testCaptureNeverReturnsNonTerminalOutcome(GatewayResult $captureResult): void
+    {
+        // コアの契約は「capture の戻り値は COMPLETED か FAILED のみ」。中間状態を返すとコアは
+        // 失敗として扱うが、errorCode / errorMessage が無いぶん理由を伝えられない。
+        $spy = new SpyAgentPaymentGateway(GatewayResult::requiresCapture('pi_7'), $captureResult);
+        $order = $this->createOrder(AgentProtocol::ACP, CreditCard::class);
+
+        $authorization = $this->handler($spy)->authorize($order, ['token' => 'tok_ok']);
+        $outcome = $this->handler($spy)->capture($order, ['token' => 'tok_ok'], $authorization);
+
+        $this->assertSame(PaymentOutcomeStatus::FAILED, $outcome->status, 'capture は COMPLETED か FAILED しか返さない');
+        $this->assertSame('capture_unexpected_status', $outcome->errorCode);
+        $this->assertNotSame('', $outcome->errorMessage ?? '', '理由を伝えられるようメッセージを載せる');
+    }
+
+    /**
+     * capture が返してはならないゲートウェイ結果.
+     *
+     * @return \Iterator<string, array{GatewayResult}>
+     */
+    public static function nonTerminalCaptureResults(): \Iterator
+    {
+        yield 'requires_capture (未 capture のまま)' => [GatewayResult::requiresCapture('pi_7')];
+        yield 'requires_action (capture 中の追加認証)' => [GatewayResult::requiresAction(['type' => '3ds'], 'pi_7')];
+        yield 'processing (非同期確定)' => [GatewayResult::processing('pi_7')];
     }
 
     public function testRequiresActionCarriesActionDataMetadataAndReference(): void

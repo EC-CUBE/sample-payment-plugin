@@ -53,6 +53,19 @@ class AcpSampleCardHandler extends AbstractAgentCardHandler implements AcpPaymen
         return AgentProtocol::ACP;
     }
 
+    /**
+     * ACP の capture 失敗は**再試行させない**.
+     *
+     * ready からの再 complete は新規 authorize から始まるが、その入口である
+     * {@link redeemSharedPaymentToken()} は Shared Payment Token の償還であり、SPT はワンショットで
+     * 2 度目が失敗する。再試行を許しても必ず失敗し、与信だけが PSP 側に残るため canceled にする
+     * (与信の取消は PSP 側の運用に委ねる)。
+     */
+    protected function captureFailureIsRetryable(): bool
+    {
+        return false;
+    }
+
     protected function toGatewayInstrument(array $paymentData): array
     {
         // SPT の償還はワンショットなので authorize からの 1 度だけ。capture は与信結果を使う

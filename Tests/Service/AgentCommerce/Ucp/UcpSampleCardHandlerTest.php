@@ -139,8 +139,24 @@ class UcpSampleCardHandlerTest extends AgentCardHandlerTestCase
         $captured = $handler->capture($order, [], $authorization);
         $this->assertSame(PaymentOutcomeStatus::FAILED, $captured->status, 'capture 失敗の分岐を検証できる規約を持つ');
         $this->assertSame('capture_failed', $captured->errorCode);
-        $this->assertTrue($captured->retryable);
+        // UCP はエージェントが complete のたびに credential を送り直すため、ready からの再試行で
+        // exchange → authorize をやり直せる (ACP の SPT と非対称なのはここ)。
+        $this->assertTrue($captured->retryable, 'credential を再送すれば新規 authorize からやり直せる');
         $this->assertSame($authorization->transactionId, $captured->transactionId);
+    }
+
+    public function testCaptureNeverReturnsNonTerminalOutcome(): void
+    {
+        // コアの契約は「capture の戻り値は COMPLETED か FAILED のみ」。
+        $spy = new SpyAgentPaymentGateway(GatewayResult::requiresCapture('pi_u1'), GatewayResult::processing('pi_u1'));
+        $order = $this->createOrder(AgentProtocol::UCP, CreditCard::class);
+
+        $authorization = $this->handler($spy)->authorize($order, ['token' => 'tok_ok']);
+        $outcome = $this->handler($spy)->capture($order, [], $authorization);
+
+        $this->assertSame(PaymentOutcomeStatus::FAILED, $outcome->status);
+        $this->assertSame('capture_unexpected_status', $outcome->errorCode);
+        $this->assertTrue($outcome->retryable, 'UCP は再 authorize できるため契約違反でも ready へ戻す');
     }
 
     private function handler(AgentPaymentGatewayInterface $gateway): UcpSampleCardHandler
